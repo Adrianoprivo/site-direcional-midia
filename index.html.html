@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direcional Mídia | Aceleradora & Gestão de Performance</title>
+  <meta name="description" content="Tiramos sua empresa do labirinto no meio físico e traçamos a rota certa para vendas escaláveis no digital com Mídia e CRM integrado.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --bg-surface: #071033;
+      --bg-card: #0c1849;
+      --primary: #00d084;
+      --accent: #00ffff;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(0, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Sora', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* MENU FIXO NO SCROLL */
+    .sticky-nav {
+      position: fixed;
+      top: -100px;
+      left: 0;
+      width: 100%;
+      background: rgba(2, 6, 23, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      transition: top 0.3s ease;
+      padding: 12px 0;
+    }
+    .sticky-nav.visible {
+      top: 0;
+    }
+    .sticky-nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    /* NAV REGULAR */
+    nav.main-nav {
+      padding: 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+    .brand-logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      object-fit: cover;
+      background: #040924;
+    }
+    .brand span {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: -0.5px;
+    }
+    .brand span b {
+      color: var(--accent);
+    }
+
+    /* BOTÕES */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--primary);
+      color: #020617;
+      padding: 16px 36px;
+      font-weight: 700;
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      border-radius: 50px;
+      transition: all 0.25s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 208, 132, 0.4);
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: #fff;
+    }
+    .btn-whatsapp:hover {
+      box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25D366;
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      z-index: 999;
+      text-decoration: none;
+      transition: transform 0.2s;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+    }
+
+    /* HERO */
+    .hero {
+      padding: 80px 0 90px;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 50px;
+      align-items: center;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+    }
+    .hero h1 span {
+      color: var(--accent);
+    }
+    .hero p {
+      color: var(--text-muted);
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 16px 24px;
+      border-radius: 14px;
+      margin-top: 30px;
+    }
+    .hero-badge h3 {
+      color: var(--accent);
+      font-size: 26px;
+    }
+    .hero-badge p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* HERO COMPASS WRAPPER */
+    .hero-orbit-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 440px;
+    }
+    .orbit-bg-rotor {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 2px dashed rgba(0, 208, 132, 0.5);
+      box-shadow: 0 0 35px rgba(0, 208, 132, 0.25);
+      pointer-events: none;
+      z-index: 0;
+      transition: transform 0.15s ease-out;
+    }
+    .orbit-fg-compass {
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.3), 0 25px 60px rgba(0, 0, 0, 0.9);
+      border: 3px solid rgba(0, 255, 255, 0.4);
+      z-index: 1;
+      display: block;
+      transition: transform 0.15s ease-out;
+      background: #071033;
+    }
+    /* Fallback vetorial caso a foto demore ou falhe */
+    .compass-vector-fallback {
+      display: none;
+      width: 100%;
+      max-width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      box-shadow: 0 0 50px rgba(0, 255, 255, 0.3), 0 25px 60px rgba(0, 0, 0, 0.9);
+      border: 3px solid rgba(0, 255, 255, 0.4);
+      z-index: 1;
+    }
+
+    /* SEÇÕES */
+    .section {
+      padding: 90px 0;
+    }
+    .section-title {
+      text-align: center;
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+    .section-title span {
+      color: var(--accent);
+    }
+    .section-sub {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 50px;
+      color: var(--text-muted);
+      font-size: 17px;
+    }
+
+    /* MÉTRICAS */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 32px 20px;
+      border-radius: 16px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .metric-card:hover {
+      transform: translateY(-4px);
+    }
+    .metric-card h4 {
+      font-size: 38px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .metric-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* METODOLOGIA */
+    .devrs-orbit-section {
+      background: radial-gradient(circle at 75% 50%, rgba(7, 16, 51, 0.8) 0%, #020617 70%);
+      position: relative;
+    }
+    .devrs-orbit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .orbit-copy h2 {
+      font-size: 36px;
+      margin-bottom: 24px;
+      color: #fff;
+    }
+    .orbit-copy h2 span {
+      color: var(--primary);
+    }
+    .orbit-copy .main-desc {
+      color: var(--text-muted);
+      font-size: 17px;
+      line-height: 1.7;
+      margin-bottom: 30px;
+    }
+    .active-pilar-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      padding: 24px;
+      border-radius: 12px;
+      min-height: 140px;
+    }
+    .active-pilar-box h4 {
+      color: var(--accent);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .active-pilar-box p {
+      color: #cbd5e1;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .orbit-visual-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .orbit-svg {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      filter: drop-shadow(0 15px 35px rgba(0,0,0,0.7));
+    }
+    .pilar-wedge {
+      cursor: pointer;
+      transition: all 0.3s ease;
+      fill: #0c1b54;
+      stroke: #192a73;
+      stroke-width: 2px;
+    }
+    .pilar-wedge:hover, .pilar-wedge.active {
+      fill: #142a82;
+      stroke: var(--accent);
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 12px rgba(0, 255, 255, 0.4));
+    }
+    .wedge-text {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      fill: #ffffff;
+      pointer-events: none;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    /* ESPECIALIDADES */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 25px;
+    }
+    .service-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 30px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(0, 255, 255, 0.4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    }
+    .service-card:hover::before {
+      opacity: 1;
+    }
+    .service-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(0, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      margin-bottom: 22px;
+    }
+    .service-card h3 {
+      font-size: 21px;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .service-card p {
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* CRM SECTION */
+    .crm-highlight-section {
+      background: #040924;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .crm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
+    }
+    .crm-card-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 35px;
+    }
+    .crm-flow-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .crm-flow-step:last-child {
+      margin-bottom: 0;
+    }
+    .step-badge {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    .crm-flow-step h4 {
+      font-size: 17px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .crm-flow-step p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* COMPARATIVO */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .compare-box {
+      background: var(--bg-surface);
+      border-radius: 18px;
+      padding: 40px;
+      border: 1px solid var(--border);
+    }
+    .compare-box.bad {
+      border-top: 4px solid #ef4444;
+    }
+    .compare-box.good {
+      border-top: 4px solid var(--primary);
+    }
+    .compare-box h3 {
+      font-size: 22px;
+      margin-bottom: 24px;
+    }
+    .compare-box ul {
+      list-style: none;
+    }
+    .compare-box li {
+      margin-bottom: 16px;
+      padding-left: 32px;
+      position: relative;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+    .compare-box.bad li::before {
+      content: "✕";
+      position: absolute;
+      left: 0;
+      color: #ef4444;
+      font-weight: 800;
+    }
+    .compare-box.good li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    /* FAQ */
+    .faq-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .faq-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .faq-item:hover {
+      border-color: rgba(0, 255, 255, 0.35);
+    }
+    .faq-btn {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #fff;
+      padding: 22px;
+      font-size: 17px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+    .faq-btn span {
+      font-size: 20px;
+      color: var(--accent);
+      transition: transform 0.2s;
+    }
+    .faq-content {
+      padding: 0 22px 22px;
+      color: var(--text-muted);
+      display: none;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .faq-item.open .faq-content {
+      display: block;
+    }
+
+    /* FORMULÁRIO */
+    .form-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    #form-success-msg {
+      display: none;
+      background: rgba(0, 208, 132, 0.15);
+      border: 1px solid var(--primary);
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    /* MODAL INSTITUCIONAL */
+    .legal-modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 6, 23, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .legal-modal-backdrop.active {
+      display: flex;
+    }
+    .legal-modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 40px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    .legal-modal-box h3 {
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .legal-modal-box p {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .modal-close-btn {
+      background: var(--primary);
+      color: #020617;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    /* FOOTER */
+    footer.site-footer {
+      background: #010410;
+      border-top: 1px solid var(--border);
+      padding: 70px 0 30px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 50px;
+    }
+    .footer-col h4 {
+      color: #fff;
+      font-size: 16px;
+      margin-bottom: 20px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 12px;
+    }
+    .footer-col a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-col a:hover {
+      color: var(--accent);
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      font-size: 13px;
+    }
+    .legal-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 20px;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+    .legal-links a:hover {
+      color: var(--primary);
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid, .devrs-orbit-grid, .crm-grid, .compare-grid, .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        display: none;
+      }
+      .hero h1, .orbit-copy h2 {
+        font-size: 30px;
+      }
+      .hero-orbit-stage {
+        min-height: 360px;
+      }
+      .orbit-bg-rotor {
+        width: 340px;
+        height: 340px;
+      }
+      .orbit-fg-compass, .compass-vector-fallback {
+        max-width: 290px;
+        height: 290px;
+      }
+      .form-wrap {
+        padding: 24px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+      .legal-links a {
+        margin: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body id="inicio">
+
+  <!-- MODAL POLÍTICA DE PRIVACIDADE -->
+  <div id="modal-privacidade" class="legal-modal-backdrop">
+    <div class="legal-modal-box">
+      <h3>Política de Privacidade</h3>
+      <p>A <b>Direcional Mídia</b> preza pela transparência, sigilo e segurança integral dos dados de seus parceiros e clientes, atuando em rigorosa conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018 - LGPD).</p>
+      <p><b>1. Coleta de Dados:</b> As informações solicitadas em nossos formulários (Nome, WhatsApp, Empresa, Faturamento e Canal Digital) são utilizadas única e exclusivamente para realizar a análise estratégica preliminar e entrar em contato comercial.</p>
+      <p><b>2. Não Compartilhamento:</b> Não comercializamos, cedemos ou repassamos seus dados a quaisquer terceiros ou plataformas externas sem autorização expressa.</p>
+      <p><b>3. Armazenamento Seguro:</b> Os registros são armazenados em ambiente em nuvem protegido por criptografia de ponta e podem ser excluídos a qualquer momento mediante solicitação via e-mail corporativo.</p>
+      <button class="modal-close-btn" onclick="closeLegalModal('modal-privacidade')">Entendido e Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL TERMOS DE USO -->
+  <div id="modal-termos" class="legal-modal-backdrop">
+    <div class="legal-modal-box">
+      <h3>Termos de Uso</h3>
+      <p>Ao navegar em nosso portal e solicitar um diagnóstico estratégico gratuito, você concorda com as diretrizes e termos operacionais descritos abaixo:</p>
+      <p><b>1. Diagnóstico Estratégico:</b> A sessão de alinhamento oferecida tem caráter consultivo e de orientação técnica, baseada nas melhores práticas de mídia e CRM do mercado.</p>
+      <p><b>2. Responsabilidade Compartilhada:</b> A escala e o sucesso financeiro de qualquer operação dependem do alinhamento conjunto entre as campanhas geradas pela Direcional Mídia e a execução ágil do time comercial e de atendimento do cliente.</p>
+      <p><b>3. Direitos Autorais:</b> Todo o conteúdo, identidade visual, logotipo e metodologias presentes neste portal são de titularidade exclusiva da Direcional Mídia.</p>
+      <button class="modal-close-btn" onclick="closeLegalModal('modal-termos')">Concordar e Fechar</button>
+    </div>
+  </div>
+
+  <!-- BOTÃO FLUTUANTE DO WHATSAPP -->
+  <a href="https://wa.me/5511970511827?text=Olá!%20Vim%20pelo%20site%20da%20Direcional%20Mídia%20e%20gostaria%20de%20um%20diagnóstico." class="whatsapp-float" target="_blank" title="Falar no WhatsApp">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.275.058.376-.058c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12 0 2.159.57 4.188 1.564 5.946l-1.564 5.882 6.07-1.593c1.706.924 3.654 1.465 5.73 1.465 6.627 0 12-5.373 12-12s-5.373-12-12-12z"/></svg>
+  </a>
+
+  <!-- MENU SUPERIOR FIXO NO SCROLL -->
+  <header id="sticky-header" class="sticky-nav">
+    <div class="container sticky-nav-inner">
+      <a href="#inicio" class="brand">
+        <img class="brand-logo-img" src="./index_files/logo.jpeg" alt="Logo Direcional Mídia">
+        <span>DIRECIONAL <b>MÍDIA</b></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#metricas">Métricas</a></li>
+        <li><a href="#metodo">Metodologia</a></li>
+        <li><a href="#especialidades">Especialidades</a></li>
+        <li><a href="#crm">CRM</a></li>
+        <li><a href="#comparativo">Para Quem É</a></li>
+        <li><a href="#faq">Dúvidas</a></li>
+        <li><a href="#formulario" style="color: var(--primary);">Contato</a></li>
+      </ul>
+      <a href="#formulario" class="btn" style="padding: 9px 20px; font-size: 13px;">Agendar Diagnóstico</a>
+    </div>
+  </header>
+
+  <!-- NAV REGULAR DE ENTRADA -->
+  <div class="container">
+    <nav class="main-nav">
+      <a href="#inicio" class="brand">
+        <img class="brand-logo-img" src="./index_files/logo.jpeg" alt="Logo Direcional Mídia">
+        <span>DIRECIONAL <b>MÍDIA</b></span>
+      </a>
+      <div style="display: flex; gap: 18px; align-items: center;">
+        <a href="#especialidades" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600;">Especialidades</a>
+        <a href="#formulario" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600;">Contato</a>
+        <a href="#formulario" class="btn" style="padding: 10px 22px; font-size: 13px;">Agendar Diagnóstico</a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          Mídia de Performance & Inteligência de CRM
+        </div>
+        <h1>Sua empresa está perdida no meio físico? <span>Nós apontamos a rota certa no digital.</span></h1>
+        <p>A Direcional Mídia constrói a bússola de escala do seu negócio. Integramos tráfego qualificado e gestão rigorosa de CRM para transformar cliques em clientes fidelizados e faturamento constante.</p>
+        
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+          <a href="#formulario" class="btn">
+            Quero Direcionar Minha Empresa
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+          <a href="https://wa.me/5511970511827?text=Olá!%20Gostaria%20de%20falar%20diretamente%20pelo%20WhatsApp%20sobre%20a%20Direcional%20Mídia." target="_blank" class="btn btn-whatsapp">
+            Falar no WhatsApp
+          </a>
+        </div>
+
+        <div class="hero-badge">
+          <div>
+            <h3>+R$ 5.7 Milhões</h3>
+            <p>em vendas geradas para nossos clientes</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO IMAGE COM SISTEMA RESILIENTE -->
+      <div class="hero-orbit-stage">
+        <div id="orbit-bg-rotor" class="orbit-bg-rotor"></div>
+        
+        <img id="orbit-fg-compass" class="orbit-fg-compass" 
+     src="./index_files/hero.jpeg" 
+     alt="Direcional Mídia Bússola Digital">
+
+        <!-- Fallback vetorial automático caso o arquivo falte no deploy -->
+        <svg id="hero-vector-fallback" class="compass-vector-fallback" viewBox="0 0 500 500" fill="none">
+          <circle cx="250" cy="250" r="195" fill="#071033" stroke="#162463" stroke-width="8"/>
+          <circle cx="250" cy="250" r="170" stroke="#00ffff" stroke-width="2" stroke-dasharray="4 6" opacity="0.6"/>
+          <polygon points="250,40 280,220 250,250 220,220" fill="#0284c7"/>
+          <polygon points="250,40 220,220 250,250" fill="#0369a1"/>
+          <polygon points="250,460 280,280 250,250 220,280" fill="#0284c7"/>
+          <polygon points="250,460 220,280 250,250" fill="#0369a1"/>
+          <polygon points="460,250 280,280 250,250 280,220" fill="#0284c7"/>
+          <polygon points="460,250 280,220 250,250" fill="#0369a1"/>
+          <polygon points="40,250 220,280 250,250 220,220" fill="#0284c7"/>
+          <polygon points="40,250 220,220 250,250" fill="#0369a1"/>
+          <path d="M 290,175 Q 365,135 395,85" stroke="#00ffff" stroke-width="12" fill="none" stroke-linecap="round"/>
+          <polygon points="395,85 370,95 385,115" fill="#00ffff"/>
+          <path d="M 315,205 Q 405,155 435,105" stroke="#00d084" stroke-width="16" fill="none" stroke-linecap="round"/>
+          <polygon points="435,105 400,115 420,140" fill="#00d084"/>
+          <path d="M 210,325 Q 135,365 105,415" stroke="#00ffff" stroke-width="12" fill="none" stroke-linecap="round"/>
+          <polygon points="105,415 130,405 115,385" fill="#00ffff"/>
+          <path d="M 185,295 Q 95,345 65,395" stroke="#00d084" stroke-width="16" fill="none" stroke-linecap="round"/>
+          <polygon points="65,395 100,385 80,360" fill="#00d084"/>
+          <circle cx="250" cy="250" r="42" fill="#020617" stroke="#00ffff" stroke-width="3"/>
+          <circle cx="250" cy="250" r="18" fill="#00d084"/>
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- MÉTRICAS -->
+  <section id="metricas" class="section" style="background: #040924;">
+    <div class="container">
+      <h2 class="section-title">Quem Somos na <span>Direcional Mídia</span></h2>
+      <p class="section-sub">
+        Desde 2019, atuamos como uma bússola de escala. Empresas sólidas no mundo físico perdem margem no digital quando investem em tráfego sem um sistema de inteligência de dados. Nós conectamos atração agressiva com retenção inteligente.
+      </p>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <h4>+9</h4>
+          <p>Estados atendidos no Brasil</p>
+        </div>
+        <div class="metric-card">
+          <h4>+60</h4>
+          <p>Operações aceleradas</p>
+        </div>
+        <div class="metric-card">
+          <h4>+980K</h4>
+          <p>Gerenciados em anúncios</p>
+        </div>
+        <div class="metric-card">
+          <h4>+5,7M</h4>
+          <p>Faturamento gerado</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METODOLOGIA -->
+  <section id="metodo" class="section devrs-orbit-section">
+    <div class="container">
+      <div class="devrs-orbit-grid">
+        
+        <div class="orbit-copy">
+          <h2>Nossa Metodologia de Aceleração consiste em <span>5 pilares estratégicos</span>, para acelerar resultados no menor tempo possível.</h2>
+          <p class="main-desc">Temos clareza para executar nossa parte e orientar o que você precisa fazer, integrando captação com inteligência de CRM para acelerar vendas de forma previsível.</p>
+          
+          <div class="active-pilar-box" id="pilar-desc-box">
+            <h4 id="pilar-title">1. Descobrir</h4>
+            <p id="pilar-text">Mapeamos o perfil comprador do seu negócio físico e cadastramos a inteligência dos primeiros dados diretamente no CRM antes mesmo de escalar anúncios.</p>
+          </div>
+        </div>
+
+        <div class="orbit-visual-wrap">
+          <svg class="orbit-svg" viewBox="0 0 500 500">
+            <circle cx="250" cy="250" r="230" fill="none" stroke="rgba(0, 255, 255, 0.08)" stroke-width="1.5"/>
+            <circle cx="250" cy="250" r="215" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1.5" stroke-dasharray="6 6"/>
+            
+            <g id="orbit-wedges">
+              <path id="wedge-0" class="pilar-wedge active" d="M 250,55 A 195,195 0 0,1 435,187 L 342,218 A 98,98 0 0,0 250,152 Z" onclick="selectPilarManual(0)"/>
+              <path id="wedge-1" class="pilar-wedge" d="M 435,187 A 195,195 0 0,1 364,407 L 307,328 A 98,98 0 0,0 342,218 Z" onclick="selectPilarManual(1)"/>
+              <path id="wedge-2" class="pilar-wedge" d="M 364,407 A 195,195 0 0,1 136,407 L 193,328 A 98,98 0 0,0 307,328 Z" onclick="selectPilarManual(2)"/>
+              <path id="wedge-3" class="pilar-wedge" d="M 136,407 A 195,195 0 0,1 65,187 L 158,218 A 98,98 0 0,0 193,328 Z" onclick="selectPilarManual(3)"/>
+              <path id="wedge-4" class="pilar-wedge" d="M 65,187 A 195,195 0 0,1 250,55 L 250,152 A 98,98 0 0,0 158,218 Z" onclick="selectPilarManual(4)"/>
+
+              <text class="wedge-text" x="325" y="125">1. Descobrir</text>
+              <text class="wedge-text" x="390" y="295">2. Engajar</text>
+              <text class="wedge-text" x="250" y="380">3. Vender</text>
+              <text class="wedge-text" x="110" y="295">4. Recuperar</text>
+              <text class="wedge-text" x="175" y="125">5. Satisfazer</text>
+            </g>
+
+            <circle cx="250" cy="250" r="88" fill="#020617" stroke="var(--border)" stroke-width="3"/>
+            
+            <defs>
+              <clipPath id="circleClipMetodo">
+                <circle cx="250" cy="250" r="80"/>
+              </clipPath>
+            </defs>
+
+            <!-- Render da Imagem 3 com Fallback Automático -->
+            <g>
+              <image id="metodo-img-center" href="./index_files/metodo.jpeg" x="170" y="170" width="160" height="160" clip-path="url(#circleClipMetodo)" preserveAspectRatio="xMidYMid slice"/>
+            </g>
+            <circle cx="250" cy="250" r="80" fill="none" stroke="var(--accent)" stroke-width="2.5" pointer-events="none"/>
+          </svg>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ESPECIALIDADES -->
+  <section id="especialidades" class="section" style="background: #020617;">
+    <div class="container">
+      <h2 class="section-title">Nossas <span>Especialidades</span></h2>
+      <p class="section-sub">
+        Não entregamos tarefas isoladas. Construímos uma esteira técnica de ponta a ponta para que sua empresa converta mais com a mesma verba.
+      </p>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <h3>Gestão de Tráfego Pago</h3>
+          <p>Mídia orientada a lucro (Meta Ads & Google Ads). Construção de matriz criativa agressiva, segmentações inteligentes e testes contínuos de públicos compradores para reduzir seu CAC e elevar o ROAS.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Estruturação de CRM</h3>
+          <p>Seu negócio não pode ser refém de anúncios diários. Organizamos e tagueamos sua base de dados desde o primeiro clique para ativar réguas de relacionamento que vendem no automático via WhatsApp e E-mail.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <h3>Otimização de Conversão (CRO)</h3>
+          <p>Mais vendas sem precisar dobrar o investimento em mídia. Ajustamos a usabilidade, a clareza da proposta de valor, a velocidade da página e o checkout para transformar mais visitantes em clientes pagantes.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          </div>
+          <h3>Recuperação de Carrinho & Leads</h3>
+          <p>Onde a maioria das empresas sangra faturamento: orçamentos não respondidos e carrinhos abandonados. Criamos automações dinâmicas e ofertas de urgência para resgatar vendas que já pareciam perdidas.</p>
+        </div>
+
+        <div class="service-card">
+          <div class="service-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>Estratégias de LTV & Recompra</h3>
+          <p>O verdadeiro lucro do negócio está na segunda e terceira compra. Criamos calendários de ofertas sazonais, incentivos de recompra e clubes de fidelidade para extrair o valor máximo do ciclo de vida de cada cliente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CRM SECTION -->
+  <section id="crm" class="section crm-highlight-section">
+    <div class="container">
+      <div class="crm-grid">
+        <div>
+          <div class="hero-tag" style="border-color: var(--primary); color: var(--primary);">
+            A Coluna Dorsal do Método
+          </div>
+          <h2 style="font-size: 34px; margin-bottom: 20px;">Por que mídia paga sem <span>CRM estruturado</span> é desperdício de verba?</h2>
+          <p style="color: var(--text-muted); font-size: 17px; margin-bottom: 25px;">
+            Nenhum negócio sustentável sobrevive dependendo exclusivamente do leilão diário de anúncios. Quando o custo por clique sobe, operações sem dados quebram. 
+          </p>
+          <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 30px;">
+            Na Direcional Mídia, o CRM não entra no final: ele é ativado desde a <b>Descoberta</b>. Cada lead que clica ou interage é imediatamente catalogado, tagueado e trabalhado para gerar lucro contínuo com CAC cada vez menor.
+          </p>
+          <a href="#formulario" class="btn">Estruturar Minha Operação</a>
+        </div>
+
+        <div class="crm-card-visual">
+          <div class="crm-flow-step">
+            <div class="step-badge">01</div>
+            <div>
+              <h4>Captura & Enriquecimento Inicial</h4>
+              <p>Desde a fase de Descoberta, os dados do cliente (origem, interesse e ticket) são inseridos no CRM, criando uma base proprietária blindada.</p>
+            </div>
+          </div>
+
+          <div class="crm-flow-step">
+            <div class="step-badge">02</div>
+            <div>
+              <h4>Automação de Fechamento</h4>
+              <p>Leads que chegam no WhatsApp ou e-commerce recebem atendimento e réguas imediatas, evitando que oportunidades esfriem por demora na resposta.</p>
+            </div>
+          </div>
+
+          <div class="crm-flow-step">
+            <div class="step-badge">03</div>
+            <div>
+              <h4>Recuperação de Vendas Perdidas</h4>
+              <p>Carrinhos abandonados e propostas paradas são ativados com ofertas personalizadas sem que você precise gastar mais com novos anúncios.</p>
+            </div>
+          </div>
+
+          <div class="crm-flow-step">
+            <div class="step-badge">04</div>
+            <div>
+              <h4>LTV & Recompra Recorrente</h4>
+              <p>O cliente que já comprou uma vez é estimulado a voltar em ciclos programados, aumentando o lucro líquido por cliente conquistado.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARATIVO -->
+  <section id="comparativo" class="section" style="background: #020617;">
+    <div class="container">
+      <h2 class="section-title">Para Quem É o Nosso Trabalho?</h2>
+      <p class="section-sub">Alinhamento transparente de objetivos e expectativas.</p>
+
+      <div class="compare-grid">
+        <div class="compare-box bad">
+          <h3>Para quem NÃO é:</h3>
+          <ul>
+            <li>Empresários que buscam fórmulas mágicas sem investimento de verdade.</li>
+            <li>Quem não atende com agilidade e preparo os clientes enviados ao WhatsApp.</li>
+            <li>Empresas que ignoram o CRM e querem apenas queimar dinheiro em anúncios.</li>
+            <li>Quem não enxerga a internet como um canal profissional e escalável.</li>
+          </ul>
+        </div>
+        <div class="compare-box good">
+          <h3>Para quem É:</h3>
+          <ul>
+            <li>Negócios físicos que precisam criar um canal rentável e escalável no digital.</li>
+            <li>Empresas prontas para integrar campanhas com uma base sólida de CRM.</li>
+            <li>Gestores que prezam por planejamento metódico, números e ROI real.</li>
+            <li>Líderes comprometidos com o crescimento previsível de longo prazo.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="section" style="background: #040924;">
+    <div class="container faq-wrapper">
+      <h2 class="section-title" style="margin-bottom: 12px;">Perguntas <span>Frequentes</span></h2>
+      <p class="section-sub" style="margin-bottom: 40px;">Tire todas as suas dúvidas antes de dar o próximo passo na aceleração do seu negócio.</p>
+      
+      <div class="faq-item">
+        <button class="faq-btn">Para que tipo e tamanho de empresa a Direcional Mídia é indicada? <span>+</span></button>
+        <div class="faq-content">
+          <p>Atendemos desde negócios físicos tradicionais que estão migrando ou patinando no digital até e-commerces em fase de escala. Nosso foco são empresas que possuem produto ou serviço validado, estrutura mínima para atender clientes e que entendem que tráfego pago exige acompanhamento metódico e processos comerciais sérios.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn">Qual é a diferença entre a Direcional Mídia e uma agência de marketing tradicional? <span>+</span></button>
+        <div class="faq-content">
+          <p>Agências tradicionais vendem "serviços avulsos": sobem campanhas, entregam relatórios cheios de métricas de vaidade (como impressões e cliques) e culpam sua equipe quando a venda não acontece. A Direcional Mídia atua como parceira de receita e aceleradora: assumimos a cadeia ponta a ponta — do anúncio que atrai até a integração com o CRM e os fluxos de recuperação que transformam contatos em faturamento no caixa.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn">Quanto tempo leva para começarmos a ver resultados concretos? <span>+</span></button>
+        <div class="faq-content">
+          <p>Nas primeiras semanas de alinhamento e auditoria da fase de <b>Descoberta</b> já identificamos gargalos e vazamentos de verba imediatos. A geração e aquisição de leads qualificados começa nos primeiros ciclos de testes de campanha, enquanto a maturação de LTV e recompra via CRM se consolida entre 30 a 90 dias de operação contínua.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn">Vocês substituem a minha equipe interna ou trabalham junto? <span>+</span></button>
+        <div class="faq-content">
+          <p>Trabalhamos em sinergia total. Assumimos toda a estratégia técnica de tráfego, funil e automações de CRM, enquanto alinhamos diretamente com o seu time de vendas ou atendimento para que nenhum lead esfrie. Orientamos sua operação com diretrizes claras e cadência de acompanhamento.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn">Como funciona a sessão de consultoria / diagnóstico gratuito? <span>+</span></button>
+        <div class="faq-content">
+          <p>Trata-se de uma reunião individual de 30 a 45 minutos com nossos especialistas. Analisamos seus números atuais, seu nicho e onde a sua empresa está travando. Você sai da sessão com um mapa claro dos gargalos e a rota recomendada para destravar suas vendas, sem nenhum tipo de pegadinha ou obrigação de contratação.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn">Por que vocês enfatizam tanto o CRM junto com o tráfego pago? <span>+</span></button>
+        <div class="faq-content">
+          <p>Porque o leilão de mídia fica mais concorrido e caro a cada ano. Quem depende exclusivamente de comprar cliques novos todos os dias vê sua margem de lucro derreter. Quando você possui um CRM estruturado desde o primeiro clique, você recupera clientes que abandonaram contato e estimula a recompra com custo de aquisição zero, multiplicando seu lucro líquido.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-btn">Qual é o investimento mínimo necessário em anúncios? <span>+</span></button>
+        <div class="faq-content">
+          <p>O investimento mínimo necessário em mídia varia de <b>R$ 2.500 a R$ 3.000 por mês</b>. Essa faixa garante volume estatístico adequado para testar criativos, alimentar os algoritmos com inteligência e tracionar leads qualificados diariamente.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULÁRIO -->
+  <section id="formulario" class="section" style="background: #020617; border-top: 1px solid var(--border);">
+    <div class="container">
+      <div class="form-wrap">
+        <h2 style="text-align: center; font-size: 26px; margin-bottom: 8px;">Agendar Sessão Estratégica</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 28px;">Preencha abaixo para receber o direcionamento da nossa equipe.</p>
+        
+        <form id="leadForm">
+          <div class="form-group">
+            <label>Seu Nome</label>
+            <input type="text" name="nome" id="field_nome" placeholder="Seu nome completo" required>
+          </div>
+          <div class="form-group">
+            <label>WhatsApp Comercial</label>
+            <input type="tel" name="whatsapp" id="field_whatsapp" placeholder="(DDD) 99999-9999" required>
+          </div>
+          <div class="form-group">
+            <label>Nome da Sua Empresa</label>
+            <input type="text" name="empresa" id="field_empresa" placeholder="Ex: Minha Empresa" required>
+          </div>
+          <div class="form-group">
+            <label>Instagram ou Site</label>
+            <input type="text" name="perfil" id="field_perfil" placeholder="@suaempresa ou link" required>
+          </div>
+          <div class="form-group">
+            <label>Faturamento mensal</label>
+            <select name="faturamento" id="field_faturamento" required>
+              <option value="" disabled selected>Selecione seu faturamento</option>
+              <option value="0 a 10k">De 0 a R$ 10.000</option>
+              <option value="10k a 50k">De R$ 10.000 a R$ 50.000</option>
+              <option value="50k a 100k">De R$ 50.000 a R$ 100.000</option>
+              <option value="100k a 500k">De R$ 100.000 a R$ 500.000</option>
+              <option value="Mais de 500k">Mais de R$ 500.000</option>
+            </select>
+          </div>
+
+          <button type="submit" id="btnSubmitForm" class="btn" style="width: 100%; border-radius: 8px; margin-top: 10px;">
+            Solicitar Direcionamento Gratuito
+          </button>
+
+          <div style="text-align: center; margin-top: 15px;">
+            <span style="color: var(--text-muted); font-size: 13px;">Prefere atendimento imediato? </span>
+            <a href="https://wa.me/5511970511827?text=Olá!%20Prefiro%20falar%20diretamente%20pelo%20WhatsApp%20para%20agendar%20minha%20sessão." target="_blank" style="color: #25D366; font-weight: bold; text-decoration: none; font-size: 13px;">
+              Clique aqui para falar no WhatsApp
+            </a>
+          </div>
+        </form>
+
+        <div id="form-success-msg">
+          <h4 style="color: var(--primary); margin-bottom: 5px;">Dados enviados com sucesso!</h4>
+          <p style="font-size: 14px;">Nossa equipe entrará em contato em breve via WhatsApp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <div class="footer-col">
+          <div class="brand" style="margin-bottom: 16px;">
+            <img class="brand-logo-img" src="logo.jpeg" alt="Logo Direcional Mídia">
+            <span>DIRECIONAL <b>MÍDIA</b></span>
+          </div>
+          <p style="line-height: 1.6; margin-bottom: 20px;">
+            Aceleradora de negócios e e-commerces. Conectamos tráfego pago de alta performance e inteligência de CRM para gerar crescimento previsível, lucrativo e consistente.
+          </p>
+          <p style="color: #64748b; font-size: 13px;">
+            São Paulo - SP, Brasil.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="#inicio">Início</a></li>
+            <li><a href="#metricas">Métricas de Resultado</a></li>
+            <li><a href="#metodo">Metodologia dos 5 Pilares</a></li>
+            <li><a href="#especialidades">Especialidades Técnicas</a></li>
+            <li><a href="#crm">Inteligência de CRM</a></li>
+            <li><a href="#faq">Dúvidas Frequentes</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Especialidades</h4>
+          <ul>
+            <li><a href="#especialidades">Gestão de Tráfego Pago</a></li>
+            <li><a href="#especialidades">Estruturação de CRM</a></li>
+            <li><a href="#especialidades">Otimização de Conversão (CRO)</a></li>
+            <li><a href="#especialidades">Recuperação de Carrinho</a></li>
+            <li><a href="#especialidades">Estratégias de LTV & Recompra</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Atendimento</h4>
+          <ul>
+            <li>
+              <span style="display: block; font-size: 12px; color: var(--accent); text-transform: uppercase;">E-mail Corporativo:</span>
+              <a href="mailto:mktsouzas20@gmail.com?subject=Contato%20via%20Site%20Direcional%20Mídia" title="Enviar e-mail para Direcional Mídia">
+                contato@direcionalmidia.com.br
+              </a>
+            </li>
+            <li style="margin-top: 14px;">
+              <span style="display: block; font-size: 12px; color: var(--accent); text-transform: uppercase;">WhatsApp:</span>
+              <a href="https://wa.me/5511970511827" target="_blank">(11) 97051-1827</a>
+            </li>
+            <li style="margin-top: 14px;">
+              <span style="display: block; font-size: 12px; color: var(--accent); text-transform: uppercase;">Horário:</span>
+              Segunda a Sexta, das 09h às 18h
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          © 2026 Direcional Mídia. Todos os direitos reservados.
+        </div>
+        <div class="legal-links">
+          <a onclick="openLegalModal('modal-privacidade')">Política de Privacidade</a>
+          <a onclick="openLegalModal('modal-termos')">Termos de Uso</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // SISTEMA DE RECUPERAÇÃO DA IMAGEM HERO
+    function tentarRecuperarHero(imgEl) {
+      // 1ª tentativa: caminho com espaço simples
+      if (imgEl.src.indexOf('%20') !== -1) {
+        imgEl.src = './imagem 2.jpeg';
+        return;
+      }
+      // 2ª tentativa: raiz com espaço codificado
+      if (imgEl.src.indexOf('index_files') !== -1) {
+        imgEl.src = './imagem%202.jpeg';
+        return;
+      }
+      // Se não encontrar o arquivo físico no servidor do Netlify, ativa o SVG nativo
+      imgEl.style.display = 'none';
+      const fallback = document.getElementById('hero-vector-fallback');
+      if (fallback) fallback.style.display = 'block';
+    }
+
+    // SISTEMA DE RECUPERAÇÃO DA IMAGEM DO MÉTODO
+    function tentarRecuperarMetodo(svgImgEl) {
+      const atual = svgImgEl.getAttribute('href');
+      if (atual.indexOf('%20') !== -1) {
+        svgImgEl.setAttribute('href', './imagem 3.jpeg');
+      } else if (atual.indexOf('index_files') !== -1) {
+        svgImgEl.setAttribute('href', './imagem%203.jpeg');
+      }
+    }
+
+    // MODAL LEGAL
+    function openLegalModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+    function closeLegalModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    // FAQ
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        item.classList.toggle('open');
+        const span = btn.querySelector('span');
+        span.textContent = item.classList.contains('open') ? '—' : '+';
+      });
+    });
+
+    // METODOLOGIA
+    const pilaresData = [
+      {
+        title: "1. Descobrir",
+        desc: "Mapeamos o perfil comprador do seu negócio físico e cadastramos a inteligência dos primeiros dados diretamente no CRM antes mesmo de escalar anúncios."
+      },
+      {
+        title: "2. Engajar",
+        desc: "Construímos narrativas, anúncios magnéticos e criativos que retêm a atenção do cliente ideal e geram desejo imediato pela sua solução."
+      },
+      {
+        title: "3. Vender",
+        desc: "Conduzimos um fluxo qualificado e diário de contatos prontos para fechar pedidos ou contratos diretamente no canal comercial da sua empresa."
+      },
+      {
+        title: "4. Recuperar",
+        desc: "Estratégias avançadas de automação no CRM e remarketing para resgatar quem abandonou carrinho ou parou no orçamento."
+      },
+      {
+        title: "5. Satisfazer",
+        desc: "Gestão ativa da base de clientes com réguas de pós-venda, estímulo de recompra recorrente e programas de indicação."
+      }
+    ];
+
+    function selectPilar(index) {
+      document.querySelectorAll('.pilar-wedge').forEach((wedge, i) => {
+        wedge.classList.toggle('active', i === index);
+      });
+      document.getElementById('pilar-title').textContent = pilaresData[index].title;
+      document.getElementById('pilar-text').textContent = pilaresData[index].desc;
+    }
+
+    function selectPilarManual(index) {
+      selectPilar(index);
+    }
+
+    // SCROLL ANIMATIONS
+    const stickyHeader = document.getElementById('sticky-header');
+    const orbitBgRotor = document.getElementById('orbit-bg-rotor');
+    const orbitFgCompass = document.getElementById('orbit-fg-compass');
+    const fallbackVector = document.getElementById('hero-vector-fallback');
+
+    window.addEventListener('scroll', () => {
+      const scrollPos = window.scrollY;
+
+      if (scrollPos > 220) {
+        stickyHeader.classList.add('visible');
+      } else {
+        stickyHeader.classList.remove('visible');
+      }
+
+      if (orbitBgRotor) {
+        orbitBgRotor.style.transform = `rotate(${scrollPos * 0.3}deg)`;
+      }
+      if (orbitFgCompass && orbitFgCompass.style.display !== 'none') {
+        orbitFgCompass.style.transform = `rotate(${-scrollPos * 0.05}deg)`;
+      }
+      if (fallbackVector && fallbackVector.style.display !== 'none') {
+        fallbackVector.style.transform = `rotate(${-scrollPos * 0.05}deg)`;
+      }
+    });
+
+    // INTEGRAÇÃO SHEETS & EMAIL
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzgKr9MhACT3WvUxb77F4m_G8n76wxb3G48H0owJHDKcmG3XhuizxglPxhaKB7B-Y_7lQ/exec";
+
+    const leadForm = document.getElementById('leadForm');
+    const btnSubmit = document.getElementById('btnSubmitForm');
+    const successMsg = document.getElementById('form-success-msg');
+
+    leadForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Enviando dados...";
+
+      const formData = new FormData();
+      formData.append("nome", document.getElementById('field_nome').value);
+      formData.append("whatsapp", document.getElementById('field_whatsapp').value);
+      formData.append("empresa", document.getElementById('field_empresa').value);
+      formData.append("perfil", document.getElementById('field_perfil').value);
+      formData.append("faturamento", document.getElementById('field_faturamento').value);
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: formData,
+        mode: "no-cors"
+      }).then(() => {
+        leadForm.reset();
+        leadForm.style.display = "none";
+        successMsg.style.display = "block";
+      }).catch(err => {
+        console.error(err);
+        leadForm.reset();
+        leadForm.style.display = "none";
+        successMsg.style.display = "block";
+      });
+    });
+  </script>
+</body>
+</html>
