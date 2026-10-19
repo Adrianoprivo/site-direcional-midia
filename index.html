@@ -996,12 +996,14 @@
       <div class="devrs-orbit-grid">
         
         <div class="orbit-copy">
-          <h2>Nossa Metodologia de Aceleração consiste em <span>5 pilares estratégicos</span>, para acelerar resultados no menor tempo possível.</h2>
-          <p class="main-desc">Temos clareza para executar nossa parte e orientar o que você precisa fazer, integrando captação com inteligência de CRM para acelerar vendas de forma previsível.</p>
+          <h2>Método <span>DEVER</span>: não é sorte. É dever.</h2>
+          <p class="main-desc">Cinco etapas que unem orgânico e pago em um ciclo: o funil gira e não termina na venda. O cliente encantado recomenda, e a recomendação alimenta a próxima descoberta.</p>
           
           <div class="active-pilar-box" id="pilar-desc-box">
-            <h4 id="pilar-title">1. Descobrir</h4>
-            <p id="pilar-text">Mapeamos o perfil comprador do seu negócio físico e cadastramos a inteligência dos primeiros dados diretamente no CRM antes mesmo de escalar anúncios.</p>
+            <h4 id="pilar-title">1. Descobrir: ser visto por novos públicos</h4>
+            <p id="pilar-text" style="white-space: pre-line;">Orgânico: conteúdo que atrai (Reels, TikTok, SEO).
+Pago: tráfego para audiências frias.
+Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</p>
           </div>
         </div>
 
@@ -1020,9 +1022,18 @@
               <text class="wedge-text" x="325" y="125">1. Descobrir</text>
               <text class="wedge-text" x="390" y="295">2. Engajar</text>
               <text class="wedge-text" x="250" y="380">3. Vender</text>
-              <text class="wedge-text" x="110" y="295">4. Recuperar</text>
-              <text class="wedge-text" x="175" y="125">5. Satisfazer</text>
+              <text class="wedge-text" x="110" y="295">4. Encantar</text>
+              <text class="wedge-text" x="175" y="125">5. Recomendar</text>
             </g>
+
+            <!-- O ciclo: Recomendar realimenta o Descobrir -->
+            <defs>
+              <marker id="cicloSeta" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+              </marker>
+            </defs>
+            <path d="M 205,40 A 213,213 0 0,1 295,40" fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#cicloSeta)" opacity="0.85"/>
+            <text x="250" y="24" text-anchor="middle" fill="var(--accent)" font-size="12" font-weight="700" letter-spacing="1">O CICLO RECOMEÇA</text>
 
             <circle cx="250" cy="250" r="88" fill="#020617" stroke="var(--border)" stroke-width="3"/>
             
@@ -1321,7 +1332,7 @@
           <ul>
             <li><a href="#inicio">Início</a></li>
             <li><a href="#metricas">Métricas de Resultado</a></li>
-            <li><a href="#metodo">Metodologia dos 5 Pilares</a></li>
+            <li><a href="#metodo">Método DEVER</a></li>
             <li><a href="#especialidades">Especialidades Técnicas</a></li>
             <li><a href="#crm">Inteligência de CRM</a></li>
             <li><a href="#faq">Dúvidas Frequentes</a></li>
@@ -1423,24 +1434,24 @@
     // METODOLOGIA
     const pilaresData = [
       {
-        title: "1. Descobrir",
-        desc: "Mapeamos o perfil comprador do seu negócio físico e cadastramos a inteligência dos primeiros dados diretamente no CRM antes mesmo de escalar anúncios."
+        title: "1. Descobrir: ser visto por novos públicos",
+        desc: "Orgânico: conteúdo que atrai (Reels, TikTok, SEO).\nPago: tráfego para audiências frias.\nRecebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar."
       },
       {
-        title: "2. Engajar",
-        desc: "Construímos narrativas, anúncios magnéticos e criativos que retêm a atenção do cliente ideal e geram desejo imediato pela sua solução."
+        title: "2. Engajar: transformar atenção em conversa",
+        desc: "Orgânico: stories, enquetes, comunidade, direct e e-mail.\nPago: remarketing de engajamento."
       },
       {
-        title: "3. Vender",
-        desc: "Conduzimos um fluxo qualificado e diário de contatos prontos para fechar pedidos ou contratos diretamente no canal comercial da sua empresa."
+        title: "3. Vender: transformar relação em compra",
+        desc: "Orgânico: ofertas no perfil, lives, e-mail e WhatsApp.\nPago: campanhas de conversão e remarketing de carrinho."
       },
       {
-        title: "4. Recuperar",
-        desc: "Estratégias avançadas de automação no CRM e remarketing para resgatar quem abandonou carrinho ou parou no orçamento."
+        title: "4. Encantar: a marca agindo no cliente",
+        desc: "Pós-venda: acompanhamento e suporte humano.\nExperiência: embalagem, entrega, surpresas e comunidade.\nRecompra: fidelidade e ofertas de retorno."
       },
       {
-        title: "5. Satisfazer",
-        desc: "Gestão ativa da base de clientes com réguas de pós-venda, estímulo de recompra recorrente e programas de indicação."
+        title: "5. Recomendar: o cliente agindo pela marca",
+        desc: "Prova social: depoimentos e avaliações.\nUGC: conteúdo criado pelo cliente.\nIndicação: programa de indicação.\nTudo isso volta para o Descobrir e o ciclo recomeça."
       }
     ];
 
