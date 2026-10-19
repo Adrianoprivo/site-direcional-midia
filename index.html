@@ -407,7 +407,7 @@
     /* ESPECIALIDADES */
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
       gap: 25px;
     }
     .service-card {
@@ -793,6 +793,45 @@
         margin: 0 10px;
       }
     }
+
+    /* Celular: o menu de entrada não pode passar da largura da tela */
+    @media (max-width: 600px) {
+      .main-nav-actions a:not(.btn) {
+        display: none;
+      }
+      .main-nav-actions .btn {
+        padding: 9px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+      }
+      nav.main-nav .brand span {
+        font-size: 16px;
+        white-space: nowrap;
+      }
+      nav.main-nav {
+        gap: 12px;
+      }
+      .hide-sm {
+        display: none;
+      }
+      .orbit-bg-rotor {
+        max-width: 100%;
+      }
+    }
+
+    #form-error-msg {
+      display: none;
+      text-align: center;
+      padding: 24px;
+      border: 1px solid #f87171;
+      border-radius: 12px;
+      margin-top: 16px;
+    }
+    #form-error-msg a {
+      color: #25D366;
+      font-weight: bold;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body id="inicio">
@@ -830,7 +869,7 @@
   <header id="sticky-header" class="sticky-nav">
     <div class="container sticky-nav-inner">
       <a href="#inicio" class="brand">
-        <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia">
+        <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia" width="40" height="40">
         <span>DIRECIONAL <b>MÍDIA</b></span>
       </a>
       <ul class="nav-links">
@@ -850,13 +889,13 @@
   <div class="container">
     <nav class="main-nav">
       <a href="#inicio" class="brand">
-        <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia">
+        <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia" width="40" height="40">
         <span>DIRECIONAL <b>MÍDIA</b></span>
       </a>
-      <div style="display: flex; gap: 18px; align-items: center;">
+      <div class="main-nav-actions" style="display: flex; gap: 18px; align-items: center;">
         <a href="#especialidades" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600;">Especialidades</a>
         <a href="#formulario" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600;">Contato</a>
-        <a href="#formulario" class="btn" style="padding: 10px 22px; font-size: 13px;">Agendar Diagnóstico</a>
+        <a href="#formulario" class="btn" style="padding: 10px 22px; font-size: 13px;"><span>Agendar<span class="hide-sm"> Diagnóstico</span></span></a>
       </div>
     </nav>
   </div>
@@ -893,7 +932,7 @@
         
         <img id="orbit-fg-compass" class="orbit-fg-compass" 
      src="./imagem 2.jpeg" 
-     alt="Direcional Mídia Bússola Digital">
+     alt="Direcional Mídia Bússola Digital" fetchpriority="high" decoding="async">
 
         <!-- Fallback vetorial automático caso o arquivo falte no deploy -->
         <svg id="hero-vector-fallback" class="compass-vector-fallback" viewBox="0 0 500 500" fill="none">
@@ -1208,19 +1247,19 @@
         <form id="leadForm">
           <div class="form-group">
             <label>Seu Nome</label>
-            <input type="text" name="nome" id="field_nome" placeholder="Seu nome completo" required>
+            <input type="text" name="nome" id="field_nome" placeholder="Seu nome completo" autocomplete="name" required>
           </div>
           <div class="form-group">
             <label>WhatsApp Comercial</label>
-            <input type="tel" name="whatsapp" id="field_whatsapp" placeholder="(DDD) 99999-9999" required>
+            <input type="tel" name="whatsapp" id="field_whatsapp" placeholder="(DDD) 99999-9999" inputmode="numeric" autocomplete="tel-national" maxlength="15" pattern="\(\d{2}\) \d{4,5}-\d{4}" title="Digite o WhatsApp com DDD, por exemplo (11) 99999-9999" required>
           </div>
           <div class="form-group">
             <label>Nome da Sua Empresa</label>
-            <input type="text" name="empresa" id="field_empresa" placeholder="Ex: Minha Empresa" required>
+            <input type="text" name="empresa" id="field_empresa" placeholder="Ex: Minha Empresa" autocomplete="organization" required>
           </div>
           <div class="form-group">
-            <label>Instagram ou Site</label>
-            <input type="text" name="perfil" id="field_perfil" placeholder="@suaempresa ou link" required>
+            <label>Instagram ou Site (opcional)</label>
+            <input type="text" name="perfil" id="field_perfil" placeholder="@suaempresa ou link">
           </div>
           <div class="form-group">
             <label>Faturamento mensal</label>
@@ -1250,6 +1289,11 @@
           <h4 style="color: var(--primary); margin-bottom: 5px;">Dados enviados com sucesso!</h4>
           <p style="font-size: 14px;">Nossa equipe entrará em contato em breve via WhatsApp.</p>
         </div>
+
+        <div id="form-error-msg" role="alert">
+          <h4 style="color: #f87171; margin-bottom: 5px;">Não conseguimos enviar seus dados agora.</h4>
+          <p style="font-size: 14px;">Confira sua conexão e tente de novo, ou <a href="https://wa.me/5511970511827?text=Olá!%20Tentei%20enviar%20o%20formulário%20do%20site%20e%20não%20consegui.%20Quero%20agendar%20o%20diagnóstico." target="_blank" rel="noopener">fale direto no WhatsApp</a>.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -1261,7 +1305,7 @@
         
         <div class="footer-col">
           <div class="brand" style="margin-bottom: 16px;">
-            <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia">
+            <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia" width="40" height="40" loading="lazy">
             <span>DIRECIONAL <b>MÍDIA</b></span>
           </div>
           <p style="line-height: 1.6; margin-bottom: 20px;">
@@ -1445,8 +1489,38 @@
     const btnSubmit = document.getElementById('btnSubmitForm');
     const successMsg = document.getElementById('form-success-msg');
 
+    const errorMsg = document.getElementById('form-error-msg');
+    const BTN_TEXT = btnSubmit.textContent;
+
+    // Guarda a origem do visitante (UTM e clique de anúncio) para enviar junto com o lead
+    const ORIGEM_CAMPOS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid', 'gclid'];
+    (function guardarOrigem() {
+      try {
+        const params = new URLSearchParams(location.search);
+        const salva = JSON.parse(sessionStorage.getItem('dm_origem') || '{}');
+        ORIGEM_CAMPOS.forEach(function(k) { if (params.get(k)) salva[k] = params.get(k); });
+        if (!salva.pagina_entrada) salva.pagina_entrada = location.pathname + location.search;
+        if (!salva.referencia && document.referrer) salva.referencia = document.referrer;
+        sessionStorage.setItem('dm_origem', JSON.stringify(salva));
+      } catch (err) { /* navegador sem armazenamento: segue sem origem */ }
+    })();
+    function lerOrigem() {
+      try { return JSON.parse(sessionStorage.getItem('dm_origem') || '{}'); } catch (err) { return {}; }
+    }
+
+    // Máscara do WhatsApp: (11) 99999-9999
+    const campoWhats = document.getElementById('field_whatsapp');
+    campoWhats.addEventListener('input', function() {
+      const d = campoWhats.value.replace(/\D/g, '').slice(0, 11);
+      let v = d;
+      if (d.length > 2) v = '(' + d.slice(0, 2) + ') ' + d.slice(2);
+      if (d.length > 6) v = '(' + d.slice(0, 2) + ') ' + d.slice(2, d.length - 4) + '-' + d.slice(d.length - 4);
+      campoWhats.value = v;
+    });
+
     leadForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      errorMsg.style.display = "none";
       btnSubmit.disabled = true;
       btnSubmit.textContent = "Enviando dados...";
 
@@ -1456,7 +1530,12 @@
       formData.append("empresa", document.getElementById('field_empresa').value);
       formData.append("perfil", document.getElementById('field_perfil').value);
       formData.append("faturamento", document.getElementById('field_faturamento').value);
+      const origem = lerOrigem();
+      ORIGEM_CAMPOS.concat(['pagina_entrada', 'referencia']).forEach(function(k) {
+        formData.append(k, origem[k] || '');
+      });
 
+      // Com "no-cors" o navegador só avisa falha de rede; nesse caso mostramos o erro de verdade
       fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
         body: formData,
@@ -1467,9 +1546,9 @@
         successMsg.style.display = "block";
       }).catch(err => {
         console.error(err);
-        leadForm.reset();
-        leadForm.style.display = "none";
-        successMsg.style.display = "block";
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = BTN_TEXT;
+        errorMsg.style.display = "block";
       });
     });
   </script>
