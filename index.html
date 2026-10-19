@@ -90,6 +90,11 @@
     .nav-links a:hover {
       color: var(--accent);
     }
+    .brand span, .nav-links a, .sticky-nav .btn { white-space: nowrap; }
+    .sticky-nav-inner { gap: 24px; }
+    @media (max-width: 1150px) {
+      .sticky-nav .nav-links { display: none; }
+    }
 
     /* NAV REGULAR */
     nav.main-nav {
@@ -296,6 +301,8 @@
     .lb-palco img { max-width: 100%; max-height: 100%; border-radius: 10px; cursor: zoom-in; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
     .lb.zoom .lb-palco { align-items: flex-start; justify-content: flex-start; }
     .lb.zoom .lb-palco img { max-width: none; max-height: none; width: 1342px; cursor: zoom-out; }
+    .lb.zoom .lb-palco { cursor: grab; }
+    .lb.arrastando .lb-palco, .lb.arrastando .lb-palco img { cursor: grabbing; }
     .lb-base { display: flex; justify-content: center; align-items: center; gap: 18px; padding: 14px 18px 22px; color: var(--text-muted); font-size: 13px; }
     .lb-nav { background: var(--bg-surface); border: 1px solid var(--border); color: var(--accent); width: 46px; height: 46px; border-radius: 50%; font-size: 20px; cursor: pointer; }
     .lb-nav:hover, .lb-fechar:hover { border-color: var(--accent); }
@@ -1740,10 +1747,22 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
     document.getElementById('lb-prox').onclick=function(){ mostrar(i+1); };
     img.onclick=function(){
       var z=lb.classList.toggle('zoom');
-      dica.textContent=z?'Arraste para ver os números. Toque de novo para reduzir':'Toque no print para ampliar';
+      dica.textContent=z?'Arraste para ver datas e números. Toque de novo para reduzir':'Toque no print para ampliar';
       if(z){ palco.scrollLeft=palco.scrollWidth*0.35; palco.scrollTop=0; }
     };
     palco.addEventListener('click',function(e){ if(e.target===palco) fechar(); });
+    var arr=null, moveu=false;
+    palco.addEventListener('mousedown',function(e){
+      if(!lb.classList.contains('zoom')) return;
+      arr={x:e.clientX,y:e.clientY,l:palco.scrollLeft,t:palco.scrollTop}; moveu=false; e.preventDefault();
+    });
+    window.addEventListener('mousemove',function(e){
+      if(!arr) return; var dx=e.clientX-arr.x, dy=e.clientY-arr.y;
+      if(Math.abs(dx)+Math.abs(dy)>4){ moveu=true; lb.classList.add('arrastando'); }
+      palco.scrollLeft=arr.l-dx; palco.scrollTop=arr.t-dy;
+    });
+    window.addEventListener('mouseup',function(){ arr=null; setTimeout(function(){ lb.classList.remove('arrastando'); },0); });
+    img.addEventListener('click',function(e){ if(moveu){ e.stopImmediatePropagation(); moveu=false; } },true);
     document.addEventListener('keydown',function(e){
       if(!lb.classList.contains('aberto')) return;
       if(e.key==='Escape') fechar();
