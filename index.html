@@ -333,6 +333,18 @@
     }
 
     /* BOTÕES */
+    .btn-metodo {
+      display: inline-flex; align-items: center; gap: 10px;
+      margin: 0 0 24px; padding: 13px 26px;
+      border: 1.5px solid var(--accent); border-radius: 50px;
+      color: var(--accent); background: rgba(0,255,255,.06);
+      font-weight: 700; font-size: 14px; text-decoration: none;
+      transition: all .25s ease;
+    }
+    .btn-metodo:hover { background: var(--accent); color: #020617; box-shadow: 0 0 22px rgba(0,255,255,.35); }
+    .btn-metodo span { transition: transform .25s ease; }
+    .btn-metodo:hover span { transform: translateX(4px); }
+    @media (max-width: 600px) { .btn-metodo { width: 100%; justify-content: center; padding: 13px 16px; font-size: 13px; } }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -1157,6 +1169,7 @@
         <span>DIRECIONAL <b>MÍDIA</b></span>
       </a>
       <div class="main-nav-actions" style="display: flex; gap: 18px; align-items: center;">
+        <a href="/metodo-dever/" style="color: var(--accent); text-decoration: none; font-size: 14px; font-weight: 600;">Método DEVER</a>
         <a href="#especialidades" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600;">Especialidades</a>
         <a href="#formulario" style="color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600;">Contato</a>
         <a href="#formulario" class="btn" style="padding: 10px 22px; font-size: 13px;"><span>Agendar<span class="hide-sm"> Diagnóstico</span></span></a>
@@ -1298,7 +1311,7 @@
         <div class="orbit-copy">
           <h2>Método <span>DEVER</span>: não é sorte. É dever.</h2>
           <p class="main-desc">Cinco etapas que unem orgânico e pago em um ciclo: o funil gira e não termina na venda. O cliente encantado recomenda, e a recomendação alimenta a próxima descoberta.</p>
-          <a href="/metodo-dever/" style="display:inline-block;margin:-6px 0 22px;color:var(--accent);font-weight:600;font-size:15px;text-decoration:none;border-bottom:1px solid rgba(0,255,255,.4);padding-bottom:2px;">Ver o Método DEVER em detalhes →</a>
+          <a href="/metodo-dever/" class="btn-metodo">Conheça o Método DEVER em detalhes <span aria-hidden="true">→</span></a>
           
           <div class="active-pilar-box" id="pilar-desc-box">
             <h4 id="pilar-title">1. Descobrir: ser visto por novos públicos</h4>
