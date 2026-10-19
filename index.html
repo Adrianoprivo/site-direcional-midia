@@ -283,6 +283,19 @@
       padding: 90px 0;
     }
 
+
+    /* PROVA DE INVESTIMENTO */
+    .prova-investimento { margin-top: 50px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
+    .prova-cabeca { text-align: center; margin-bottom: 24px; }
+    .prova-rotulo { color: var(--text-muted); font-size: 14px; letter-spacing: 1.2px; text-transform: uppercase; margin: 0 0 6px; }
+    .prova-valor { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 44px; color: var(--accent); margin: 0; line-height: 1.1; }
+    .prova-sub { color: var(--text-muted); font-size: 15px; max-width: 620px; margin: 10px auto 0; }
+    .prova-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; }
+    .prova-grade a { display: block; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); transition: transform .3s, border-color .3s; }
+    .prova-grade a:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .prova-grade img { display: block; width: 100%; height: auto; }
+    .prova-dica { text-align: center; color: var(--text-muted); font-size: 13px; margin: 14px 0 0; }
+    @media (max-width: 600px) { .prova-investimento { padding: 22px 16px; } .prova-valor { font-size: 36px; } .prova-grade { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
     /* FAIXA DE CLIENTES */
     .clientes-faixa { margin-top: 60px; }
     .clientes-titulo { text-align: center; color: var(--text-muted); font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 26px; }
@@ -1018,38 +1031,41 @@
         <p class="clientes-titulo">Marcas que escolheram a <span>Direcional Mídia</span></p>
         <div class="clientes-marquee">
           <ul class="clientes-trilho">
-            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="Let Baby" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/colegio-sao-paulo.webp" alt="Colégio São Paulo" title="Colégio São Paulo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="Casa Domo" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="Donni Project" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/vovo-quem-fez.webp" alt="Vovó Quem Fez" title="Vovó Quem Fez" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="Brilho e Bronze" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="Casa Domo" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="Let Baby" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/loja-excelente.webp" alt="Loja Excelente" title="Loja Excelente" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/carolina-luna.webp" alt="Carolina Luna" title="Carolina Luna" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="Brilho e Bronze" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ls-caixas.webp" alt="LS Caixas de Papelão" title="LS Caixas de Papelão" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/agius-assessoria.webp" alt="Agius Assessoria" title="Agius Assessoria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="Donni Project" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/henri-store.webp" alt="Henri Store" title="Henri Store" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/espaco-mulher.webp" alt="Espaço Mulher by Paula Rodrigues" title="Espaço Mulher by Paula Rodrigues" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ts-pizzaria.webp" alt="TS Pizzaria" title="TS Pizzaria" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/hl-aquecedores.webp" alt="HL Aquecedores" title="HL Aquecedores" width="72" height="72" loading="lazy" decoding="async"></li>
           </ul>
           <ul class="clientes-trilho" aria-hidden="true">
-            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/colegio-sao-paulo.webp" alt="" title="Colégio São Paulo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/vovo-quem-fez.webp" alt="" title="Vovó Quem Fez" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/loja-excelente.webp" alt="" title="Loja Excelente" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/carolina-luna.webp" alt="" title="Carolina Luna" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ls-caixas.webp" alt="" title="LS Caixas de Papelão" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/agius-assessoria.webp" alt="" title="Agius Assessoria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/henri-store.webp" alt="" title="Henri Store" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/espaco-mulher.webp" alt="" title="Espaço Mulher by Paula Rodrigues" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ts-pizzaria.webp" alt="" title="TS Pizzaria" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/hl-aquecedores.webp" alt="" title="HL Aquecedores" width="72" height="72" loading="lazy" decoding="async"></li>
           </ul>
         </div>
+      </div>
+
+      <div class="prova-investimento">
+        <div class="prova-cabeca">
+          <p class="prova-rotulo">Investimento em anúncios gerenciado em setembro de 2026</p>
+          <p class="prova-valor">R$&nbsp;66,5 mil</p>
+          <p class="prova-sub">4 contas de e-commerce, 2 delas acima de R$&nbsp;500 por dia. Prints do Gerenciador de Anúncios da Meta, com os nomes ocultos por confidencialidade.</p>
+        </div>
+        <div class="prova-grade">
+          <a href="./provas/setembro-2026-conta-1.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-1-mini.webp" alt="Print do Gerenciador de Anúncios: conta 1, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-2.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-2-mini.webp" alt="Print do Gerenciador de Anúncios: conta 2, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-3.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-3-mini.webp" alt="Print do Gerenciador de Anúncios: conta 3, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-4.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-4-mini.webp" alt="Print do Gerenciador de Anúncios: conta 4, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+        </div>
+        <p class="prova-dica">Toque em um print para ver em tamanho real.</p>
       </div>
     </div>
   </section>
