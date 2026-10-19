@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /central/
+
+Sitemap: https://direcionalmidia.com.br/sitemap.xml
