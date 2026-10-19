@@ -1251,7 +1251,7 @@
           </div>
           <div class="form-group">
             <label>WhatsApp Comercial</label>
-            <input type="tel" name="whatsapp" id="field_whatsapp" placeholder="(DDD) 99999-9999" inputmode="numeric" autocomplete="tel-national" maxlength="15" pattern="\(\d{2}\) \d{4,5}-\d{4}" title="Digite o WhatsApp com DDD, por exemplo (11) 99999-9999" required>
+            <input type="tel" name="whatsapp" id="field_whatsapp" placeholder="(DDD) 99999-9999" inputmode="numeric" autocomplete="tel-national" maxlength="15" required>
           </div>
           <div class="form-group">
             <label>Nome da Sua Empresa</label>
@@ -1518,8 +1518,49 @@
       campoWhats.value = v;
     });
 
+    // Travas: cada campo só aceita o tipo de dado que pede (evita CPF, CNPJ ou número no lugar errado)
+    const SO_DIGITOS = /^[\d\s.\-\/]+$/;
+    const PARECE_DOCUMENTO = /\d{3}\.?\d{3}\.?\d{3}-?\d{2}|\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}/;
+    const TRAVAS = {
+      field_nome: function(v) {
+        if (/\d/.test(v)) return 'O nome não pode ter números.';
+        if (v.replace(/[^A-Za-zÀ-ÿ]/g, '').length < 2) return 'Digite seu nome.';
+        return '';
+      },
+      field_empresa: function(v) {
+        if (PARECE_DOCUMENTO.test(v) || SO_DIGITOS.test(v)) return 'Digite o nome da empresa, não um número ou documento.';
+        if (v.replace(/[^A-Za-zÀ-ÿ]/g, '').length < 2) return 'Digite o nome da empresa.';
+        return '';
+      },
+      field_perfil: function(v) {
+        if (v && (PARECE_DOCUMENTO.test(v) || SO_DIGITOS.test(v))) return 'Digite o @ do Instagram ou o endereço do site.';
+        return '';
+      },
+      field_whatsapp: function(v) {
+        const d = v.replace(/\D/g, '');
+        if (d.length < 10 || d.length > 11) return 'Digite o WhatsApp com DDD, por exemplo (11) 99999-9999.';
+        return '';
+      }
+    };
+    function conferirCampo(id) {
+      const campo = document.getElementById(id);
+      const msg = TRAVAS[id](campo.value.trim());
+      campo.setCustomValidity(msg);
+      return msg;
+    }
+    Object.keys(TRAVAS).forEach(function(id) {
+      const campo = document.getElementById(id);
+      campo.addEventListener('input', function() { campo.setCustomValidity(''); });
+      campo.addEventListener('blur', function() { if (campo.value) conferirCampo(id); });
+    });
+
     leadForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      const invalido = Object.keys(TRAVAS).find(function(id) { return conferirCampo(id); });
+      if (invalido) {
+        document.getElementById(invalido).reportValidity();
+        return;
+      }
       errorMsg.style.display = "none";
       btnSubmit.disabled = true;
       btnSubmit.textContent = "Enviando dados...";
