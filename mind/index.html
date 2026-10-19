@@ -86,7 +86,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 #mapa me-root me-tpc{background:var(--grad)!important;color:#fff!important;font-family:var(--f-display);font-weight:700;letter-spacing:-.01em;border:0!important;box-shadow:0 14px 30px -10px rgb(79 70 229 / .65)}
 #mapa me-main > me-wrapper > me-parent > me-tpc{background:var(--ramo,#7C3AED)!important;color:#fff!important;border-color:transparent!important;font-weight:600;box-shadow:0 10px 22px -10px var(--ramo,#7C3AED);transition:box-shadow .15s,transform .15s}
 #mapa me-main > me-wrapper > me-parent > me-tpc:hover{transform:translateY(-1px)}
-#mapa me-main > me-wrapper > me-parent{cursor:grab}
+#mapa me-tpc{cursor:grab;touch-action:none}
+#mapa me-tpc.alvo-drop{outline:3px dashed var(--accent)!important;outline-offset:4px}
 #mapa.arrastando, #mapa.arrastando *{cursor:grabbing!important}
 #mapa me-children me-tpc{font-weight:500;color:var(--ink)}
 #mapa me-tpc.selected{outline:3px solid var(--accent)!important;outline-offset:3px}
@@ -165,8 +166,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     <dt>Setas</dt><dd>Andar entre tópicos</dd><dt>Alt + ↑ / ↓</dt><dd>Mudar ordem</dd>
     <dt>Ctrl + Z / Y</dt><dd>Desfazer / refazer</dd><dt>Ctrl + C / V</dt><dd>Copiar / colar tópico</dd>
     <dt>F1</dt><dd>Centralizar o mapa</dd>
-    <dt>Arrastar galho colorido</dt><dd>Leva o galho inteiro pra onde quiser</dd>
-    <dt>Arrastar sub-tópico</dt><dd>Solte em outro tópico pra mudar de galho</dd>
+    <dt>Arrastar o centro</dt><dd>Leva o mapa inteiro</dd>
+    <dt>Arrastar um tópico</dt><dd>Leva ele pra onde quiser</dd>
+    <dt>Soltar em cima de outro</dt><dd>Muda de galho</dd>
     <dt>Arrastar o fundo</dt><dd>Mover a tela</dd></dl></div>
 </div>
 
@@ -276,7 +278,7 @@ async function abrirMapa(id){
   if(error||!data){alert('Não encontrei esse mapa.');location.hash='';return}
   atual=data;$('e-titulo').textContent=data.titulo;document.title=data.titulo+' · PrivoMind';
   $('mapa').innerHTML='';
-  mind=new ME({el:'#mapa',direction:ME.SIDE,draggable:true,editable:true,toolBar:true,keypress:true,allowUndo:true,
+  mind=new ME({el:'#mapa',direction:ME.SIDE,draggable:false,editable:true,toolBar:true,keypress:true,allowUndo:true,
     contextMenu:{focus:true,link:true,locale:PT},newTopicName:'Novo tópico',theme:tema()});
   const dados=data.dados;delete dados.theme;
   mind.init(dados);
@@ -311,52 +313,81 @@ async function fecharEditor(){
   mapas.sort((a,b)=>b.atualizado_em>a.atualizado_em?1:-1);
 }
 
-/* ---------- galhos principais: cor viva + posição livre ---------- */
+/* ---------- cor viva dos galhos + posição livre de qualquer tópico ---------- */
 const raizTpc=()=>document.querySelector('#mapa me-root me-tpc');
 const ehRaiz=t=>!!t&&t.parentElement&&t.parentElement.tagName==='ME-ROOT';
 const ehPrincipal=t=>!!t&&t.parentElement?.parentElement?.parentElement?.tagName==='ME-MAIN';
-function posicionar(w,x,y){if(!x&&!y){w.style.position='';w.style.left='';w.style.top=''}else{w.style.position='relative';w.style.left=x+'px';w.style.top=y+'px'}}
+const temPos=t=>!!(t&&t.nodeObj&&t.nodeObj.metadata&&t.nodeObj.metadata.pos);
+/* galho principal: desloca com left/top (ele já é a "régua" dos filhos).
+   sub-tópico: desloca com margens que se anulam, assim a biblioteca continua medindo certo e os vizinhos não saem do lugar */
+function posicionar(w,x,y){
+  const principal=w.parentElement&&w.parentElement.tagName==='ME-MAIN';
+  if(principal){if(!x&&!y){w.style.position='';w.style.left='';w.style.top=''}else{w.style.position='relative';w.style.left=x+'px';w.style.top=y+'px'}}
+  else if(!x&&!y){w.style.margin=''}
+  else{w.style.margin=`${y}px ${-x}px ${-y}px ${x}px`}
+  w.dataset.px=x;w.dataset.py=y;
+}
 let reaplicando=false;
+function redesenhar(){if(!mind)return;reaplicando=true;try{mind.linkDiv()}finally{reaplicando=false}}
 function depoisDasLinhas(){
   if(!mind||reaplicando||(arr&&arr.moved))return;
   let mudou=false;
-  document.querySelectorAll('#mapa me-main > me-wrapper').forEach(w=>{
+  document.querySelectorAll('#mapa me-wrapper').forEach(w=>{
     const t=w.firstElementChild&&w.firstElementChild.firstElementChild;if(!t||!t.nodeObj)return;
     const p=t.nodeObj.metadata&&t.nodeObj.metadata.pos;const x=p?p.x:0,y=p?p.y:0;
-    if((parseFloat(w.style.left)||0)!==x||(parseFloat(w.style.top)||0)!==y){posicionar(w,x,y);mudou=true}
-    const c=t.style.borderColor;if(c)t.style.setProperty('--ramo',c);
+    if((+w.dataset.px||0)!==x||(+w.dataset.py||0)!==y){posicionar(w,x,y);mudou=true}
   });
-  if(mudou){reaplicando=true;try{mind.linkDiv()}finally{reaplicando=false}}
+  document.querySelectorAll('#mapa me-main > me-wrapper > me-parent > me-tpc').forEach(t=>{const c=t.style.borderColor;if(c)t.style.setProperty('--ramo',c)});
+  if(mudou)redesenhar();
   posBarra();
 }
-/* arrastar: segurar um galho colorido e levar pra qualquer lugar */
-let arr=null,quadro=0;
+/* arrastar:
+   - tópico central: leva o mapa inteiro junto
+   - qualquer outro tópico: leva ele (e o que está pendurado nele) pra onde quiser
+   - soltou em cima de outro tópico: vira filho dele (muda de galho) */
+let arr=null,quadro=0,alvoDrop=null;
+function marcarAlvo(t){if(alvoDrop===t)return;if(alvoDrop)alvoDrop.classList.remove('alvo-drop');alvoDrop=t;if(t)t.classList.add('alvo-drop')}
+function topicoEmbaixo(x,y,a){
+  for(const el of document.elementsFromPoint(x,y)){const t=el.closest&&el.closest('#mapa me-tpc');if(t&&t!==a.t&&!a.w.contains(t))return t}
+  return null;
+}
 $('mapa').addEventListener('pointerdown',e=>{
   if(!mind||e.button!==0||document.querySelector('#input-box'))return;
-  const t=e.target.closest('me-tpc');if(!ehPrincipal(t))return;
+  const t=e.target.closest('me-tpc');if(!t||!t.nodeObj)return;
   e.stopPropagation();
+  if(ehRaiz(t)){arr={t,raiz:true,sx:e.clientX,sy:e.clientY,lx:e.clientX,ly:e.clientY,moved:false};return}
   const w=t.parentElement.parentElement,p=(t.nodeObj.metadata&&t.nodeObj.metadata.pos)||{x:0,y:0};
   arr={t,w,sx:e.clientX,sy:e.clientY,ox:p.x,oy:p.y,moved:false};
 },true);
 window.addEventListener('pointermove',e=>{
-  if(!arr)return;const s=mind.scaleVal||1,dx=(e.clientX-arr.sx)/s,dy=(e.clientY-arr.sy)/s;
-  if(!arr.moved&&Math.hypot(dx,dy)<4)return;
+  if(!arr||!mind)return;const s=mind.scaleVal||1,dx=(e.clientX-arr.sx)/s,dy=(e.clientY-arr.sy)/s;
+  if(!arr.moved&&Math.hypot(e.clientX-arr.sx,e.clientY-arr.sy)<5)return;
   e.stopPropagation();e.preventDefault();
   if(!arr.moved){arr.moved=true;$('mapa').classList.add('arrastando');$('acoes').hidden=true}
+  if(arr.raiz){mind.move(e.clientX-arr.lx,e.clientY-arr.ly);arr.lx=e.clientX;arr.ly=e.clientY;return}
   posicionar(arr.w,Math.round(arr.ox+dx),Math.round(arr.oy+dy));
-  if(!quadro)quadro=requestAnimationFrame(()=>{quadro=0;if(mind){reaplicando=true;try{mind.linkDiv()}finally{reaplicando=false}}});
+  marcarAlvo(topicoEmbaixo(e.clientX,e.clientY,arr));
+  if(!quadro)quadro=requestAnimationFrame(()=>{quadro=0;redesenhar()});
 },true);
-window.addEventListener('pointerup',e=>{
-  if(!arr)return;const a=arr;arr=null;e.stopPropagation();$('mapa').classList.remove('arrastando');
-  if(a.moved){
-    const x=parseFloat(a.w.style.left)||0,y=parseFloat(a.w.style.top)||0;
-    a.t.nodeObj.metadata={...(a.t.nodeObj.metadata||{}),pos:{x,y}};
-    reaplicando=true;try{mind.linkDiv()}finally{reaplicando=false}
+window.addEventListener('pointerup',async e=>{
+  if(!arr||!mind)return;const a=arr;arr=null;e.stopPropagation();$('mapa').classList.remove('arrastando');
+  const destino=alvoDrop;marcarAlvo(null);
+  if(a.moved&&!a.raiz){
+    if(destino){
+      if(a.t.nodeObj.metadata)delete a.t.nodeObj.metadata.pos;posicionar(a.w,0,0);
+      await mind.moveNodeIn([a.t],destino);
+    }else{
+      const x=+a.w.dataset.px||0,y=+a.w.dataset.py||0;
+      a.t.nodeObj.metadata={...(a.t.nodeObj.metadata||{}),pos:{x,y}};
+      redesenhar();
+    }
     agendar();
   }
-  mind.selectNode(a.t);mind.container.focus({preventScroll:true});posBarra();
+  const sel=a.t.isConnected?a.t:mind.findEle(a.t.nodeObj.id);
+  if(sel&&(!a.moved||!a.raiz))mind.selectNode(sel);
+  mind.container.focus({preventScroll:true});setTimeout(posBarra,0);
 },true);
-window.addEventListener('pointercancel',()=>{if(arr){posicionar(arr.w,arr.ox,arr.oy);arr=null;$('mapa').classList.remove('arrastando');if(mind)mind.linkDiv()}},true);
+window.addEventListener('pointercancel',()=>{if(arr){if(!arr.raiz)posicionar(arr.w,arr.ox,arr.oy);arr=null;marcarAlvo(null);$('mapa').classList.remove('arrastando');redesenhar()}},true);
 
 /* ---------- barra de ações em cima do tópico ---------- */
 let ligarDe=null;
@@ -377,7 +408,7 @@ function posBarra(){
   const sel=mind.currentNode,cel=celular();
   if(!sel&&!cel){b.hidden=true;return}
   const alvo=sel&&sel.isConnected?sel:raizTpc();if(!alvo){b.hidden=true;return}
-  const raiz=ehRaiz(alvo),movido=ehPrincipal(alvo)&&!!(alvo.nodeObj.metadata&&alvo.nodeObj.metadata.pos);
+  const raiz=ehRaiz(alvo),movido=!raiz&&temPos(alvo);
   b.querySelectorAll('[data-q]').forEach(el=>{const q=el.dataset.q;el.hidden=q==='raiz'?!raiz:q==='topico'?raiz:q==='movido'?!movido:false});
   b.hidden=false;
   if(cel){b.classList.add('fixa');return}
