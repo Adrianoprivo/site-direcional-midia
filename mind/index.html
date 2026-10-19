@@ -82,7 +82,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 #mapa{flex:1;min-height:0;position:relative}
 
 /* mapa: fundo pontilhado, raiz em gradiente, galhos principais preenchidos com a cor do galho */
-#mapa .map-container{background-color:var(--bg)!important;background-image:radial-gradient(circle,var(--dots) 1.2px,transparent 1.4px);background-size:22px 22px;font-family:var(--f-body)}
+#mapa .map-container{cursor:grab;background-color:var(--bg)!important;background-image:radial-gradient(circle,var(--dots) 1.2px,transparent 1.4px);background-size:22px 22px;font-family:var(--f-body)}
 #mapa me-root me-tpc{background:var(--grad)!important;color:#fff!important;font-family:var(--f-display);font-weight:700;letter-spacing:-.01em;border:0!important;box-shadow:0 14px 30px -10px rgb(79 70 229 / .65)}
 #mapa me-main > me-wrapper > me-parent > me-tpc{background:var(--ramo,#7C3AED)!important;color:#fff!important;border-color:transparent!important;font-weight:600;box-shadow:0 10px 22px -10px var(--ramo,#7C3AED);transition:box-shadow .15s,transform .15s}
 #mapa me-main > me-wrapper > me-parent > me-tpc:hover{transform:translateY(-1px)}
@@ -94,6 +94,16 @@ button{font:inherit;color:inherit;cursor:pointer}
 #mapa .mind-elixir-toolbar{background:var(--surface);color:var(--muted);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px -12px rgb(20 10 60 / .3)}
 #mapa .mind-elixir-toolbar span:hover{color:var(--accent)}
 
+
+/* bolinha de abrir/fechar galho: sempre visível, na cor do galho (aberto = anel claro, fechado = anel cheio) */
+#mapa me-parent me-epd,#mapa me-parent me-epd.minus{opacity:1!important;background:var(--bg)!important;background-image:none!important;border:2.5px solid var(--cor-galho,var(--accent));border-radius:50%;box-sizing:border-box;transition:transform .15s,box-shadow .15s}
+#mapa me-parent me-epd.minus{opacity:.85!important}
+#mapa me-parent me-epd:hover{opacity:1!important;transform:scale(1.25);box-shadow:0 0 0 4px color-mix(in srgb,var(--cor-galho,var(--accent)) 22%,transparent)}
+#mapa me-parent me-epd:not(.minus)::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--cor-galho,var(--accent))}
+/* ímã: prévia da ligação enquanto arrasta perto de outro tópico */
+.ima{position:absolute;inset:0;pointer-events:none;z-index:44;overflow:visible}
+.ima path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6 5;stroke-linecap:round}
+.ima circle{fill:var(--accent)}
 /* barra de ações: aparece em cima do tópico selecionado (no celular, fixa embaixo) */
 .acoes{position:absolute;z-index:45;display:flex;align-items:stretch;gap:2px;padding:5px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);white-space:nowrap}
 .acoes button{border:0;background:transparent;border-radius:10px;padding:6px 8px;font-size:11.5px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;min-width:50px}
@@ -139,6 +149,7 @@ button{font:inherit;color:inherit;cursor:pointer}
     <button class="ico" id="e-ajuda" type="button" title="Atalhos de teclado" aria-label="Atalhos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.3M12 17h.01"/></svg></button>
   </div>
   <div id="mapa"></div>
+  <svg class="ima" id="ima" style="display:none"><path id="ima-l"/><circle id="ima-p" r="4"/></svg>
   <div class="acoes" id="acoes" role="toolbar" aria-label="Ações do tópico" hidden>
     <button type="button" data-t="esq" data-q="raiz" class="forte" title="Novo tópico do lado esquerdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Esquerda</button>
     <button type="button" data-t="dir" data-q="raiz" class="forte" title="Novo tópico do lado direito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Direita</button>
@@ -168,8 +179,8 @@ button{font:inherit;color:inherit;cursor:pointer}
     <dt>F1</dt><dd>Centralizar o mapa</dd>
     <dt>Arrastar o centro</dt><dd>Leva o mapa inteiro</dd>
     <dt>Arrastar um tópico</dt><dd>Leva ele pra onde quiser</dd>
-    <dt>Soltar em cima de outro</dt><dd>Muda de galho</dd>
-    <dt>Arrastar o fundo</dt><dd>Mover a tela</dd></dl></div>
+    <dt>Soltar perto de outro</dt><dd>Gruda nele (muda de galho)</dd>
+    <dt>Arrastar o fundo</dt><dd>Mover a tela</dd><dt>Botão direito no fundo</dt><dd>Selecionar vários (caixa)</dd><dt>Bolinha no fim do tópico</dt><dd>Abrir / fechar o galho</dd></dl></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -278,7 +289,7 @@ async function abrirMapa(id){
   if(error||!data){alert('Não encontrei esse mapa.');location.hash='';return}
   atual=data;$('e-titulo').textContent=data.titulo;document.title=data.titulo+' · PrivoMind';
   $('mapa').innerHTML='';
-  mind=new ME({el:'#mapa',direction:ME.SIDE,draggable:false,editable:true,toolBar:true,keypress:true,allowUndo:true,
+  mind=new ME({el:'#mapa',direction:ME.SIDE,draggable:false,editable:true,toolBar:true,keypress:true,allowUndo:true,mouseSelectionButton:2,
     contextMenu:{focus:true,link:true,locale:PT},newTopicName:'Novo tópico',theme:tema()});
   const dados=data.dados;delete dados.theme;
   mind.init(dados);
@@ -337,7 +348,7 @@ function depoisDasLinhas(){
     const p=t.nodeObj.metadata&&t.nodeObj.metadata.pos;const x=p?p.x:0,y=p?p.y:0;
     if((+w.dataset.px||0)!==x||(+w.dataset.py||0)!==y){posicionar(w,x,y);mudou=true}
   });
-  document.querySelectorAll('#mapa me-main > me-wrapper > me-parent > me-tpc').forEach(t=>{const c=t.style.borderColor;if(c)t.style.setProperty('--ramo',c)});
+  document.querySelectorAll('#mapa me-main > me-wrapper > me-parent > me-tpc').forEach(t=>{const c=t.style.borderColor;if(c){t.style.setProperty('--ramo',c);t.parentElement.parentElement.style.setProperty('--cor-galho',c)}});
   if(mudou)redesenhar();
   posBarra();
 }
@@ -347,13 +358,33 @@ function depoisDasLinhas(){
    - soltou em cima de outro tópico: vira filho dele (muda de galho) */
 let arr=null,quadro=0,alvoDrop=null;
 function marcarAlvo(t){if(alvoDrop===t)return;if(alvoDrop)alvoDrop.classList.remove('alvo-drop');alvoDrop=t;if(t)t.classList.add('alvo-drop')}
+const RAIO=22;
 function topicoEmbaixo(x,y,a){
-  for(const el of document.elementsFromPoint(x,y)){const t=el.closest&&el.closest('#mapa me-tpc');if(t&&t!==a.t&&!a.w.contains(t))return t}
-  return null;
+  let melhor=null,dist=RAIO;
+  for(const t of document.querySelectorAll('#mapa me-tpc')){
+    if(t===a.t||a.w.contains(t))continue;
+    const r=t.getBoundingClientRect();
+    const dx=Math.max(r.left-x,0,x-r.right),dy=Math.max(r.top-y,0,y-r.bottom),d=Math.hypot(dx,dy);
+    if(d<dist){dist=d;melhor=t}
+  }
+  return melhor;
+}
+function desenharIma(alvo,a){
+  const svg=$('ima');if(!alvo){svg.style.display='none';return}
+  const base=$('editor').getBoundingClientRect(),r1=alvo.getBoundingClientRect(),r2=a.t.getBoundingClientRect();
+  const dir=(r2.left+r2.width/2)>=(r1.left+r1.width/2);
+  const x1=(dir?r1.right:r1.left)-base.left,y1=r1.top+r1.height/2-base.top;
+  const x2=(dir?r2.left:r2.right)-base.left,y2=r2.top+r2.height/2-base.top,mx=(x1+x2)/2;
+  $('ima-l').setAttribute('d',`M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`);
+  $('ima-p').setAttribute('cx',x1);$('ima-p').setAttribute('cy',y1);svg.style.display='block';
 }
 $('mapa').addEventListener('pointerdown',e=>{
   if(!mind||e.button!==0||document.querySelector('#input-box'))return;
-  const t=e.target.closest('me-tpc');if(!t||!t.nodeObj)return;
+  const t=e.target.closest('me-tpc');
+  if(!t||!t.nodeObj){
+    /* fundo: segurar e arrastar move a tela (menos em bolinhas, setas, resumos e na barrinha da biblioteca) */
+    if(e.pointerType!=='mouse'||e.target.closest('me-epd,.mind-elixir-toolbar,.topiclinks,.summary,.svg-label,.circle,#input-box'))return; /* no toque a biblioteca já move a tela e faz o pinça */
+    e.stopPropagation();arr={fundo:true,raiz:true,sx:e.clientX,sy:e.clientY,lx:e.clientX,ly:e.clientY,moved:false};return}
   e.stopPropagation();
   if(ehRaiz(t)){arr={t,raiz:true,sx:e.clientX,sy:e.clientY,lx:e.clientX,ly:e.clientY,moved:false};return}
   const w=t.parentElement.parentElement,p=(t.nodeObj.metadata&&t.nodeObj.metadata.pos)||{x:0,y:0};
@@ -363,15 +394,15 @@ window.addEventListener('pointermove',e=>{
   if(!arr||!mind)return;const s=mind.scaleVal||1,dx=(e.clientX-arr.sx)/s,dy=(e.clientY-arr.sy)/s;
   if(!arr.moved&&Math.hypot(e.clientX-arr.sx,e.clientY-arr.sy)<5)return;
   e.stopPropagation();e.preventDefault();
-  if(!arr.moved){arr.moved=true;$('mapa').classList.add('arrastando');$('acoes').hidden=true}
+  if(!arr.moved){arr.moved=true;$('mapa').classList.add('arrastando');if(!arr.fundo)$('acoes').hidden=true}
   if(arr.raiz){mind.move(e.clientX-arr.lx,e.clientY-arr.ly);arr.lx=e.clientX;arr.ly=e.clientY;return}
   posicionar(arr.w,Math.round(arr.ox+dx),Math.round(arr.oy+dy));
-  marcarAlvo(topicoEmbaixo(e.clientX,e.clientY,arr));
+  marcarAlvo(topicoEmbaixo(e.clientX,e.clientY,arr));desenharIma(alvoDrop,arr);
   if(!quadro)quadro=requestAnimationFrame(()=>{quadro=0;redesenhar()});
 },true);
 window.addEventListener('pointerup',async e=>{
   if(!arr||!mind)return;const a=arr;arr=null;e.stopPropagation();$('mapa').classList.remove('arrastando');
-  const destino=alvoDrop;marcarAlvo(null);
+  const destino=alvoDrop;marcarAlvo(null);$('ima').style.display='none';
   if(a.moved&&!a.raiz){
     if(destino){
       if(a.t.nodeObj.metadata)delete a.t.nodeObj.metadata.pos;posicionar(a.w,0,0);
@@ -383,11 +414,12 @@ window.addEventListener('pointerup',async e=>{
     }
     agendar();
   }
+  if(a.fundo){if(!a.moved){mind.clearSelection();ligarDe=null;dica('')}setTimeout(posBarra,0);return}
   const sel=a.t.isConnected?a.t:mind.findEle(a.t.nodeObj.id);
   if(sel&&(!a.moved||!a.raiz))mind.selectNode(sel);
   mind.container.focus({preventScroll:true});setTimeout(posBarra,0);
 },true);
-window.addEventListener('pointercancel',()=>{if(arr){if(!arr.raiz)posicionar(arr.w,arr.ox,arr.oy);arr=null;marcarAlvo(null);$('mapa').classList.remove('arrastando');redesenhar()}},true);
+window.addEventListener('pointercancel',()=>{if(arr){if(!arr.raiz)posicionar(arr.w,arr.ox,arr.oy);arr=null;marcarAlvo(null);$('ima').style.display='none';$('mapa').classList.remove('arrastando');redesenhar()}},true);
 
 /* ---------- barra de ações em cima do tópico ---------- */
 let ligarDe=null;
