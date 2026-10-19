@@ -31,6 +31,7 @@
 
     html {
       scroll-behavior: smooth;
+      overflow-x: clip;
     }
 
     body {
@@ -180,6 +181,7 @@
     .hero {
       padding: 80px 0 90px;
       position: relative;
+      overflow-x: clip;
     }
     .hero-grid {
       display: grid;
@@ -284,6 +286,19 @@
     }
 
 
+
+    /* VISUALIZADOR DOS PRINTS */
+    .lb { position: fixed; inset: 0; z-index: 9999; background: rgba(2, 6, 23, 0.97); display: none; flex-direction: column; }
+    .lb.aberto { display: flex; }
+    .lb-topo { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; color: var(--text-muted); font-size: 14px; }
+    .lb-fechar { background: transparent; border: 1px solid var(--border); color: var(--text); width: 42px; height: 42px; border-radius: 50%; font-size: 22px; cursor: pointer; }
+    .lb-palco { flex: 1; min-height: 0; min-width: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 0 12px; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y pinch-zoom; }
+    .lb-palco img { max-width: 100%; max-height: 100%; border-radius: 10px; cursor: zoom-in; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+    .lb.zoom .lb-palco { align-items: flex-start; justify-content: flex-start; }
+    .lb.zoom .lb-palco img { max-width: none; max-height: none; width: 1342px; cursor: zoom-out; }
+    .lb-base { display: flex; justify-content: center; align-items: center; gap: 18px; padding: 14px 18px 22px; color: var(--text-muted); font-size: 13px; }
+    .lb-nav { background: var(--bg-surface); border: 1px solid var(--border); color: var(--accent); width: 46px; height: 46px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+    .lb-nav:hover, .lb-fechar:hover { border-color: var(--accent); }
     /* PROVA DE INVESTIMENTO */
     .prova-investimento { margin-top: 50px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
     .prova-cabeca { text-align: center; margin-bottom: 24px; }
@@ -1055,10 +1070,10 @@
 
       <div class="prova-investimento">
         <div class="prova-grade">
-          <a href="./provas/setembro-2026-conta-1.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-1-mini.webp" alt="Print do Gerenciador de Anúncios: conta 1, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
-          <a href="./provas/setembro-2026-conta-2.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-2-mini.webp" alt="Print do Gerenciador de Anúncios: conta 2, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
-          <a href="./provas/setembro-2026-conta-3.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-3-mini.webp" alt="Print do Gerenciador de Anúncios: conta 3, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
-          <a href="./provas/setembro-2026-conta-4.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-4-mini.webp" alt="Print do Gerenciador de Anúncios: conta 4, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-1.webp" class="prova-link"><img src="./provas/setembro-2026-conta-1-mini.webp" alt="Print do Gerenciador de Anúncios: conta 1, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-2.webp" class="prova-link"><img src="./provas/setembro-2026-conta-2-mini.webp" alt="Print do Gerenciador de Anúncios: conta 2, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-3.webp" class="prova-link"><img src="./provas/setembro-2026-conta-3-mini.webp" alt="Print do Gerenciador de Anúncios: conta 3, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-4.webp" class="prova-link"><img src="./provas/setembro-2026-conta-4-mini.webp" alt="Print do Gerenciador de Anúncios: conta 4, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
         </div>
         <p class="prova-dica">Nossos resultados atualizados</p>
       </div>
@@ -1695,6 +1710,52 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
         errorMsg.style.display = "block";
       });
     });
+  </script>
+
+  <!-- Visualizador dos prints -->
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Print de resultado">
+    <div class="lb-topo"><span id="lb-cont">1 de 4</span><button class="lb-fechar" id="lb-fechar" aria-label="Fechar">&times;</button></div>
+    <div class="lb-palco" id="lb-palco"><img id="lb-img" src="" alt=""></div>
+    <div class="lb-base"><button class="lb-nav" id="lb-ant" aria-label="Print anterior">&#8249;</button><span id="lb-dica">Toque no print para ampliar</span><button class="lb-nav" id="lb-prox" aria-label="Próximo print">&#8250;</button></div>
+  </div>
+  <script>
+  (function(){
+    var links=[].slice.call(document.querySelectorAll('.prova-link'));
+    if(!links.length) return;
+    var lb=document.getElementById('lb'), img=document.getElementById('lb-img'), palco=document.getElementById('lb-palco'),
+        cont=document.getElementById('lb-cont'), dica=document.getElementById('lb-dica'), i=0, x0=null;
+    function mostrar(n){
+      i=(n+links.length)%links.length;
+      lb.classList.remove('zoom');
+      img.src=links[i].getAttribute('href');
+      img.alt=links[i].querySelector('img').alt;
+      cont.textContent=(i+1)+' de '+links.length;
+      dica.textContent='Toque no print para ampliar';
+    }
+    function abrir(n){ mostrar(n); lb.classList.add('aberto'); document.body.style.overflow='hidden'; document.getElementById('lb-fechar').focus(); }
+    function fechar(){ lb.classList.remove('aberto','zoom'); document.body.style.overflow=''; links[i].focus(); }
+    links.forEach(function(a,n){ a.addEventListener('click',function(e){ e.preventDefault(); abrir(n); }); });
+    document.getElementById('lb-fechar').onclick=fechar;
+    document.getElementById('lb-ant').onclick=function(){ mostrar(i-1); };
+    document.getElementById('lb-prox').onclick=function(){ mostrar(i+1); };
+    img.onclick=function(){
+      var z=lb.classList.toggle('zoom');
+      dica.textContent=z?'Arraste para ver os números. Toque de novo para reduzir':'Toque no print para ampliar';
+      if(z){ palco.scrollLeft=palco.scrollWidth*0.35; palco.scrollTop=0; }
+    };
+    palco.addEventListener('click',function(e){ if(e.target===palco) fechar(); });
+    document.addEventListener('keydown',function(e){
+      if(!lb.classList.contains('aberto')) return;
+      if(e.key==='Escape') fechar();
+      if(e.key==='ArrowLeft') mostrar(i-1);
+      if(e.key==='ArrowRight') mostrar(i+1);
+    });
+    palco.addEventListener('touchstart',function(e){ x0=lb.classList.contains('zoom')?null:e.touches[0].clientX; },{passive:true});
+    palco.addEventListener('touchend',function(e){
+      if(x0===null) return; var dx=e.changedTouches[0].clientX-x0;
+      if(Math.abs(dx)>50) mostrar(i+(dx<0?1:-1)); x0=null;
+    });
+  })();
   </script>
 </body>
 </html>
