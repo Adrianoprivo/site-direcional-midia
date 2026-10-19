@@ -282,6 +282,23 @@
     .section {
       padding: 90px 0;
     }
+
+    /* FAIXA DE CLIENTES */
+    .clientes-faixa { margin-top: 60px; }
+    .clientes-titulo { text-align: center; color: var(--text-muted); font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 26px; }
+    .clientes-titulo span { color: var(--accent); }
+    .clientes-marquee { display: flex; overflow: hidden; gap: 28px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+    .clientes-trilho { display: flex; gap: 28px; list-style: none; margin: 0; padding: 6px 0; flex-shrink: 0; animation: clientes-rolar 45s linear infinite; }
+    .clientes-marquee:hover .clientes-trilho { animation-play-state: paused; }
+    .cliente-logo img { display: block; width: 72px; height: 72px; border-radius: 50%; border: 1px solid var(--border); box-shadow: 0 0 0 4px rgba(255,255,255,0.04); background: #fff; opacity: 0.85; transition: opacity .3s, transform .3s, border-color .3s; }
+    .cliente-logo img:hover { opacity: 1; transform: scale(1.08); border-color: var(--accent); }
+    @keyframes clientes-rolar { to { transform: translateX(calc(-100% - 28px)); } }
+    @media (prefers-reduced-motion: reduce) {
+      .clientes-marquee { flex-wrap: wrap; justify-content: center; -webkit-mask-image: none; mask-image: none; }
+      .clientes-trilho { animation: none; flex-wrap: wrap; justify-content: center; }
+      .clientes-trilho[aria-hidden="true"] { display: none; }
+    }
+    @media (max-width: 600px) { .cliente-logo img { width: 58px; height: 58px; } .clientes-trilho, .clientes-marquee { gap: 20px; } }
     .section-title {
       text-align: center;
       font-size: 34px;
@@ -985,6 +1002,44 @@
         <div class="metric-card">
           <h4>+17,3M</h4>
           <p>Faturamento gerado</p>
+        </div>
+      </div>
+
+      <div class="clientes-faixa">
+        <p class="clientes-titulo">Marcas que escolheram a <span>Direcional Mídia</span></p>
+        <div class="clientes-marquee">
+          <ul class="clientes-trilho">
+            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="Let Baby" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/colegio-sao-paulo.webp" alt="Colégio São Paulo" title="Colégio São Paulo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="Casa Domo" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="Donni Project" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/vovo-quem-fez.webp" alt="Vovó Quem Fez" title="Vovó Quem Fez" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/loja-excelente.webp" alt="Loja Excelente" title="Loja Excelente" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/carolina-luna.webp" alt="Carolina Luna" title="Carolina Luna" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="Brilho e Bronze" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/ls-caixas.webp" alt="LS Caixas de Papelão" title="LS Caixas de Papelão" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/agius-assessoria.webp" alt="Agius Assessoria" title="Agius Assessoria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/henri-store.webp" alt="Henri Store" title="Henri Store" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/espaco-mulher.webp" alt="Espaço Mulher by Paula Rodrigues" title="Espaço Mulher by Paula Rodrigues" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/ts-pizzaria.webp" alt="TS Pizzaria" title="TS Pizzaria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/hl-aquecedores.webp" alt="HL Aquecedores" title="HL Aquecedores" width="72" height="72" loading="lazy" decoding="async"></li>
+          </ul>
+          <ul class="clientes-trilho" aria-hidden="true">
+            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/colegio-sao-paulo.webp" alt="" title="Colégio São Paulo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/vovo-quem-fez.webp" alt="" title="Vovó Quem Fez" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/loja-excelente.webp" alt="" title="Loja Excelente" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/carolina-luna.webp" alt="" title="Carolina Luna" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/ls-caixas.webp" alt="" title="LS Caixas de Papelão" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/agius-assessoria.webp" alt="" title="Agius Assessoria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/henri-store.webp" alt="" title="Henri Store" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/espaco-mulher.webp" alt="" title="Espaço Mulher by Paula Rodrigues" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/ts-pizzaria.webp" alt="" title="TS Pizzaria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/hl-aquecedores.webp" alt="" title="HL Aquecedores" width="72" height="72" loading="lazy" decoding="async"></li>
+          </ul>
         </div>
       </div>
     </div>
