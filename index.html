@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Direcional Mídia | Aceleradora & Gestão de Performance</title>
-  <meta name="description" content="Tiramos sua empresa do labirinto no meio físico e traçamos a rota certa para vendas escaláveis no digital com Mídia e CRM integrado.">
+  <title>Direcional Mídia | Growth para E-commerces, do clique ao lucro</title>
+  <meta name="description" content="Growth para e-commerces que investem a partir de R$ 500 por dia em anúncios. Do clique ao lucro com o Método DEVER: mídia, conversão, relacionamento e recompra.">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -283,6 +283,19 @@
       padding: 90px 0;
     }
 
+
+    /* PROVA DE INVESTIMENTO */
+    .prova-investimento { margin-top: 50px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 20px; padding: 32px; }
+    .prova-cabeca { text-align: center; margin-bottom: 24px; }
+    .prova-rotulo { color: var(--text-muted); font-size: 14px; letter-spacing: 1.2px; text-transform: uppercase; margin: 0 0 6px; }
+    .prova-valor { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 44px; color: var(--accent); margin: 0; line-height: 1.1; }
+    .prova-sub { color: var(--text-muted); font-size: 15px; max-width: 620px; margin: 10px auto 0; }
+    .prova-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; }
+    .prova-grade a { display: block; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); transition: transform .3s, border-color .3s; }
+    .prova-grade a:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .prova-grade img { display: block; width: 100%; height: auto; }
+    .prova-dica { text-align: center; color: var(--text-muted); font-size: 13px; margin: 14px 0 0; }
+    @media (max-width: 600px) { .prova-investimento { padding: 22px 16px; } .prova-valor { font-size: 36px; } .prova-grade { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
     /* FAIXA DE CLIENTES */
     .clientes-faixa { margin-top: 60px; }
     .clientes-titulo { text-align: center; color: var(--text-muted); font-size: 15px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 26px; }
@@ -359,7 +372,7 @@
       color: #fff;
     }
     .orbit-copy h2 span {
-      color: var(--primary);
+      color: var(--accent);
     }
     .orbit-copy .main-desc {
       color: var(--text-muted);
@@ -831,6 +844,15 @@
       .hide-sm {
         display: none;
       }
+      .sticky-cta {
+        padding: 9px 14px !important;
+        font-size: 12px !important;
+        white-space: nowrap;
+      }
+      .sticky-nav .brand span {
+        font-size: 16px;
+        white-space: nowrap;
+      }
       .orbit-bg-rotor {
         max-width: 100%;
       }
@@ -870,7 +892,7 @@
     <div class="legal-modal-box">
       <h3>Termos de Uso</h3>
       <p>Ao navegar em nosso portal e solicitar um diagnóstico estratégico gratuito, você concorda com as diretrizes e termos operacionais descritos abaixo:</p>
-      <p><b>1. Diagnóstico Estratégico:</b> A sessão de alinhamento oferecida tem caráter consultivo e de orientação técnica, baseada nas melhores práticas de mídia e CRM do mercado.</p>
+      <p><b>1. Diagnóstico Estratégico:</b> A sessão de alinhamento oferecida tem caráter consultivo e de orientação técnica, baseada nas melhores práticas de mídia e e-commerce do mercado.</p>
       <p><b>2. Responsabilidade Compartilhada:</b> A escala e o sucesso financeiro de qualquer operação dependem do alinhamento conjunto entre as campanhas geradas pela Direcional Mídia e a execução ágil do time comercial e de atendimento do cliente.</p>
       <p><b>3. Direitos Autorais:</b> Todo o conteúdo, identidade visual, logotipo e metodologias presentes neste portal são de titularidade exclusiva da Direcional Mídia.</p>
       <button class="modal-close-btn" onclick="closeLegalModal('modal-termos')">Concordar e Fechar</button>
@@ -886,19 +908,19 @@
   <header id="sticky-header" class="sticky-nav">
     <div class="container sticky-nav-inner">
       <a href="#inicio" class="brand">
-        <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia" width="40" height="40">
+        <img class="brand-logo-img" src="./logo-rosa.svg" alt="Logo Direcional Mídia" width="40" height="40">
         <span>DIRECIONAL <b>MÍDIA</b></span>
       </a>
       <ul class="nav-links">
         <li><a href="#metricas">Métricas</a></li>
         <li><a href="#metodo">Metodologia</a></li>
         <li><a href="#especialidades">Especialidades</a></li>
-        <li><a href="#crm">CRM</a></li>
+        <li><a href="#crm">Recompra</a></li>
         <li><a href="#comparativo">Para Quem É</a></li>
         <li><a href="#faq">Dúvidas</a></li>
         <li><a href="#formulario" style="color: var(--primary);">Contato</a></li>
       </ul>
-      <a href="#formulario" class="btn" style="padding: 9px 20px; font-size: 13px;">Agendar Diagnóstico</a>
+      <a href="#formulario" class="btn sticky-cta" style="padding: 9px 20px; font-size: 13px;"><span>Agendar<span class="hide-sm"> Diagnóstico</span></span></a>
     </div>
   </header>
 
@@ -906,7 +928,7 @@
   <div class="container">
     <nav class="main-nav">
       <a href="#inicio" class="brand">
-        <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia" width="40" height="40">
+        <img class="brand-logo-img" src="./logo-rosa.svg" alt="Logo Direcional Mídia" width="40" height="40">
         <span>DIRECIONAL <b>MÍDIA</b></span>
       </a>
       <div class="main-nav-actions" style="display: flex; gap: 18px; align-items: center;">
@@ -923,21 +945,21 @@
       <div>
         <div class="hero-tag">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-          Mídia de Performance & Inteligência de CRM
+          Growth para E-commerces
         </div>
-        <h1>Sua empresa está perdida no meio físico? <span>Nós apontamos a rota certa no digital.</span></h1>
-        <p>A Direcional Mídia constrói a bússola de escala do seu negócio. Integramos tráfego qualificado e gestão rigorosa de CRM para transformar cliques em clientes fidelizados e faturamento constante.</p>
+        <h1>Seu e-commerce investe R$&nbsp;500 por dia em anúncios. <span>Quanto disso vira lucro?</span></h1>
+        <p><b style="color: var(--text);">Não é sorte. É DEVER.</b> A Direcional Mídia cuida do caminho inteiro, do clique ao lucro: tráfego, conversão, relacionamento e recompra, integrados pelo Método DEVER. Comece por um diagnóstico gratuito da sua loja.</p>
         
        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
   <a href="#formulario" class="btn">
-    Quero Direcionar Minha Empresa
+    Quero meu diagnóstico gratuito
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
   </a>
 </div>
 
         <div class="hero-badge">
           <div>
-            <h3>+R$ 17,3 Milhões</h3>
+            <h3>+R$&nbsp;17,3 Milhões</h3>
             <p>em vendas geradas para nossos clientes</p>
           </div>
         </div>
@@ -983,7 +1005,7 @@
     <div class="container">
       <h2 class="section-title">Quem Somos na <span>Direcional Mídia</span></h2>
       <p class="section-sub">
-        Desde 2019, atuamos como uma bússola de escala. Empresas sólidas no mundo físico perdem margem no digital quando investem em tráfego sem um sistema de inteligência de dados. Nós conectamos atração agressiva com retenção inteligente.
+        Desde 2019, atuamos como uma bússola de escala para e-commerces. Muitas lojas vendem bem e lucram pouco, porque investem em anúncios sem enxergar o que acontece depois do clique. Nós conectamos tráfego, conversão e relacionamento para que o investimento volte em lucro.
       </p>
 
       <div class="metrics-grid">
@@ -1009,38 +1031,36 @@
         <p class="clientes-titulo">Marcas que escolheram a <span>Direcional Mídia</span></p>
         <div class="clientes-marquee">
           <ul class="clientes-trilho">
-            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="Let Baby" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/colegio-sao-paulo.webp" alt="Colégio São Paulo" title="Colégio São Paulo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="Casa Domo" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="Donni Project" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/vovo-quem-fez.webp" alt="Vovó Quem Fez" title="Vovó Quem Fez" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="Brilho e Bronze" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="Casa Domo" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="Let Baby" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/loja-excelente.webp" alt="Loja Excelente" title="Loja Excelente" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/carolina-luna.webp" alt="Carolina Luna" title="Carolina Luna" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="Brilho e Bronze" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ls-caixas.webp" alt="LS Caixas de Papelão" title="LS Caixas de Papelão" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/agius-assessoria.webp" alt="Agius Assessoria" title="Agius Assessoria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="Donni Project" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/henri-store.webp" alt="Henri Store" title="Henri Store" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/espaco-mulher.webp" alt="Espaço Mulher by Paula Rodrigues" title="Espaço Mulher by Paula Rodrigues" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ts-pizzaria.webp" alt="TS Pizzaria" title="TS Pizzaria" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/hl-aquecedores.webp" alt="HL Aquecedores" title="HL Aquecedores" width="72" height="72" loading="lazy" decoding="async"></li>
           </ul>
           <ul class="clientes-trilho" aria-hidden="true">
-            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/colegio-sao-paulo.webp" alt="" title="Colégio São Paulo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/vovo-quem-fez.webp" alt="" title="Vovó Quem Fez" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/casa-domo.webp" alt="" title="Casa Domo" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/let-baby.webp" alt="" title="Let Baby" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/loja-excelente.webp" alt="" title="Loja Excelente" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/carolina-luna.webp" alt="" title="Carolina Luna" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/brilho-e-bronze.webp" alt="" title="Brilho e Bronze" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ls-caixas.webp" alt="" title="LS Caixas de Papelão" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/agius-assessoria.webp" alt="" title="Agius Assessoria" width="72" height="72" loading="lazy" decoding="async"></li>
+            <li class="cliente-logo"><img src="./clientes/donni-project.webp" alt="" title="Donni Project" width="72" height="72" loading="lazy" decoding="async"></li>
             <li class="cliente-logo"><img src="./clientes/henri-store.webp" alt="" title="Henri Store" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/espaco-mulher.webp" alt="" title="Espaço Mulher by Paula Rodrigues" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/ts-pizzaria.webp" alt="" title="TS Pizzaria" width="72" height="72" loading="lazy" decoding="async"></li>
-            <li class="cliente-logo"><img src="./clientes/hl-aquecedores.webp" alt="" title="HL Aquecedores" width="72" height="72" loading="lazy" decoding="async"></li>
           </ul>
         </div>
+      </div>
+
+      <div class="prova-investimento">
+        <div class="prova-grade">
+          <a href="./provas/setembro-2026-conta-1.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-1-mini.webp" alt="Print do Gerenciador de Anúncios: conta 1, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-2.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-2-mini.webp" alt="Print do Gerenciador de Anúncios: conta 2, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-3.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-3-mini.webp" alt="Print do Gerenciador de Anúncios: conta 3, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+          <a href="./provas/setembro-2026-conta-4.webp" target="_blank" rel="noopener"><img src="./provas/setembro-2026-conta-4-mini.webp" alt="Print do Gerenciador de Anúncios: conta 4, setembro de 2026" width="480" height="265" loading="lazy" decoding="async"></a>
+        </div>
+        <p class="prova-dica">Gerenciador de Anúncios da Meta, setembro de 2026. Toque em um print para ver em tamanho real.</p>
       </div>
     </div>
   </section>
@@ -1115,7 +1135,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
     <div class="container">
       <h2 class="section-title">Nossas <span>Especialidades</span></h2>
       <p class="section-sub">
-        Não entregamos tarefas isoladas. Construímos uma esteira técnica de ponta a ponta para que sua empresa converta mais com a mesma verba.
+        Não entregamos tarefas isoladas. Cuidamos da jornada inteira do seu e-commerce, do anúncio à recompra, para vender mais com a mesma verba.
       </p>
 
       <div class="services-grid">
@@ -1131,8 +1151,8 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
           <div class="service-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
-          <h3>Estruturação de CRM</h3>
-          <p>Seu negócio não pode ser refém de anúncios diários. Organizamos e tagueamos sua base de dados desde o primeiro clique para ativar réguas de relacionamento que vendem no automático via WhatsApp e E-mail.</p>
+          <h3>Relacionamento com a Base</h3>
+          <p>Sua loja não pode ser refém de anúncios diários. Organizamos sua base de clientes desde o primeiro clique para ativar réguas de relacionamento que vendem no automático via WhatsApp e e-mail.</p>
         </div>
 
         <div class="service-card">
@@ -1140,7 +1160,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
           </div>
           <h3>Otimização de Conversão (CRO)</h3>
-          <p>Mais vendas sem precisar dobrar o investimento em mídia. Ajustamos a usabilidade, a clareza da proposta de valor, a velocidade da página e o checkout para transformar mais visitantes em clientes pagantes.</p>
+          <p>Mais vendas sem precisar dobrar o investimento em mídia. Ajustamos a página de produto, a clareza da oferta, a velocidade da loja e o checkout para transformar mais visitantes em compradores.</p>
         </div>
 
         <div class="service-card">
@@ -1148,7 +1168,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
           </div>
           <h3>Recuperação de Carrinho & Leads</h3>
-          <p>Onde a maioria das empresas sangra faturamento: orçamentos não respondidos e carrinhos abandonados. Criamos automações dinâmicas e ofertas de urgência para resgatar vendas que já pareciam perdidas.</p>
+          <p>Onde a maioria dos e-commerces perde faturamento: carrinhos abandonados, Pix e boletos não pagos e conversas sem resposta. Criamos automações e ofertas de recuperação para resgatar vendas que já pareciam perdidas.</p>
         </div>
 
         <div class="service-card">
@@ -1178,14 +1198,14 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
           <div class="hero-tag" style="border-color: var(--primary); color: var(--primary);">
             A Coluna Dorsal do Método
           </div>
-          <h2 style="font-size: 34px; margin-bottom: 20px;">Por que mídia paga sem <span>CRM estruturado</span> é desperdício de verba?</h2>
+          <h2 style="font-size: 34px; margin-bottom: 20px;">Por que anunciar sem cuidar da <span>sua base de clientes</span> é desperdício de verba?</h2>
           <p style="color: var(--text-muted); font-size: 17px; margin-bottom: 25px;">
-            Nenhum negócio sustentável sobrevive dependendo exclusivamente do leilão diário de anúncios. Quando o custo por clique sobe, operações sem dados quebram. 
+            Nenhum e-commerce lucrativo sobrevive dependendo exclusivamente do leilão diário de anúncios. Quando o custo por clique sobe, operações sem dados quebram. 
           </p>
           <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 30px;">
-            Na Direcional Mídia, o CRM não entra no final: ele é ativado desde a etapa <b>Descobrir</b> do Método DEVER. Cada lead que clica ou interage é imediatamente catalogado, tagueado e trabalhado para gerar lucro contínuo com CAC cada vez menor.
+            Na Direcional Mídia, o relacionamento com o cliente não fica para o final: ele começa na etapa <b>Descobrir</b> do Método DEVER. Cada pessoa que clica ou compra é registrada e acompanhada, para gerar lucro contínuo com CAC cada vez menor.
           </p>
-          <a href="#formulario" class="btn">Estruturar Minha Operação</a>
+          <a href="#formulario" class="btn">Quero meu diagnóstico gratuito</a>
         </div>
 
         <div class="crm-card-visual">
@@ -1193,7 +1213,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <div class="step-badge">01</div>
             <div>
               <h4>Captura & Enriquecimento Inicial</h4>
-              <p>Desde a etapa Descobrir, os dados do cliente (origem, interesse e ticket) são inseridos no CRM, criando uma base proprietária blindada.</p>
+              <p>Desde a etapa Descobrir, os dados do cliente (origem, interesse e ticket) ficam registrados na sua base de clientes (no CRM ou na própria plataforma da loja), um ativo que é seu e não do anúncio.</p>
             </div>
           </div>
 
@@ -1201,7 +1221,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <div class="step-badge">02</div>
             <div>
               <h4>Automação de Fechamento</h4>
-              <p>Leads que chegam no WhatsApp ou e-commerce recebem atendimento e réguas imediatas, evitando que oportunidades esfriem por demora na resposta.</p>
+              <p>Quem chama no WhatsApp ou sai da loja sem comprar recebe atendimento e réguas imediatas, antes que a compra esfrie.</p>
             </div>
           </div>
 
@@ -1209,7 +1229,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <div class="step-badge">03</div>
             <div>
               <h4>Recuperação de Vendas Perdidas</h4>
-              <p>Carrinhos abandonados e propostas paradas são ativados com ofertas personalizadas sem que você precise gastar mais com novos anúncios.</p>
+              <p>Carrinhos abandonados e pagamentos pendentes são ativados com ofertas personalizadas sem que você precise gastar mais com novos anúncios.</p>
             </div>
           </div>
 
@@ -1225,7 +1245,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <div class="step-badge">05</div>
             <div>
               <h4>Recomendação que Realimenta o Funil</h4>
-              <p>Depoimentos, avaliações e indicações ficam registrados no CRM e voltam para a etapa Descobrir como prova social. O ciclo recomeça com custo de aquisição menor.</p>
+              <p>Depoimentos, avaliações e indicações ficam registrados na sua base e voltam para a etapa Descobrir como prova social. O ciclo recomeça com custo de aquisição menor.</p>
             </div>
           </div>
         </div>
@@ -1245,15 +1265,15 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
           <ul>
             <li>Empresários que buscam fórmulas mágicas sem investimento de verdade.</li>
             <li>Quem não atende com agilidade e preparo os clientes enviados ao WhatsApp.</li>
-            <li>Empresas que ignoram o CRM e querem apenas queimar dinheiro em anúncios.</li>
-            <li>Quem não enxerga a internet como um canal profissional e escalável.</li>
+            <li>Lojas que ignoram quem já comprou e querem apenas queimar dinheiro em anúncios.</li>
+            <li>Lojas que ainda estão validando o produto e não têm verba para investir com constância.</li>
           </ul>
         </div>
         <div class="compare-box good">
           <h3>Para quem É:</h3>
           <ul>
-            <li>Negócios físicos que precisam criar um canal rentável e escalável no digital.</li>
-            <li>Empresas prontas para integrar campanhas com uma base sólida de CRM.</li>
+            <li>E-commerces que já investem a partir de R$&nbsp;500 por dia em anúncios e querem mais lucro, não só mais vendas.</li>
+            <li>Lojas prontas para integrar campanhas, relacionamento e pós-venda.</li>
             <li>Gestores que prezam por planejamento metódico, números e ROI real.</li>
             <li>Líderes comprometidos com o crescimento previsível de longo prazo.</li>
           </ul>
@@ -1271,28 +1291,28 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
       <div class="faq-item">
         <button class="faq-btn">Para que tipo e tamanho de empresa a Direcional Mídia é indicada? <span>+</span></button>
         <div class="faq-content">
-          <p>Atendemos desde negócios físicos tradicionais que estão migrando ou patinando no digital até e-commerces em fase de escala. Nosso foco são empresas que possuem produto ou serviço validado, estrutura mínima para atender clientes e que entendem que tráfego pago exige acompanhamento metódico e processos comerciais sérios.</p>
+          <p>Atendemos e-commerces que já investem a partir de R$&nbsp;500 por dia em anúncios e querem transformar esse investimento em lucro. Nosso foco são lojas com produto validado, operação pronta para atender e entregar, e que entendem que crescer exige método e acompanhamento.</p>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-btn">Qual é a diferença entre a Direcional Mídia e uma agência de marketing tradicional? <span>+</span></button>
         <div class="faq-content">
-          <p>Agências tradicionais vendem "serviços avulsos": sobem campanhas, entregam relatórios cheios de métricas de vaidade (como impressões e cliques) e culpam sua equipe quando a venda não acontece. A Direcional Mídia atua como parceira de receita e aceleradora: assumimos a cadeia ponta a ponta — do anúncio que atrai até a integração com o CRM e os fluxos de recuperação que transformam contatos em faturamento no caixa.</p>
+          <p>Agências tradicionais vendem "serviços avulsos": sobem campanhas, entregam relatórios cheios de métricas de vaidade (como impressões e cliques) e culpam sua equipe quando a venda não acontece. A Direcional Mídia atua como parceira de receita e aceleradora: assumimos a cadeia ponta a ponta — do anúncio que atrai até o relacionamento com quem comprou e os fluxos de recuperação que transformam contatos em faturamento no caixa.</p>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-btn">Quanto tempo leva para começarmos a ver resultados concretos? <span>+</span></button>
         <div class="faq-content">
-          <p>Nas primeiras semanas de alinhamento e auditoria da etapa <b>Descobrir</b> já identificamos gargalos e vazamentos de verba imediatos. A geração e aquisição de leads qualificados começa nos primeiros ciclos de testes de campanha, enquanto a maturação de LTV e recompra via CRM se consolida entre 30 a 90 dias de operação contínua.</p>
+          <p>Nas primeiras semanas de alinhamento e auditoria da etapa <b>Descobrir</b> já identificamos gargalos e vazamentos de verba imediatos. Os ajustes de campanha e de conversão começam nos primeiros ciclos de teste, enquanto a maturação de LTV e recompra se consolida entre 30 e 90 dias de operação contínua.</p>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-btn">Vocês substituem a minha equipe interna ou trabalham junto? <span>+</span></button>
         <div class="faq-content">
-          <p>Trabalhamos em sinergia total. Assumimos toda a estratégia técnica de tráfego, funil e automações de CRM, enquanto alinhamos diretamente com o seu time de vendas ou atendimento para que nenhum lead esfrie. Orientamos sua operação com diretrizes claras e cadência de acompanhamento.</p>
+          <p>Trabalhamos em sinergia total. Assumimos toda a estratégia de tráfego, funil e automações de relacionamento, enquanto alinhamos diretamente com o seu time de vendas ou atendimento para que nenhum cliente esfrie. Orientamos sua operação com diretrizes claras e cadência de acompanhamento.</p>
         </div>
       </div>
 
@@ -1304,16 +1324,16 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
       </div>
 
       <div class="faq-item">
-        <button class="faq-btn">Por que vocês enfatizam tanto o CRM junto com o tráfego pago? <span>+</span></button>
+        <button class="faq-btn">Por que vocês falam tanto de recompra junto com o tráfego pago? <span>+</span></button>
         <div class="faq-content">
-          <p>Porque o leilão de mídia fica mais concorrido e caro a cada ano. Quem depende exclusivamente de comprar cliques novos todos os dias vê sua margem de lucro derreter. Quando você possui um CRM estruturado desde o primeiro clique, você recupera clientes que abandonaram contato e estimula a recompra com custo de aquisição zero, multiplicando seu lucro líquido.</p>
+          <p>Porque o leilão de mídia fica mais concorrido e caro a cada ano. Quem depende exclusivamente de comprar cliques novos todos os dias vê sua margem de lucro derreter. Quando os dados dos seus clientes estão organizados desde o primeiro clique, você recupera carrinhos abandonados e estimula a recompra com custo de aquisição zero, multiplicando seu lucro líquido.</p>
         </div>
       </div>
 
       <div class="faq-item">
         <button class="faq-btn">Qual é o investimento mínimo necessário em anúncios? <span>+</span></button>
         <div class="faq-content">
-          <p>O investimento mínimo necessário em mídia varia de <b>R$ 2.500 a R$ 3.000 por mês</b>. Essa faixa garante volume estatístico adequado para testar criativos, alimentar os algoritmos com inteligência e tracionar leads qualificados diariamente.</p>
+          <p>O investimento mínimo recomendado em mídia é de <b>R$&nbsp;500 por dia</b> (cerca de R$&nbsp;15 mil por mês). Essa faixa garante volume adequado para testar criativos, alimentar os algoritmos com dados e gerar vendas todos os dias.</p>
         </div>
       </div>
     </div>
@@ -1323,8 +1343,8 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
   <section id="formulario" class="section" style="background: #020617; border-top: 1px solid var(--border);">
     <div class="container">
       <div class="form-wrap">
-        <h2 style="text-align: center; font-size: 26px; margin-bottom: 8px;">Agendar Sessão Estratégica</h2>
-        <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 28px;">Preencha abaixo para receber o direcionamento da nossa equipe.</p>
+        <h2 style="text-align: center; font-size: 26px; margin-bottom: 8px;">Agende seu diagnóstico gratuito</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 28px;">Em 30 a 45 minutos, você sai com um mapa claro dos gargalos da sua loja.</p>
         
         <form id="leadForm">
           <div class="form-group">
@@ -1356,7 +1376,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
           </div>
 
           <button type="submit" id="btnSubmitForm" class="btn" style="width: 100%; border-radius: 8px; margin-top: 10px;">
-            Solicitar Direcionamento Gratuito
+            Quero meu diagnóstico gratuito
           </button>
 
           <div style="text-align: center; margin-top: 15px;">
@@ -1387,11 +1407,11 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
         
         <div class="footer-col">
           <div class="brand" style="margin-bottom: 16px;">
-            <img class="brand-logo-img" src="./imagem 1.jpeg" alt="Logo Direcional Mídia" width="40" height="40" loading="lazy">
+            <img class="brand-logo-img" src="./logo-rosa.svg" alt="Logo Direcional Mídia" width="40" height="40" loading="lazy">
             <span>DIRECIONAL <b>MÍDIA</b></span>
           </div>
           <p style="line-height: 1.6; margin-bottom: 20px;">
-            Aceleradora de negócios e e-commerces. Conectamos tráfego pago de alta performance e inteligência de CRM para gerar crescimento previsível, lucrativo e consistente.
+            Growth para e-commerces, do clique ao lucro. Conectamos tráfego, conversão, relacionamento e recompra para gerar crescimento previsível, lucrativo e consistente.
           </p>
           <p style="color: #64748b; font-size: 13px;">
             São Paulo - SP, Brasil.
@@ -1405,7 +1425,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
             <li><a href="#metricas">Métricas de Resultado</a></li>
             <li><a href="#metodo">Método DEVER</a></li>
             <li><a href="#especialidades">Especialidades Técnicas</a></li>
-            <li><a href="#crm">Inteligência de CRM</a></li>
+            <li><a href="#crm">Relacionamento & Recompra</a></li>
             <li><a href="#faq">Dúvidas Frequentes</a></li>
           </ul>
         </div>
@@ -1414,7 +1434,7 @@ Recebe a prova social e o conteúdo dos clientes que vêm da etapa Recomendar.</
           <h4>Especialidades</h4>
           <ul>
             <li><a href="#especialidades">Gestão de Tráfego Pago</a></li>
-            <li><a href="#especialidades">Estruturação de CRM</a></li>
+            <li><a href="#especialidades">Relacionamento com a Base</a></li>
             <li><a href="#especialidades">Otimização de Conversão (CRO)</a></li>
             <li><a href="#especialidades">Recuperação de Carrinho</a></li>
             <li><a href="#especialidades">Pós-venda, LTV & Recompra</a></li>
