@@ -1,0 +1,31 @@
+feature,area,priority,original,clone,notes
+Login com e-mail ou Google,acesso,must,yes,yes,"e-mail e senha, mesmo da Central (Google não é necessário pra uso próprio)"
+Painel com lista de mapas (criar/abrir/renomear/apagar),painel,must,yes,yes,
+Criar tópicos pelo teclado (Enter irmão / Tab filho),editor,must,yes,yes,o coração do app
+Editar texto do tópico direto no mapa,editor,must,yes,yes,
+Layout automático dos galhos,editor,must,yes,yes,parte mais difícil
+Arrastar tópico para outro galho,editor,must,yes,yes,
+Recolher e expandir galhos,editor,must,yes,yes,
+Zoom e arrastar a tela,editor,must,yes,yes,
+Desfazer e refazer,editor,must,yes,yes,
+Salvar automático,editor,must,yes,yes,
+Cor / fonte / ícone / emoji no tópico,estilo,should,yes,no,
+Notas e links no tópico,editor,should,yes,no,
+Imagem no tópico,editor,should,yes,no,
+Modo tópicos (lista recuada),editor,should,yes,no,
+Temas do mapa,estilo,should,yes,partial,claro/escuro automático; escolher tema na fase 2
+Exportar imagem e PDF,exportar,should,yes,partial,PNG feito; PDF na fase 2
+Modelos prontos,painel,should,yes,no,criar modelos próprios (não copiar os deles)
+Modo apresentação,apresentar,could,yes,no,
+Compartilhar por link (somente leitura),compartilhar,could,yes,no,
+Colaboração em tempo real,compartilhar,could,yes,no,projeto grande sozinho
+Comentários com @menção,compartilhar,could,yes,no,
+Histórico de versões,mapa,could,yes,no,
+Gerar mapa com IA a partir de tema ou arquivo,ia,could,yes,no,precisa de chave de API (custo)
+Exportar Word e PowerPoint,exportar,could,yes,no,
+Anexos em tópicos,editor,could,yes,no,
+Ligação extra entre tópicos (seta solta),editor,could,yes,yes,
+Apps nativos iOS e Android,mobile,could,yes,skip,versão web responsiva primeiro
+Integração MeisterTask / Teams,integrações,could,yes,skip,produtos e parcerias deles; fazer a sua (Central de Projetos)
+Galeria pública de mapas (Universo),comunidade,could,yes,skip,é a rede e o conteúdo deles
+SSO SAML e backups de conformidade,empresa,could,yes,skip,fora do público-alvo

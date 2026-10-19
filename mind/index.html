@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<title>PrivoMind</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mind-elixir@5.15.1/dist/MindElixir.css">
+<style>
+/* PrivoMind: mesma família visual da Privo Central (mesmas variáveis de cor e fontes) */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --rowh:#F1F5F9; --sunk:#E8EDF2; --line:#D8DFE6; --ink:#18202C; --muted:#5D6A79;
+  --accent:#0B6477; --accent-ink:#FFFFFF; --accent-soft:#D6ECEF; --late:#D93B4C; --done:#0E9F6A; --shadow:0 10px 30px rgb(15 25 40 / .16);
+  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131A; --surface:#171C25; --rowh:#212833; --sunk:#252C37; --line:#2C3541; --ink:#E4E9EF; --muted:#94A0AE;
+  --accent:#3FB2C6; --accent-ink:#06181C; --accent-soft:#14343B; --late:#F0606F; --done:#27B37F; --shadow:0 12px 34px rgb(0 0 0 / .45); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131A; --surface:#171C25; --rowh:#212833; --sunk:#252C37; --line:#2C3541; --ink:#E4E9EF; --muted:#94A0AE;
+  --accent:#3FB2C6; --accent-ink:#06181C; --accent-soft:#14343B; --late:#F0606F; --done:#27B37F; --shadow:0 12px 34px rgb(0 0 0 / .45); color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+.brand small{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.brand h1{font-family:var(--f-display);font-weight:700;letter-spacing:-.02em;margin:2px 0 0;font-size:24px}
+.brand h1 span{color:var(--accent)}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.login form{width:min(380px,100%);background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:14px}
+.login label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
+.login input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 12px;font-size:15px;color:var(--ink)}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 16px;font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.btn:disabled{opacity:.6}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--rowh)}
+.err{color:var(--late);font-size:13px;font-weight:600;min-height:18px;margin:0}
+
+/* lista de mapas */
+.lista{max-width:960px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 24px) 16px 60px}
+.topo{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.topo .acoes{display:flex;gap:8px}
+.barra{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.busca{flex:1;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:15px;color:var(--ink);min-width:0}
+.cont{font-family:var(--f-num);font-size:12px;color:var(--muted);white-space:nowrap}
+.mapas{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mapas li{display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;border-top:1px solid var(--line)}
+.mapas li:first-child{border-top:0}
+.mapas li:hover{background:var(--rowh)}
+.mapas .abrir{flex:1;min-width:0;text-align:left;background:none;border:0;padding:12px 10px;display:flex;flex-direction:column;gap:2px}
+.mapas .abrir b{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mapas .abrir span{font-size:12px;color:var(--muted)}
+.ico{width:36px;height:36px;border:0;background:transparent;border-radius:8px;display:grid;place-items:center;color:var(--muted);flex:none}
+.ico:hover{background:var(--sunk);color:var(--ink)}
+.ico.on{color:#E0A100}
+.ico svg{width:18px;height:18px}
+.vazio{padding:48px 20px;text-align:center;color:var(--muted)}
+.vazio b{display:block;color:var(--ink);font-family:var(--f-display);font-size:20px;margin-bottom:6px}
+
+/* editor */
+.editor{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg)}
+.ebar{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;background:var(--surface);border-bottom:1px solid var(--line)}
+.ebar .titulo{flex:1;min-width:0;font-family:var(--f-display);font-weight:700;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status{font-size:12px;color:var(--muted);white-space:nowrap}
+.status.erro{color:var(--late);font-weight:600}
+.status.ok{color:var(--done)}
+#mapa{flex:1;min-height:0;position:relative}
+.ajuda{position:absolute;right:12px;top:calc(env(safe-area-inset-top,0px) + 60px);z-index:40;width:min(300px,calc(100vw - 24px));background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:14px 16px;font-size:13px}
+.ajuda h3{margin:0 0 8px;font-family:var(--f-display);font-size:15px}
+.ajuda dl{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0}
+.ajuda dt{font-family:var(--f-num);font-size:12px;color:var(--accent);font-weight:600}
+.ajuda dd{margin:0;color:var(--muted)}
+@media (max-width:560px){.status{display:none}.esconde-cel{display:none!important}}
+/* barra de toque: só em telas de toque (celular/tablet), onde não tem Tab nem Enter */
+.toque{display:none;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:40;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:6px;gap:4px}
+.toque button{border:0;background:transparent;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px}
+.toque button:active{background:var(--sunk)}
+.toque button.perigo{color:var(--late)}
+.toque svg{width:20px;height:20px}
+@media (pointer:coarse){.toque{display:flex}}
+</style></head>
+<body>
+
+<div class="login" id="login" hidden><form id="lg-form"><div class="brand"><small>Direcional Mídia</small><h1>Privo<span>Mind</span></h1></div>
+<label>E-mail<input id="lg-email" type="email" autocomplete="username" required></label><label>Senha<input id="lg-pass" type="password" autocomplete="current-password" required></label>
+<p class="err" id="lg-msg" role="alert"></p><button class="btn" id="lg-btn" type="submit" style="justify-content:center;padding:11px;font-size:15px">Entrar</button></form></div>
+
+<main class="lista" id="lista" hidden>
+  <div class="topo"><div class="brand"><small>Direcional Mídia</small><h1>Privo<span>Mind</span></h1></div>
+    <div class="acoes"><button class="btn ghost" id="sair" type="button">Sair</button><button class="btn" id="novo" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Novo mapa</button></div></div>
+  <div class="barra"><input class="busca" id="busca" type="search" placeholder="Buscar mapas" autocomplete="off"><span class="cont" id="cont"></span></div>
+  <ul class="mapas" id="mapas"></ul>
+  <p class="err" id="lista-msg" role="alert"></p>
+</main>
+
+<div class="editor" id="editor" hidden>
+  <div class="ebar">
+    <button class="ico" id="voltar" type="button" title="Voltar para os mapas" aria-label="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="titulo" id="e-titulo"></div>
+    <span class="status" id="e-status"></span>
+    <button class="ico esconde-cel" id="e-png" type="button" title="Baixar como imagem (PNG)" aria-label="Baixar imagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg></button>
+    <button class="ico" id="e-ajuda" type="button" title="Atalhos de teclado" aria-label="Atalhos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.3M12 17h.01"/></svg></button>
+  </div>
+  <div id="mapa"></div>
+  <div class="toque" id="toque" role="toolbar" aria-label="Editar tópico">
+    <button type="button" data-t="filho"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h6v12h4M14 18h6M17 15v6"/></svg>Filho</button>
+    <button type="button" data-t="irmao"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 7h9M5 17h9M18 14v6M15 17h6"/></svg>Irmão</button>
+    <button type="button" data-t="editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Editar</button>
+    <button type="button" data-t="desfazer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg>Desfazer</button>
+    <button type="button" data-t="apagar" class="perigo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Apagar</button>
+  </div>
+  <div class="ajuda" id="ajuda" hidden><h3>Atalhos</h3><dl>
+    <dt>Enter</dt><dd>Novo tópico irmão</dd><dt>Tab</dt><dd>Novo tópico filho</dd>
+    <dt>F2 / 2 cliques</dt><dd>Editar texto</dd><dt>Delete</dt><dd>Apagar tópico</dd>
+    <dt>Setas</dt><dd>Andar entre tópicos</dd><dt>Alt + ↑ / ↓</dt><dd>Mudar ordem</dd>
+    <dt>Ctrl + Z / Y</dt><dd>Desfazer / refazer</dd><dt>Ctrl + C / V</dt><dd>Copiar / colar tópico</dd>
+    <dt>F1</dt><dd>Centralizar o mapa</dd><dt>Botão direito</dt><dd>Mais opções</dd>
+    <dt>Arrastar</dt><dd>Mover tópico de galho</dd></dl></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-elixir@5.15.1/dist/MindElixir.iife.js"></script>
+<script>
+/* ---------- conexão (mesmo projeto e login da Privo Central) ---------- */
+const SB_URL='https://ftahvdzbyqnvarukytws.supabase.co',SB_KEY='sb_publishable_TRsKX1yVSB8EYPxbaSOFAg_HM8AVpI7';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const ME=window.MindElixir.default;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const escuro=()=>matchMedia('(prefers-color-scheme: dark)').matches;
+
+/* menu do botão direito em português */
+const PT={addChild:'Adicionar filho',addParent:'Adicionar pai',addSibling:'Adicionar irmão',removeNode:'Apagar tópico',focus:'Modo foco',cancelFocus:'Sair do foco',moveUp:'Subir',moveDown:'Descer',link:'Ligar a outro tópico',linkBidirectional:'Ligação de ida e volta',clickTips:'Clique no tópico de destino',summary:'Resumo'};
+
+let mapas=[],mind=null,atual=null;
+
+/* ---------- login ---------- */
+async function iniciar(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){mostrar('login');setTimeout(()=>$('lg-email').focus(),50);return}
+  await carregarLista();rota();
+}
+$('lg-form').addEventListener('submit',async e=>{e.preventDefault();const b=$('lg-btn'),m=$('lg-msg');b.disabled=true;m.textContent='';
+  const {error}=await sb.auth.signInWithPassword({email:$('lg-email').value.trim(),password:$('lg-pass').value});
+  b.disabled=false;if(error){m.textContent='E-mail ou senha incorretos.';return}
+  $('lg-pass').value='';await carregarLista();rota();});
+$('sair').onclick=async()=>{await sb.auth.signOut();location.hash='';location.reload()};
+
+function mostrar(qual){for(const id of ['login','lista','editor'])$(id).hidden=id!==qual}
+
+/* ---------- rotas: #/mapa/<id> abre o editor; o resto, a lista ---------- */
+window.addEventListener('hashchange',rota);
+async function rota(){
+  const m=location.hash.match(/^#\/mapa\/([0-9a-f-]{36})$/);
+  if(m){await abrirMapa(m[1])}else{await fecharEditor();mostrar('lista');desenharLista()}
+}
+
+/* ---------- lista ---------- */
+async function carregarLista(){
+  const {data,error}=await sb.from('mapas').select('id,titulo,favorito,atualizado_em').order('atualizado_em',{ascending:false});
+  if(error){$('lista-msg').textContent='Não consegui carregar os mapas. Recarregue a página.';return}
+  $('lista-msg').textContent='';mapas=data;
+}
+const quando=iso=>{const d=new Date(iso),h=new Date();const mesmoDia=d.toDateString()===h.toDateString();
+  return mesmoDia?'hoje, '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:d.getFullYear()===h.getFullYear()?undefined:'numeric'})};
+const SVG_ESTRELA='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/></svg>';
+const SVG_ESTRELA_V='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.6l1-5.8-4.3-4.1 5.9-.9z"/></svg>';
+const SVG_LAPIS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
+const SVG_LIXO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
+function desenharLista(){
+  const q=$('busca').value.trim().toLowerCase();
+  const lista=mapas.filter(m=>!q||m.titulo.toLowerCase().includes(q)).sort((a,b)=>(b.favorito-a.favorito)||(b.atualizado_em>a.atualizado_em?1:-1));
+  $('cont').textContent=mapas.length===1?'1 mapa':mapas.length+' mapas';
+  const ul=$('mapas');
+  if(!mapas.length){ul.innerHTML='<li class="vazio" style="display:block"><b>Nenhum mapa ainda</b>Clique em “Novo mapa” e comece pelo teclado: Enter cria irmão, Tab cria filho.</li>';return}
+  if(!lista.length){ul.innerHTML='<li class="vazio" style="display:block">Nada encontrado para “'+esc(q)+'”.</li>';return}
+  ul.innerHTML=lista.map(m=>`<li data-id="${m.id}">
+    <button class="ico ${m.favorito?'on':''}" data-a="fav" title="${m.favorito?'Tirar dos favoritos':'Favoritar'}" aria-label="Favorito">${m.favorito?SVG_ESTRELA:SVG_ESTRELA_V}</button>
+    <button class="abrir" data-a="abrir"><b>${esc(m.titulo)}</b><span>Editado ${quando(m.atualizado_em)}</span></button>
+    <button class="ico" data-a="ren" title="Renomear" aria-label="Renomear">${SVG_LAPIS}</button>
+    <button class="ico" data-a="del" title="Apagar" aria-label="Apagar">${SVG_LIXO}</button></li>`).join('');
+}
+$('busca').addEventListener('input',desenharLista);
+$('mapas').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('li').dataset.id,m=mapas.find(x=>x.id===id);if(!m)return;
+  if(b.dataset.a==='abrir'){location.hash='#/mapa/'+id;return}
+  if(b.dataset.a==='fav'){m.favorito=!m.favorito;desenharLista();
+    const {error}=await sb.from('mapas').update({favorito:m.favorito}).eq('id',id);if(error){m.favorito=!m.favorito;desenharLista();avisoLista()}return}
+  if(b.dataset.a==='ren'){const novo=(prompt('Novo nome do mapa:',m.titulo)||'').trim();if(!novo||novo===m.titulo)return;
+    const {data,error}=await sb.from('mapas').select('dados').eq('id',id).single();if(error){avisoLista();return}
+    data.dados.nodeData.topic=novo;
+    const r=await sb.from('mapas').update({titulo:novo,dados:data.dados}).eq('id',id).select('atualizado_em').single();if(r.error){avisoLista();return}
+    m.titulo=novo;m.atualizado_em=r.data.atualizado_em;desenharLista();return}
+  if(b.dataset.a==='del'){if(!confirm('Apagar o mapa “'+m.titulo+'”? Isso não tem volta.'))return;
+    const {error}=await sb.from('mapas').delete().eq('id',id);if(error){avisoLista();return}
+    mapas=mapas.filter(x=>x.id!==id);desenharLista()}
+});
+const avisoLista=()=>{$('lista-msg').textContent='Não consegui salvar essa mudança. Confira a internet e tente de novo.'};
+$('novo').onclick=async()=>{const b=$('novo');b.disabled=true;
+  const dados=ME.new('Novo mapa');delete dados.theme;
+  const {data,error}=await sb.from('mapas').insert({titulo:'Novo mapa',dados}).select('id,titulo,favorito,atualizado_em').single();
+  b.disabled=false;if(error){avisoLista();return}
+  mapas.unshift(data);location.hash='#/mapa/'+data.id;
+};
+
+/* ---------- editor ---------- */
+let salvando=false,pendente=false,timer=null;
+function status(t,cls){const s=$('e-status');s.textContent=t;s.className='status'+(cls?' '+cls:'')}
+async function abrirMapa(id){
+  if(atual&&atual.id===id)return;
+  await fecharEditor();
+  mostrar('editor');status('Abrindo…');$('e-titulo').textContent='';
+  const {data,error}=await sb.from('mapas').select('id,titulo,dados').eq('id',id).single();
+  if(error||!data){alert('Não encontrei esse mapa.');location.hash='';return}
+  atual=data;$('e-titulo').textContent=data.titulo;document.title=data.titulo+' · PrivoMind';
+  $('mapa').innerHTML='';
+  mind=new ME({el:'#mapa',direction:ME.SIDE,draggable:true,editable:true,toolBar:true,keypress:true,allowUndo:true,
+    contextMenu:{focus:true,link:true,locale:PT},newTopicName:'Novo tópico',theme:escuro()?ME.DARK_THEME:ME.THEME});
+  const dados=data.dados;delete dados.theme;
+  mind.init(dados);
+  mind.bus.addListener('operation',op=>{if(op&&op.name==='beginEdit')return;agendar()});
+  mind.bus.addListener('expandNode',agendar);
+  status('Salvo','ok');
+}
+function agendar(){pendente=true;status('Salvando…');clearTimeout(timer);timer=setTimeout(salvar,700)}
+async function salvar(){
+  if(!mind||!atual||!pendente)return;if(salvando){clearTimeout(timer);timer=setTimeout(salvar,400);return}
+  salvando=true;pendente=false;
+  const dados=mind.getData();delete dados.theme;
+  const titulo=(dados.nodeData.topic||'Sem título').trim().slice(0,200)||'Sem título';
+  const {data,error}=await sb.from('mapas').update({dados,titulo}).eq('id',atual.id).select('atualizado_em').single();
+  salvando=false;
+  if(error){pendente=true;status('Não salvou, tentando de novo…','erro');clearTimeout(timer);timer=setTimeout(salvar,3000);return}
+  $('e-titulo').textContent=titulo;document.title=titulo+' · PrivoMind';
+  const m=mapas.find(x=>x.id===atual.id);if(m){m.titulo=titulo;m.atualizado_em=data.atualizado_em}
+  if(!pendente)status('Salvo','ok');
+}
+async function fecharEditor(){
+  if(!mind)return;clearTimeout(timer);
+  if(pendente){await salvar()}
+  try{mind.destroy()}catch(_){}
+  mind=null;atual=null;$('mapa').innerHTML='';$('ajuda').hidden=true;document.title='PrivoMind';
+  mapas.sort((a,b)=>b.atualizado_em>a.atualizado_em?1:-1);
+}
+$('voltar').onclick=()=>{location.hash=''};
+/* botões da barra de toque agem no tópico selecionado (ou no central, se nenhum) */
+$('toque').addEventListener('click',async e=>{
+  const b=e.target.closest('button[data-t]');if(!b||!mind)return;
+  const raiz=document.querySelector('#mapa me-root me-tpc');
+  const alvo=mind.currentNode||raiz;if(!alvo)return;
+  const t=b.dataset.t;
+  if(t==='filho')await mind.addChild(alvo);
+  else if(t==='irmao'){if(alvo===raiz)await mind.addChild(alvo);else await mind.insertSibling('after',alvo)}
+  else if(t==='editar')await mind.beginEdit(alvo);
+  else if(t==='desfazer'){mind.undo();agendar()}
+  else if(t==='apagar'){if(alvo===raiz)return;const sel=mind.currentNodes&&mind.currentNodes.length?mind.currentNodes:[alvo];await mind.removeNodes(sel)}
+});
+/* garantia: duplo clique sempre abre a edição (a biblioteca às vezes ignora quando o tópico já está selecionado) */
+$('mapa').addEventListener('dblclick',e=>{
+  const tpc=e.target.closest('me-tpc');if(!tpc||!mind)return;
+  setTimeout(()=>{if(!document.querySelector('#input-box'))mind.beginEdit(tpc)},60);
+});
+/* desfazer/refazer pelo teclado também precisa salvar */
+document.addEventListener('keydown',e=>{
+  if(mind&&(e.ctrlKey||e.metaKey)&&/^[zy]$/i.test(e.key))setTimeout(agendar,60);
+});
+$('e-ajuda').onclick=()=>{$('ajuda').hidden=!$('ajuda').hidden};
+$('e-png').onclick=async()=>{
+  if(!mind)return;status('Gerando imagem…');
+  try{const blob=await mind.exportPng(false);if(!blob)throw 0;
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(atual.titulo||'mapa').replace(/[\\/:*?"<>|]+/g,'-')+'.png';a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),2000);status(pendente?'Salvando…':'Salvo','ok')}
+  catch(_){status('Não consegui gerar a imagem','erro')}
+};
+window.addEventListener('beforeunload',e=>{if(pendente||salvando){salvar();e.preventDefault();e.returnValue=''}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&pendente)salvar()});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(mind)mind.changeTheme(escuro()?ME.DARK_THEME:ME.THEME)});
+
+iniciar();
+</script>
+</body></html>
