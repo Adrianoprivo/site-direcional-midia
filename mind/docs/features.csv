@@ -9,11 +9,11 @@ Recolher e expandir galhos,editor,must,yes,yes,
 Zoom e arrastar a tela,editor,must,yes,yes,
 Desfazer e refazer,editor,must,yes,yes,
 Salvar automático,editor,must,yes,yes,
-Cor / fonte / ícone / emoji no tópico,estilo,should,yes,no,
-Notas e links no tópico,editor,should,yes,no,
-Imagem no tópico,editor,should,yes,no,
-Modo tópicos (lista recuada),editor,should,yes,no,
-Temas do mapa,estilo,should,yes,partial,"tema próprio claro/escuro automático, cores vivas; escolher tema ainda não"
+Cor / fonte / ícone / emoji no tópico,estilo,should,yes,partial,negrito/itálico/sublinhado/riscado/cor no tópico ou no trecho (TXT); ícone/emoji ainda não
+Notas e links no tópico,editor,should,yes,partial,links feitos (LNK); notas ainda não
+Imagem no tópico,editor,should,yes,yes,"colar, soltar arquivo, escolher, link; P/M/G; armazenamento privado (IMG)"
+Modo tópicos (lista recuada),editor,should,yes,yes,vista em lista editável no rodapé (VIS-L)
+Temas do mapa,estilo,should,yes,yes,5 temas de cor sólida + estilo Linha/Caixa por mapa (VIS-02/03)
 Exportar imagem e PDF,exportar,should,yes,partial,PNG feito; PDF na fase 2
 Modelos prontos,painel,should,yes,no,criar modelos próprios (não copiar os deles)
 Modo apresentação,apresentar,could,yes,no,
@@ -29,9 +29,11 @@ Apps nativos iOS e Android,mobile,could,yes,skip,versão web responsiva primeiro
 Integração MeisterTask / Teams,integrações,could,yes,skip,produtos e parcerias deles; fazer a sua (Central de Projetos)
 Galeria pública de mapas (Universo),comunidade,could,yes,skip,é a rede e o conteúdo deles
 SSO SAML e backups de conformidade,empresa,could,yes,skip,fora do público-alvo
-Arrastar qualquer tópico livre (posição salva),editor,must,yes,yes,metadata.pos; Realinhar no botão direito
+Arrastar qualquer tópico livre (posição salva),editor,must,yes,yes,v2: encaixa na estrutura (antes/depois/dentro); posição livre só no galho principal
 Arrastar o fundo ou o centro move o mapa,editor,must,yes,yes,mouseSelectionButton:2 (seleção de várias caixas no botão direito)
-Ímã: soltar perto de outro tópico cola nele,editor,must,yes,yes,linha tracejada de prévia
+Ímã: soltar perto de outro tópico cola nele,editor,must,yes,yes,v2: prévia com linha reta (irmão) ou contorno + curva (filho)
 Bolinhas + ao lado do tópico (filho/irmão/lado),editor,should,yes,yes,no centro: + de cada lado
-Bolinha de abrir/fechar galho sempre visível,editor,should,yes,yes,cheia = fechado
+Bolinha de abrir/fechar galho sempre visível,editor,should,yes,yes,"v2: refinada, fechada mostra quantos tópicos esconde"
 Resumo (chave) e modo foco,editor,could,yes,yes,botão direito
+Criar sempre à direita a partir do centro,editor,should,yes,yes,EST-02; esquerda só pelo + da esquerda
+Rodapé com vista e zoom (− % +),editor,should,yes,yes,ROD-01..04

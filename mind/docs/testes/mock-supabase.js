@@ -26,7 +26,17 @@
     }
     return api;
   }
-  window.supabase={createClient:()=>({
+  /* armazenamento simulado: guarda as imagens como data URL na memória */
+  const files=window.__files=JSON.parse(sessionStorage.getItem('mockfiles')||'{}');const salvaF=()=>sessionStorage.setItem('mockfiles',JSON.stringify(files));
+  const paraDataUrl=b=>new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});
+  const storage={from:()=>({
+    async upload(path,blob){if(window.__falharUpload)return {data:null,error:{message:'falhou'}};files[path]=await paraDataUrl(blob);salvaF();return {data:{path},error:null}},
+    async createSignedUrl(path){return files[path]?{data:{signedUrl:files[path]},error:null}:{data:null,error:{message:'not found'}}},
+    async createSignedUrls(paths){return {data:paths.map(p=>({path:p,signedUrl:files[p]||null,error:files[p]?null:'not found'})),error:null}},
+    async list(prefix){return {data:Object.keys(files).filter(k=>k.startsWith(prefix+'/')).map(k=>({name:k.slice(prefix.length+1)})),error:null}},
+    async remove(paths){paths.forEach(p=>delete files[p]);salvaF();return {data:null,error:null}}
+  })};
+  window.supabase={createClient:()=>({storage,
     auth:{getSession:async()=>({data:{session:logged?{user:{id:'u1'}}:null}}),
       signInWithPassword:async({email,password})=>{if(password==='certa'){logged=true;sessionStorage.setItem('mocklog','1');return {error:null}}return {error:{message:'bad'}}},
       signOut:async()=>{logged=false;sessionStorage.removeItem('mocklog')}},
