@@ -39,6 +39,12 @@ create policy "dono vê e mexe" on public.mapas
 create index on public.mapas (user_id, atualizado_em desc);
 ```
 
+## Armazenamento de imagens (v2, aplicado em 2026-10-19)
+
+Migração `privomind_mapas_imagens`: pasta **privada** `mapas-imagens` (até 10 MB por arquivo; JPG, PNG, WEBP, GIF).
+Caminho `<user_id>/<mapa_id>/<arquivo>`; 4 regras (ler, enviar, atualizar, apagar) só quando a primeira pasta do caminho é o `auth.uid()` de quem pede.
+O app guarda o caminho em `metadata.img` e gera links temporários (7 dias) ao abrir o mapa.
+
 Compartilhar com outra pessoa (fase 3): tabela `mapas_acesso (mapa_id, email, nivel)` + regra extra. Fica pra depois.
 
 ## Telas da fase 1
