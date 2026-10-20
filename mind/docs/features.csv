@@ -13,7 +13,7 @@ Cor / fonte / ícone / emoji no tópico,estilo,should,yes,no,
 Notas e links no tópico,editor,should,yes,no,
 Imagem no tópico,editor,should,yes,no,
 Modo tópicos (lista recuada),editor,should,yes,no,
-Temas do mapa,estilo,should,yes,partial,claro/escuro automático; escolher tema na fase 2
+Temas do mapa,estilo,should,yes,partial,"tema próprio claro/escuro automático, cores vivas; escolher tema ainda não"
 Exportar imagem e PDF,exportar,should,yes,partial,PNG feito; PDF na fase 2
 Modelos prontos,painel,should,yes,no,criar modelos próprios (não copiar os deles)
 Modo apresentação,apresentar,could,yes,no,
@@ -29,3 +29,9 @@ Apps nativos iOS e Android,mobile,could,yes,skip,versão web responsiva primeiro
 Integração MeisterTask / Teams,integrações,could,yes,skip,produtos e parcerias deles; fazer a sua (Central de Projetos)
 Galeria pública de mapas (Universo),comunidade,could,yes,skip,é a rede e o conteúdo deles
 SSO SAML e backups de conformidade,empresa,could,yes,skip,fora do público-alvo
+Arrastar qualquer tópico livre (posição salva),editor,must,yes,yes,metadata.pos; Realinhar no botão direito
+Arrastar o fundo ou o centro move o mapa,editor,must,yes,yes,mouseSelectionButton:2 (seleção de várias caixas no botão direito)
+Ímã: soltar perto de outro tópico cola nele,editor,must,yes,yes,linha tracejada de prévia
+Bolinhas + ao lado do tópico (filho/irmão/lado),editor,should,yes,yes,no centro: + de cada lado
+Bolinha de abrir/fechar galho sempre visível,editor,should,yes,yes,cheia = fechado
+Resumo (chave) e modo foco,editor,could,yes,yes,botão direito

@@ -1,0 +1,31 @@
+import json
+from playwright.sync_api import sync_playwright
+exec(open('base_lista_editor.py').read().split('with sync_playwright')[0])
+MAPA={"nodeData":{"id":"r","topic":"Centro","children":[{"id":"a","topic":"Alfa","direction":1,"children":[{"id":"a1","topic":"Alfa 1"}]},{"id":"b","topic":"Beta","direction":0,"children":[{"id":"b1","topic":"Beta 1"}]}]},"arrows":[],"summaries":[]}
+def box(pg,i): return pg.evaluate("i=>{const r=mind.findEle(i).getBoundingClientRect();return {l:r.left,r:r.right,t:r.top,b:r.bottom,cx:r.x+r.width/2,cy:r.y+r.height/2}}",i)
+def bt(pg,id): return pg.evaluate("id=>{const e=document.getElementById(id);if(e.hidden)return null;const r=e.getBoundingClientRect();return {cx:r.x+r.width/2,cy:r.y+r.height/2,d:e.dataset.lado}}",id)
+def filhos(pg,i): return pg.evaluate("i=>{const f=n=>n.id===i?n:(n.children||[]).map(f).find(Boolean);return (f(mind.getData().nodeData).children||[]).map(c=>c.topic)}",i)
+with sync_playwright() as p:
+    b=p.chromium.launch(); pg=b.new_page(viewport={'width':1280,'height':800}); pg.route('**/*',rotas)
+    errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
+    pg.goto('http://local/mind/')
+    pg.evaluate("d=>{sessionStorage.setItem('mocklog','1');sessionStorage.setItem('mockdb',JSON.stringify([{id:'11111111-1111-4111-8111-111111111111',titulo:'T',favorito:false,atualizado_em:new Date().toISOString(),dados:d}]))}",MAPA)
+    pg.goto('http://local/mind/?t=1#/mapa/11111111-1111-4111-8111-111111111111'); pg.wait_for_selector('me-root'); pg.wait_for_timeout(800)
+    a=box(pg,'a'); pg.mouse.move(a['cx'],a['cy']); pg.wait_for_timeout(200)
+    f=bt(pg,'mais-frente'); x=bt(pg,'mais-baixo'); print('hover Alfa -> frente a direita:',f and f['cx']>a['r'],'| baixo embaixo:',x and x['cy']>a['b'])
+    pg.mouse.move(f['cx'],f['cy']); pg.wait_for_timeout(150); pg.mouse.click(f['cx'],f['cy']); pg.wait_for_timeout(300); pg.keyboard.type('Filho via +'); pg.keyboard.press('Enter'); pg.wait_for_timeout(400)
+    print('filhos de Alfa:',filhos(pg,'a'))
+    bb=box(pg,'b'); pg.mouse.move(bb['cx'],bb['cy']); pg.wait_for_timeout(200); f=bt(pg,'mais-frente'); print('hover Beta (lado esquerdo) -> frente a esquerda:',f and f['cx']<bb['l'])
+    x=bt(pg,'mais-baixo'); pg.mouse.move(x['cx'],x['cy']); pg.wait_for_timeout(150); pg.mouse.click(x['cx'],x['cy']); pg.wait_for_timeout(300); pg.keyboard.type('Irmao via +'); pg.keyboard.press('Enter'); pg.wait_for_timeout(400)
+    print('principais:',filhos(pg,'r'))
+    r=box(pg,'r'); pg.mouse.move(r['cx'],r['cy']); pg.wait_for_timeout(200); f=bt(pg,'mais-frente'); t=bt(pg,'mais-tras'); print('raiz: + dir e + esq:',f and f['d'],t and t['d'], bt(pg,'mais-baixo'))
+    pg.mouse.move(t['cx'],t['cy']); pg.wait_for_timeout(150); pg.mouse.click(t['cx'],t['cy']); pg.wait_for_timeout(300); pg.keyboard.type('Novo esq'); pg.keyboard.press('Enter'); pg.wait_for_timeout(400)
+    print('lado do novo:',pg.evaluate("JSON.stringify(mind.getData().nodeData.children.filter(c=>c.topic==='Novo esq').map(c=>c.direction))"))
+    a=box(pg,'a'); pg.mouse.click(a['cx'],a['cy']); pg.wait_for_timeout(300); print('selecionado:',pg.evaluate('mind.currentNode&&mind.currentNode.textContent')); print('barra grande no PC escondida:',not pg.is_visible('#acoes'))
+    pg.mouse.move(640,700); pg.wait_for_timeout(900); print('sem hover, mas selecionado -> bolinhas continuam:',bt(pg,'mais-frente') is not None)
+    # arrastar o fundo move a tela
+    r0=box(pg,'r'); pg.mouse.move(1000,650); pg.mouse.down(); pg.mouse.move(900,600,steps=8); pg.mouse.up(); pg.wait_for_timeout(300); r1=box(pg,'r'); print('fundo moveu a tela:',round(r1['cx']-r0['cx']),round(r1['cy']-r0['cy']))
+    pg.wait_for_timeout(1000); print('status:',pg.text_content('#e-status'))
+    pg.mouse.move(*[box(pg,'a1')[k] for k in ('cx','cy')]); pg.wait_for_timeout(250); pg.screenshot(path=OUT+'/c1.png')
+    print('ERROS:',errs)
+    b.close()
