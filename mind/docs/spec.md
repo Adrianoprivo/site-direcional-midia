@@ -76,6 +76,8 @@ Legenda de status: ✅ pronto · 🆕 entra nesta versão · ⏳ depois
 | VIS-04 | Bolinha de abrir/fechar refinada | Aberto: anel pequeno e discreto na cor do galho. Fechado: bolinha cheia com o **número de tópicos escondidos**. Cresce um pouco ao passar o mouse. |
 | VIS-05 | Edição do centro | Ao editar o centro, o texto aparece **legível** (texto escuro em fundo claro, ou o contrário no escuro). *Corrige o bug "o nome some".* |
 | VIS-06 | Fundo | Pontilhado leve, igual hoje. |
+| VIS-07 | **Cor do galho** | No botão de cor (barra de formatação): "Cor do galho" com as cores do tema + Automática. A cor vale pra linha do tópico **e tudo que sai dele**. No galho principal muda também o preenchimento. Não existe no centro. Decisão (2026-10-19): cor por galho, não por linha solta, pra o mapa não perder a leitura de "qual assunto é esse". |
+| VIS-08 | Lados estáveis | Trocar tema, estilo, foco ou criar rápido nunca muda o lado dos galhos. O mapa é sempre gravado no modo "dos dois lados"; mapa gravado errado é consertado ao abrir. |
 
 Onde guarda: `dados.meta.privo = { tema, estilo }`. Mapa sem isso abre com Direcional + Linha.
 
