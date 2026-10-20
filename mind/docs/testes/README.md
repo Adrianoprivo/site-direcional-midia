@@ -20,6 +20,7 @@ python3 bolinhas.py          <raiz-do-repo> /tmp/me/package out   # bolinhas +, 
 python3 aparencia.py         <raiz-do-repo> /tmp/me/package out   # VIS-01..05, EST-02, ROD: setinha, temas, caixa, bolinha com número, zoom, centralizar
 python3 formatar.py          <raiz-do-repo> /tmp/me/package out   # TXT, LNK, IMG: negrito no tópico e no trecho, cor, links, imagens (colar/soltar/arquivo)
 python3 lista.py             <raiz-do-repo> /tmp/me/package out   # VIS-L: vista em lista (Enter, Tab, Shift+Tab, Backspace, setas) e volta pro mapa
+python3 lados.py            <raiz-do-repo> /tmp/me/package out   # VIS-08: tema/estilo/foco/cliques rápidos nunca mudam o lado dos galhos
 python3 celular.py           <raiz-do-repo> /tmp/me/package out   # iPhone simulado com a barra de baixo
 ```
 

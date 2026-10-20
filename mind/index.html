@@ -468,7 +468,7 @@ async function abrirMapa(id){
   const {data,error}=await sb.from('mapas').select('id,titulo,dados').eq('id',id).single();
   if(error||!data){alert('Não encontrei esse mapa.');location.hash='';return}
   atual=data;$('e-titulo').textContent=data.titulo;document.title=data.titulo+' · PrivoMind';
-  const dados=data.dados;delete dados.theme;
+  const dados=data.dados;delete dados.theme;dados.direction=ME.SIDE; /* conserta mapas gravados no modo errado */
   cfg={...CFG_PADRAO,...((dados.meta&&dados.meta.privo)||{})};
   /* ARR-09: posição livre só nos galhos principais; sub-tópicos voltam a ficar em ordem */
   let limpou=false;
@@ -495,7 +495,7 @@ async function abrirMapa(id){
 }
 function dadosAtuais(){
   const d=vista==='lista'&&dadosLista?JSON.parse(JSON.stringify(dadosLista)):mind.getData();
-  delete d.theme;d.meta={...(d.meta||{}),privo:{...cfg}};
+  delete d.theme;d.direction=ME.SIDE;d.meta={...(d.meta||{}),privo:{...cfg}};
   percorrer(d.nodeData,n=>{if(n.style){for(const k in n.style)if(n.style[k]==='')delete n.style[k];if(!Object.keys(n.style).length)delete n.style}});
   return d;
 }
@@ -548,6 +548,8 @@ function depoisDasLinhas(){
     if((+w.dataset.px||0)!==x||(+w.dataset.py||0)!==y){posicionar(w,x,y);mudou=true}
   });
   document.querySelectorAll('#mapa me-main > me-wrapper > me-parent > me-tpc').forEach(t=>{const c=t.style.borderColor;if(c){t.style.setProperty('--ramo',c);t.parentElement.parentElement.style.setProperty('--cor-galho',c)}});
+  document.querySelectorAll('#mapa me-children > me-wrapper').forEach(w=>{const t=w.firstElementChild&&w.firstElementChild.firstElementChild,c=t&&t.nodeObj&&t.nodeObj.branchColor;
+    if(c)w.style.setProperty('--cor-galho',c);else w.style.removeProperty('--cor-galho')});
   document.querySelectorAll('#mapa me-epd:not(.minus)').forEach(e=>{const t=e.previousElementSibling;if(t&&t.nodeObj){const n=contar(t.nodeObj);e.dataset.n=n>99?'99+':n}});
   if(mudou)redesenhar();
   posBarra();
@@ -620,8 +622,8 @@ window.addEventListener('pointermove',e=>{
 /* troca de lado no centro: a biblioteca escolhe o lado sozinha; aqui forçamos o lado pedido */
 async function moverProCentro(t,lado){
   /* o lado precisa estar certo ANTES da operação, senão o desfazer guarda o lado errado */
-  const raiz=raizTpc(),r=raiz.nodeObj,d=mind.direction;mind.direction=lado;r.direction=lado;
-  try{await mind.moveNodeIn([t],raiz)}finally{mind.direction=d;delete r.direction}
+  const raiz=raizTpc(),r=raiz.nodeObj;mind.direction=lado;r.direction=lado;
+  try{await mind.moveNodeIn([t],raiz)}finally{mind.direction=modoNormal();delete r.direction}
   t.nodeObj.direction=lado;
 }
 /* posição livre não é operação da biblioteca: avisa pra entrar no desfazer e no salvar */
@@ -716,12 +718,15 @@ function posBarra(){
   b.hidden=false;b.classList.add('fixa');
 }
 window.addEventListener('resize',()=>posBarra());
+/* o mapa vive no modo "dos dois lados" (SIDE); no foco a biblioteca usa "direita".
+   Nunca voltar pro valor anterior: com dois cliques rápidos ele podia ficar preso em "tudo à esquerda" */
+const modoNormal=()=>mind&&mind.isFocusMode?ME.RIGHT:ME.SIDE;
 /* EST-02: cria no lado pedido (a biblioteca, sozinha, alterna os lados) */
 async function novoNoLado(lado){
   if(!mind)return;const raiz=raizTpc();if(!raiz)return;
   const o=mind.generateNewObj();o.direction=lado;
-  const d=mind.direction;mind.direction=lado;
-  try{await addOriginal(raiz,o)}finally{mind.direction=d}
+  mind.direction=lado;
+  try{await addOriginal(raiz,o)}finally{mind.direction=modoNormal()}
   o.direction=lado;
   const el=mind.findEle(o.id);mind.selectNode(el,true);await mind.beginEdit(el);
 }
@@ -809,6 +814,7 @@ $('fmt').addEventListener('click',e=>{
   if(caixaEdicao()){const c=caixaEdicao();c.blur();mind.container.focus({preventScroll:true})}
   setTimeout(()=>abrirPop(f,b),0);
 });
+const CORES_GALHO=()=>{const T=TEMAS[cfg.tema]||TEMAS.direcional;return escuro()?T.paleta.map(c=>clarear(c,.1)):T.paleta};
 const CORES_TXT=()=>{const T=TEMAS[cfg.tema]||TEMAS.direcional;return escuro()?T.paleta.slice(0,6).map(c=>clarear(c,.35)):T.paleta.slice(0,6)};
 function fecharPop(){const p=$('pop'),tinhaFoco=p.contains(document.activeElement);p.hidden=true;p.innerHTML='';if(tinhaFoco&&mind&&vista==='mapa')mind.container.focus({preventScroll:true})}
 function fecharFlutuantes(){fecharPop();$('menu-vista').hidden=true;$('painel-ap').hidden=true}
@@ -825,10 +831,15 @@ function abrirPop(f,botao){
   p.dataset.f=f;
   if(f==='cor'){
     const atualC=(no.style&&no.style.color)||'';
+    const atualG=no.branchColor||'';
     p.innerHTML='<h4>Cor do texto</h4><div class="cores">'+`<button type="button" class="padrao ${atualC?'':'on'}" data-c="" title="Padrão"></button>`+
-      CORES_TXT().map(c=>`<button type="button" data-c="${c}" style="background:${c}" class="${atualC===c?'on':''}" title="${c}"></button>`).join('')+'</div>';
-    p.onclick=async e=>{const b=e.target.closest('button[data-c]');if(!b)return;const tt=selecionado();if(!tt)return;
-      await mind.reshapeNode(tt,{style:{...(tt.nodeObj.style||{}),color:b.dataset.c}});fecharPop();posFmt()};
+      CORES_TXT().map(c=>`<button type="button" data-c="${c}" style="background:${c}" class="${atualC===c?'on':''}" title="${c}"></button>`).join('')+'</div>'+
+      (ehRaiz(t)?'':'<h4>Cor do galho (linha e tudo que sai dele)</h4><div class="cores">'+`<button type="button" class="padrao ${atualG?'':'on'}" data-g="" title="Automática (do tema)"></button>`+
+      CORES_GALHO().map(c=>`<button type="button" data-g="${c}" style="background:${c}" class="${atualG===c?'on':''}" title="${c}"></button>`).join('')+'</div>');
+    p.onclick=async e=>{const b=e.target.closest('button[data-c],button[data-g]');if(!b)return;const tt=selecionado();if(!tt)return;
+      if('c' in b.dataset)await mind.reshapeNode(tt,{style:{...(tt.nodeObj.style||{}),color:b.dataset.c}});
+      else await mind.reshapeNode(tt,{branchColor:b.dataset.g||undefined});
+      fecharPop();posFmt()};
   }
   if(f==='link'){
     p.innerHTML=`<h4>Link</h4><input id="pop-url" type="url" inputmode="url" placeholder="Cole o link (ex.: site.com.br/pagina)" value="${esc(no.hyperLink||'')}"><p class="err" id="pop-err"></p>`+
