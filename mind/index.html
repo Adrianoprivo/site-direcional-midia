@@ -100,6 +100,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 #mapa me-parent me-epd.minus{opacity:.85!important}
 #mapa me-parent me-epd:hover{opacity:1!important;transform:scale(1.25);box-shadow:0 0 0 4px color-mix(in srgb,var(--cor-galho,var(--accent)) 22%,transparent)}
 #mapa me-parent me-epd:not(.minus)::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--cor-galho,var(--accent))}
+/* bolinhas "+" ao lado do tópico: discretas, acendem ao passar o mouse */
+.mais{position:absolute;z-index:44;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgb(20 10 60 / .14);opacity:.7;transition:opacity .12s,transform .12s,background .12s,color .12s}
+.mais:hover{opacity:1;transform:scale(1.18);background:var(--accent);border-color:var(--accent);color:#fff}
+.mais svg{width:12px;height:12px}
 /* ímã: prévia da ligação enquanto arrasta perto de outro tópico */
 .ima{position:absolute;inset:0;pointer-events:none;z-index:44;overflow:visible}
 .ima path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6 5;stroke-linecap:round}
@@ -149,6 +153,9 @@ button{font:inherit;color:inherit;cursor:pointer}
     <button class="ico" id="e-ajuda" type="button" title="Atalhos de teclado" aria-label="Atalhos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.3M12 17h.01"/></svg></button>
   </div>
   <div id="mapa"></div>
+  <button class="mais" id="mais-frente" type="button" hidden title="Novo tópico para frente (Tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="mais" id="mais-tras" type="button" hidden title="Novo tópico do outro lado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="mais" id="mais-baixo" type="button" hidden title="Novo tópico embaixo (Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
   <svg class="ima" id="ima" style="display:none"><path id="ima-l"/><circle id="ima-p" r="4"/></svg>
   <div class="acoes" id="acoes" role="toolbar" aria-label="Ações do tópico" hidden>
     <button type="button" data-t="esq" data-q="raiz" class="forte" title="Novo tópico do lado esquerdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Esquerda</button>
@@ -177,6 +184,8 @@ button{font:inherit;color:inherit;cursor:pointer}
     <dt>Setas</dt><dd>Andar entre tópicos</dd><dt>Alt + ↑ / ↓</dt><dd>Mudar ordem</dd>
     <dt>Ctrl + Z / Y</dt><dd>Desfazer / refazer</dd><dt>Ctrl + C / V</dt><dd>Copiar / colar tópico</dd>
     <dt>F1</dt><dd>Centralizar o mapa</dd>
+    <dt>Bolinhas +</dt><dd>Passe o mouse no tópico: + na frente cria filho, + embaixo cria irmão</dd>
+    <dt>Botão direito</dt><dd>Pai, subir, descer, ligar, resumo, foco, realinhar</dd>
     <dt>Arrastar o centro</dt><dd>Leva o mapa inteiro</dd>
     <dt>Arrastar um tópico</dt><dd>Leva ele pra onde quiser</dd>
     <dt>Soltar perto de outro</dt><dd>Gruda nele (muda de galho)</dd>
@@ -290,7 +299,7 @@ async function abrirMapa(id){
   atual=data;$('e-titulo').textContent=data.titulo;document.title=data.titulo+' · PrivoMind';
   $('mapa').innerHTML='';
   mind=new ME({el:'#mapa',direction:ME.SIDE,draggable:false,editable:true,toolBar:true,keypress:true,allowUndo:true,mouseSelectionButton:2,
-    contextMenu:{focus:true,link:true,locale:PT},newTopicName:'Novo tópico',theme:tema()});
+    contextMenu:{focus:true,link:true,locale:PT,extend:[{name:'Realinhar posição',onclick:()=>realinhar(mind&&mind.currentNode)}]},newTopicName:'Novo tópico',theme:tema()});
   const dados=data.dados;delete dados.theme;
   mind.init(dados);
   mind.bus.addListener('operation',op=>{if(op&&op.name==='beginEdit')return;limparRotulos();agendar();setTimeout(posBarra,0)});
@@ -421,7 +430,40 @@ window.addEventListener('pointerup',async e=>{
 },true);
 window.addEventListener('pointercancel',()=>{if(arr){if(!arr.raiz)posicionar(arr.w,arr.ox,arr.oy);arr=null;marcarAlvo(null);$('ima').style.display='none';$('mapa').classList.remove('arrastando');redesenhar()}},true);
 
-/* ---------- barra de ações em cima do tópico ---------- */
+/* ---------- bolinhas "+" ao lado do tópico (ao passar o mouse ou com ele selecionado) ---------- */
+let sobre=null,timerMais=0;
+function realinhar(t){if(!t||!t.nodeObj)return;if(t.nodeObj.metadata)delete t.nodeObj.metadata.pos;depoisDasLinhas();agendar()}
+function posMais(){
+  const f=$('mais-frente'),tr=$('mais-tras'),bx=$('mais-baixo');
+  const t=(sobre&&sobre.isConnected)?sobre:(mind&&mind.currentNode&&mind.currentNode.isConnected?mind.currentNode:null);
+  if(!mind||!t||celular()||(arr&&arr.moved)||document.querySelector('#input-box')){f.hidden=tr.hidden=bx.hidden=true;return}
+  const r=t.getBoundingClientRect(),e=$('editor').getBoundingClientRect(),m=$('mapa').getBoundingClientRect(),s=22,g=8;
+  const por=(el,x,y)=>{if(x<m.left||x>m.right-s||y<m.top||y>m.bottom-s){el.hidden=true;return}el.style.left=(x-e.left)+'px';el.style.top=(y-e.top)+'px';el.hidden=false};
+  const cy=r.top+r.height/2-s/2;
+  if(ehRaiz(t)){f.dataset.lado='dir';tr.dataset.lado='esq';por(f,r.right+g,cy);por(tr,r.left-g-s,cy);bx.hidden=true;return}
+  const esquerda=!!t.closest('.lhs');f.dataset.lado='';tr.hidden=true;
+  por(f,esquerda?r.left-g-s:r.right+g,cy);
+  por(bx,r.left+r.width/2-s/2,r.bottom+4);
+}
+$('mapa').addEventListener('pointerover',e=>{const t=e.target.closest&&e.target.closest('me-tpc');if(t){clearTimeout(timerMais);sobre=t;posMais()}});
+$('mapa').addEventListener('pointerout',e=>{const t=e.target.closest&&e.target.closest('me-tpc');if(t){clearTimeout(timerMais);timerMais=setTimeout(()=>{sobre=null;posMais()},600)}});
+for(const id of ['mais-frente','mais-tras','mais-baixo']){
+  const b=$(id);
+  b.addEventListener('pointerenter',()=>clearTimeout(timerMais));
+  b.addEventListener('pointerleave',()=>{timerMais=setTimeout(()=>{sobre=null;posMais()},600)});
+  b.addEventListener('pointerdown',e=>e.preventDefault());
+  b.addEventListener('click',async()=>{
+    if(!mind)return;const t=(sobre&&sobre.isConnected)?sobre:mind.currentNode;if(!t)return;
+    sobre=null;
+    if(id==='mais-baixo')await mind.insertSibling('after',t);
+    else if(b.dataset.lado==='dir')await novoNoLado(ME.RIGHT);
+    else if(b.dataset.lado==='esq')await novoNoLado(ME.LEFT);
+    else await mind.addChild(t);
+    posMais();
+  });
+}
+
+/* ---------- barra de ações completa: só no celular (lá não tem teclado nem mouse) ---------- */
 let ligarDe=null;
 /* a biblioteca põe "Custom Link" (em inglês) em toda seta nova: deixa sem texto (2 cliques na seta para escrever) */
 function limparRotulos(){
@@ -438,7 +480,8 @@ function posBarra(){
   const b=$('acoes');
   if(!mind||arr&&arr.moved||document.querySelector('#input-box')){b.hidden=true;return}
   const sel=mind.currentNode,cel=celular();
-  if(!sel&&!cel){b.hidden=true;return}
+  posMais();
+  if(!cel){b.hidden=true;return}
   const alvo=sel&&sel.isConnected?sel:raizTpc();if(!alvo){b.hidden=true;return}
   const raiz=ehRaiz(alvo),movido=!raiz&&temPos(alvo);
   b.querySelectorAll('[data-q]').forEach(el=>{const q=el.dataset.q;el.hidden=q==='raiz'?!raiz:q==='topico'?raiz:q==='movido'?!movido:false});
@@ -473,7 +516,7 @@ $('acoes').addEventListener('click',async e=>{
   else if(t==='ligar'){ligarDe=alvo;dica('Agora clique no tópico que vai receber a seta. (Esc cancela)')}
   else if(t==='resumo'){mind.selectNode(alvo);mind.createSummary();agendar()}
   else if(t==='foco'){mind.focusNode(alvo);$('sair-foco').hidden=false}
-  else if(t==='realinhar'){if(alvo.nodeObj.metadata)delete alvo.nodeObj.metadata.pos;depoisDasLinhas();agendar()}
+  else if(t==='realinhar')realinhar(alvo);
   else if(t==='editar')await mind.beginEdit(alvo);
   else if(t==='desfazer'){mind.undo();agendar();setTimeout(depoisDasLinhas,30)}
   else if(t==='apagar'){if(ehRaiz(alvo))return;const sel=mind.currentNodes&&mind.currentNodes.length?mind.currentNodes:[alvo];await mind.removeNodes(sel)}
