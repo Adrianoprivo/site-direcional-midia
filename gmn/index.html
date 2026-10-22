@@ -108,6 +108,17 @@
     .selo { display:inline-block; font:600 11px Sora; letter-spacing:1.5px; text-transform:uppercase; padding:4px 10px; border-radius:20px; background:rgba(0,208,132,.14); color:var(--primary); border:1px solid rgba(0,208,132,.4); margin-bottom:10px; }
     .honesto { margin-top:18px; background:linear-gradient(180deg, rgba(0,255,255,.05), transparent), var(--surf); border:1px solid var(--line); border-radius:18px; padding:18px 22px; color:#cbd5e1; font-size:15px; }
     .honesto strong { color:var(--accent); }
+    .check { list-style:none; display:grid; grid-template-columns:repeat(3,1fr); gap:10px 18px; background:var(--surf); border:1px solid var(--line); border-radius:18px; padding:22px; }
+    .check li { position:relative; padding-left:28px; font-size:15px; color:#dbe3ee; }
+    .check li::before { content:"✓"; position:absolute; left:4px; top:0; color:var(--primary); font-weight:700; }
+    .quem { display:grid; grid-template-columns:220px 1fr; gap:28px; align-items:center; background:var(--surf); border:1px solid var(--line); border-radius:22px; padding:26px; }
+    .quem img { width:220px; height:220px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); box-shadow:0 0 30px rgba(0,255,255,.12); max-width:100%; }
+    .quem h2 { margin-bottom:8px; }
+    .quem p { color:#cbd5e1; margin-bottom:12px; }
+    .avaliacao { display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px 12px; background:#fff; color:#202124; border-radius:14px; padding:12px 16px; font:14px Arial, Roboto, sans-serif; }
+    .avaliacao b { font-size:20px; }
+    .avaliacao .est { color:#fbbc04; letter-spacing:1px; }
+    .avaliacao em { color:#5f6368; font-style:italic; flex-basis:100%; }
     details { background:var(--surf); border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:10px; }
     summary { cursor:pointer; font-family:Poppins; font-weight:600; font-size:16px; }
     details p { margin-top:10px; color:#cbd5e1; }
@@ -118,7 +129,9 @@
     footer .wrap { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
     footer a { color:var(--muted); }
     @media (max-width: 900px) {
-      .hero, .grade-3, .passos, .precos { grid-template-columns:1fr; }
+      .hero, .grade-3, .passos, .precos, .check, .quem { grid-template-columns:1fr; }
+      .quem { justify-items:center; text-align:center; }
+      .quem img { width:180px; height:180px; }
     }
     @media (max-width: 600px) {
       .btn { padding:9px 14px; font-size:12px; }
@@ -132,7 +145,7 @@
   <header class="topo">
     <div class="topo-in wrap">
       <a class="brand" href="/"><img src="/logo-rosa.svg" alt="" width="34" height="34"><span>DIRECIONAL <b>MÍDIA</b></span></a>
-      <a class="btn" href="https://wa.me/5511970511827?text=Ol%C3%A1!%20Vi%20a%20p%C3%A1gina%20do%20Google%20Meu%20Neg%C3%B3cio%20e%20quero%20meu%20diagn%C3%B3stico%20gratuito." rel="noopener">Diagnóstico grátis</a>
+      <a class="btn" href="https://wa.me/5511970511827?text=Ol%C3%A1%20Adriano!%20Quero%20o%20diagn%C3%B3stico%20gr%C3%A1tis%20do%20meu%20perfil%20no%20Google.%0AMeu%20neg%C3%B3cio%20%C3%A9%3A%20" rel="noopener">Diagnóstico grátis</a>
     </div>
   </header>
 
@@ -143,7 +156,7 @@
           <p class="eyebrow">Google Meu Negócio · Zona Leste</p>
           <h1>Quando o cliente procura <span>“perto de mim”</span>, ele acha você ou o concorrente da outra rua?</h1>
           <p class="lead">Muita gente do bairro escolhe pelo Google: olha as estrelas, as fotos, o horário e liga. Se o seu perfil está largado, o cliente nem chega a ver você. <b>Eu arrumo o seu perfil e cuido dele todo mês</b>, para você só atender.</p>
-          <a class="btn grande" href="https://wa.me/5511970511827?text=Ol%C3%A1!%20Vi%20a%20p%C3%A1gina%20do%20Google%20Meu%20Neg%C3%B3cio%20e%20quero%20meu%20diagn%C3%B3stico%20gratuito." rel="noopener">Quero meu diagnóstico grátis →</a>
+          <a class="btn grande" href="https://wa.me/5511970511827?text=Ol%C3%A1%20Adriano!%20Quero%20o%20diagn%C3%B3stico%20gr%C3%A1tis%20do%20meu%20perfil%20no%20Google.%0AMeu%20neg%C3%B3cio%20%C3%A9%3A%20" rel="noopener">Quero meu diagnóstico grátis →</a>
           <p class="nota">Pelo WhatsApp. Você recebe um print do seu perfil com os pontos que estão afastando cliente. Sem compromisso.</p>
         </div>
         <div class="busca" aria-hidden="true">
@@ -173,6 +186,27 @@
       </div>
     </section>
 
+    <section id="o-que-confiro">
+      <div class="wrap">
+        <h2>Os 12 pontos que eu confiro no seu perfil</h2>
+        <p class="sub">É esse o roteiro do diagnóstico grátis. Em geral, os perfis largados falham em vários deles ao mesmo tempo.</p>
+        <ul class="check">
+          <li>Categoria principal certa</li>
+          <li>Categorias extras que trazem busca</li>
+          <li>Nome igual ao da fachada, sem enfeite</li>
+          <li>Endereço ou área de atendimento</li>
+          <li>Horário normal e de feriado</li>
+          <li>Telefone e WhatsApp funcionando</li>
+          <li>Link de agendamento ou site</li>
+          <li>Serviços cadastrados, com preço</li>
+          <li>Fotos de fachada, ambiente e trabalho</li>
+          <li>Descrição com o que o cliente procura</li>
+          <li>Avaliações respondidas</li>
+          <li>Posts recentes</li>
+        </ul>
+      </div>
+    </section>
+
     <section id="como-funciona">
       <div class="wrap">
         <h2>Como funciona</h2>
@@ -182,6 +216,20 @@
           <li><strong>Implantação</strong>Arrumo categorias, serviços, horários, fotos, descrição e o caminho pro cliente ligar ou pedir rota. Se você ainda não tem perfil, eu crio.</li>
           <li><strong>Cuidado todo mês</strong>Posts novos, resposta às avaliações, mensagem pronta pra você pedir avaliação aos clientes e um relatório simples: ligações, rotas e cliques.</li>
         </ol>
+      </div>
+    </section>
+
+    <section id="quem-cuida">
+      <div class="wrap">
+        <div class="quem">
+          <img src="/gmn/adriano.webp" alt="Adriano Souza, da Direcional Mídia" width="220" height="220" loading="lazy">
+          <div>
+            <p class="eyebrow">Quem cuida do seu perfil</p>
+            <h2>Adriano Souza, aqui da Zona Leste</h2>
+            <p>Moro em Itaquera e trabalho há mais de 5 anos com marketing digital e anúncios. Você fala direto comigo, sem atendente e sem robô. E se precisar, eu passo aí.</p>
+            <div class="avaliacao"><b>5,0</b> <span class="est">★★★★★</span> <span>4 avaliações no Google</span><em>“Profissional excelente! Transparência, comprometido com que se propõe a entregar!” · Paula B.</em></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -211,6 +259,7 @@
     <section id="duvidas">
       <div class="wrap">
         <h2>Dúvidas</h2>
+        <details><summary>Tem fidelidade?</summary><p>Não. Você pode cancelar quando quiser, é só avisar com 30 dias de antecedência. A implantação é paga uma vez só.</p></details>
         <details><summary>Preciso te passar a minha senha?</summary><p>Não. Você me adiciona como gerente do perfil, direto pelo Google. A empresa continua sua e você pode me tirar quando quiser.</p></details>
         <details><summary>E se eu ainda não tenho perfil no Google?</summary><p>Eu crio na implantação. O Google pede uma verificação de que o negócio é seu, e eu te acompanho nela.</p></details>
         <details><summary>Em quanto tempo vejo resultado?</summary><p>Depende da concorrência da sua região e de como o perfil está hoje. Por isso todo mês você recebe o relatório com ligações, rotas e cliques, para ver com os próprios olhos.</p></details>
@@ -225,7 +274,7 @@
           <img src="/logo-rosa.svg" alt="Rosa dos ventos da Direcional Mídia" width="64" height="64">
           <h2>Descubra o que o seu perfil está deixando passar</h2>
           <p>Me chama no WhatsApp e receba o diagnóstico grátis do seu perfil no Google.</p>
-          <a class="btn grande" href="https://wa.me/5511970511827?text=Ol%C3%A1!%20Vi%20a%20p%C3%A1gina%20do%20Google%20Meu%20Neg%C3%B3cio%20e%20quero%20meu%20diagn%C3%B3stico%20gratuito." rel="noopener">Quero meu diagnóstico grátis →</a>
+          <a class="btn grande" href="https://wa.me/5511970511827?text=Ol%C3%A1%20Adriano!%20Quero%20o%20diagn%C3%B3stico%20gr%C3%A1tis%20do%20meu%20perfil%20no%20Google.%0AMeu%20neg%C3%B3cio%20%C3%A9%3A%20" rel="noopener">Quero meu diagnóstico grátis →</a>
         </div>
       </div>
     </section>
