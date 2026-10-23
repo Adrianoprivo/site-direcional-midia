@@ -22,6 +22,7 @@ python3 formatar.py          <raiz-do-repo> /tmp/me/package out   # TXT, LNK, IM
 python3 lista.py             <raiz-do-repo> /tmp/me/package out   # VIS-L: vista em lista (Enter, Tab, Shift+Tab, Backspace, setas) e volta pro mapa
 python3 lados.py            <raiz-do-repo> /tmp/me/package out   # VIS-08: tema/estilo/foco/cliques rápidos nunca mudam o lado dos galhos
 python3 celular.py           <raiz-do-repo> /tmp/me/package out   # iPhone simulado com a barra de baixo
+python3 largura.py           <raiz-do-repo> /tmp/me/package out   # LRG-01..11: alça de largura do tópico (estreitar/alargar livre, salvar, duplo clique = automático, linha e caixa)
 ```
 
 Resultado esperado: linhas `OK` (nenhuma `FALHOU`) e `ERROS: []` no fim. Os códigos (ARR-03 etc.) são os da `spec.md`. Capturas de tela vão para `out/`.
