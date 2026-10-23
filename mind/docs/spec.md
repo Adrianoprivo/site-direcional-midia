@@ -98,6 +98,7 @@ Onde guarda: `dados.meta.privo = { tema, estilo }`. Mapa sem isso abre com Direc
 | IMG-03 | Onde fica | Supabase Storage, pasta **privada** `mapas-imagens/<usuário>/<mapa>/…`. Só o dono acessa. Ao abrir o mapa, gera links temporários de acesso. |
 | IMG-04 | Tamanho | Botões **P / M / G** (120 / 220 / 360 px de largura). Padrão M. |
 | IMG-05 | Tirar imagem | Botão "Remover imagem" tira do tópico (Ctrl+Z traz de volta). O arquivo fica guardado pra o desfazer funcionar; limpeza de arquivos sem uso fica pra depois (⏳). Ao apagar o mapa inteiro, as imagens dele são apagadas. |
+| LRG-01 | Largura da caixa (2026-10-23) | Com o tópico selecionado aparece uma **alça** na borda de fora (direita nos galhos da direita, esquerda nos da esquerda). **Arrastar** estreita ou alarga a caixa livremente (60 a 900 px), o texto quebra em várias linhas. Vale no estilo **linha** e **caixa**. A largura fica salva no tópico (`style.width`). **Duplo clique** na alça volta ao automático. |
 
 ## 8. Editor — rodapé, zoom e vistas 🆕
 

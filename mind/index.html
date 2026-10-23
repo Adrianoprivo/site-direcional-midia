@@ -117,6 +117,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mais{position:absolute;z-index:44;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgb(20 10 60 / .14);opacity:.7;transition:opacity .12s,transform .12s,background .12s,color .12s}
 .mais:hover{opacity:1;transform:scale(1.18);background:var(--accent);border-color:var(--accent);color:#fff}
 .mais svg{width:12px;height:12px}
+.alca-largura{position:absolute;z-index:45;width:10px;border-radius:6px;background:var(--accent);opacity:.55;cursor:ew-resize;touch-action:none;transition:opacity .12s}
+.alca-largura:hover,.alca-largura.ativa{opacity:1}
+.alca-largura::after{content:'';position:absolute;inset:-8px -6px}
 /* prévia de onde o tópico vai cair (ARR-02) */
 .ima{position:absolute;inset:0;pointer-events:none;z-index:44;overflow:visible}
 .ima path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-dasharray:6 5;stroke-linecap:round}
@@ -249,6 +252,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <button class="mais" id="mais-frente" type="button" hidden title="Novo tópico para frente (Tab)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
   <button class="mais" id="mais-tras" type="button" hidden title="Novo tópico do lado esquerdo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
   <button class="mais" id="mais-baixo" type="button" hidden title="Novo tópico embaixo (Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  <div class="alca-largura" id="alca-largura" hidden title="Arraste para estreitar ou alargar a caixa · duplo clique volta ao automático"></div>
   <svg class="ima" id="ima" style="display:none"><path id="ima-l"/><circle id="ima-p" r="4"/></svg>
 
   <div class="fmt" id="fmt" role="toolbar" aria-label="Formatar" hidden>
@@ -664,6 +668,7 @@ window.addEventListener('pointercancel',cancelarArraste,true);
 let sobre=null,timerMais=0;
 function realinhar(t){if(!t||!t.nodeObj||!temPos(t))return;delete t.nodeObj.metadata.pos;depoisDasLinhas();avisarPosicao(t.nodeObj)}
 function posMais(){
+  posAlca();
   const f=$('mais-frente'),tr=$('mais-tras'),bx=$('mais-baixo');
   const t=(sobre&&sobre.isConnected)?sobre:(mind&&mind.currentNode&&mind.currentNode.isConnected?mind.currentNode:null);
   if(!mind||vista!=='mapa'||!t||celular()||(arr&&arr.moved)||document.querySelector('#input-box')){f.hidden=tr.hidden=bx.hidden=true;return}
@@ -691,6 +696,45 @@ for(const id of ['mais-frente','mais-tras','mais-baixo']){
     else await mind.addChild(t);
     posMais();
   });
+}
+
+/* ---------- alça de largura do tópico (arrastar livre; duplo clique = automático) ---------- */
+let alcaArr=null;
+function alvoAlca(){return mind&&mind.currentNode&&mind.currentNode.isConnected?mind.currentNode:null}
+function posAlca(){
+  const a=$('alca-largura');if(alcaArr)return;
+  const t=alvoAlca();
+  if(!mind||vista!=='mapa'||!t||(arr&&arr.moved)||document.querySelector('#input-box')){a.hidden=true;return}
+  const r=t.getBoundingClientRect(),e=$('editor').getBoundingClientRect(),m=$('mapa').getBoundingClientRect();
+  const esq=!ehRaiz(t)&&!!t.closest('.lhs'),h=Math.max(16,Math.min(r.height-8,40));
+  const x=esq?r.left-5:r.right-5,y=r.top+r.height/2-h/2;
+  if(x<m.left||x>m.right-10||y<m.top||y>m.bottom-h){a.hidden=true;return}
+  a.style.left=(x-e.left)+'px';a.style.top=(y-e.top)+'px';a.style.height=h+'px';a.dataset.lado=esq?'esq':'dir';a.hidden=false;
+}
+let alcaUltimo=0;
+$('alca-largura').addEventListener('pointerdown',e=>{
+  const t=alvoAlca();if(!t)return;e.preventDefault();e.stopPropagation();
+  const agora=Date.now();if(agora-alcaUltimo<400){alcaUltimo=0;larguraAuto(t);return}alcaUltimo=agora;
+  const a=$('alca-largura');a.setPointerCapture(e.pointerId);a.classList.add('ativa');
+  alcaArr={t,x0:e.clientX,w0:t.getBoundingClientRect().width/(mind.scaleVal||1),sinal:a.dataset.lado==='esq'?-1:1,w:null};
+});
+$('alca-largura').addEventListener('pointermove',e=>{
+  if(!alcaArr)return;const A=alcaArr,esc=mind.scaleVal||1;
+  A.w=Math.round(Math.max(60,Math.min(900,A.w0+A.sinal*(e.clientX-A.x0)/esc)));
+  A.t.style.width=A.w+'px';redesenhar();
+  const a=$('alca-largura'),r=A.t.getBoundingClientRect(),ed=$('editor').getBoundingClientRect(),h=parseFloat(a.style.height)||24;
+  a.style.left=((A.sinal<0?r.left:r.right)-5-ed.left)+'px';a.style.top=(r.top+r.height/2-h/2-ed.top)+'px';
+});
+async function soltarAlca(){
+  const A=alcaArr;alcaArr=null;$('alca-largura').classList.remove('ativa');if(!A)return;
+  if(A.w!=null&&A.t.isConnected){await mind.reshapeNode(A.t,{style:{...(A.t.nodeObj.style||{}),width:A.w+'px'}})}
+  setTimeout(posBarra,0);
+}
+$('alca-largura').addEventListener('pointerup',soltarAlca);
+$('alca-largura').addEventListener('pointercancel',soltarAlca);
+async function larguraAuto(t){
+  t.style.width='';
+  await mind.reshapeNode(t,{style:{width:''}}); /* reshapeNode mescla o estilo: '' apaga, e o salvar limpa a chave vazia */redesenhar();setTimeout(posBarra,0);
 }
 
 /* ---------- barra de ações (celular) ---------- */
