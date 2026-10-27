@@ -72,10 +72,11 @@ async function perfil(token: string) {
   };
 }
 
-async function posts(token: string, limite = 12) {
+async function posts(token: string, limite = 12, depois?: string) {
   const midia = await ig("me/media", token, {
     fields: "id,caption,media_type,media_product_type,permalink,thumbnail_url,media_url,timestamp,like_count,comments_count",
     limit: String(limite),
+    ...(depois ? { after: depois } : {}),
   });
   const lista = await Promise.all((midia.data ?? []).map(async (m: Record<string, string & number>) => ({
     id: m.id,
@@ -86,7 +87,7 @@ async function posts(token: string, limite = 12) {
     data: m.timestamp,
     metricas: { likes: m.like_count ?? 0, comments: m.comments_count ?? 0, ...(await metricasDoPost(m.id, token)) },
   })));
-  return lista;
+  return { lista, proximo: midia.paging?.next ? (midia.paging?.cursors?.after ?? null) : null };
 }
 
 // IG-MET-04: métricas da conta. Regra do Adriano: "últimos N dias" = N dias corridos SEM o dia de hoje (fuso de São Paulo).
@@ -147,7 +148,7 @@ Deno.serve(async (req) => {
   try {
     const uid = await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
-    const { acao } = await req.json().catch(() => ({}));
+    const { acao, depois } = await req.json().catch(() => ({}));
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
       .select("user_id,username,access_token,obtido_em,expira_em").eq("user_id", uid).maybeSingle();
@@ -158,7 +159,10 @@ Deno.serve(async (req) => {
     if (!c) return json(req, { erro: "Instagram não conectado." }, 409);
 
     if (acao === "perfil") return json(req, await perfil(await tokenValido(c as Conexao)));
-    if (acao === "posts") return json(req, { posts: await posts(await tokenValido(c as Conexao)) });
+    if (acao === "posts") {
+      const r = await posts(await tokenValido(c as Conexao), 12, typeof depois === "string" ? depois : undefined);
+      return json(req, { posts: r.lista, proximo: r.proximo });
+    }
     if (acao === "conta") {
       const t = await tokenValido(c as Conexao);
       const [d7, d14, d30] = await Promise.all([7, 14, 30].map((d) => metricasConta(t, d)));
