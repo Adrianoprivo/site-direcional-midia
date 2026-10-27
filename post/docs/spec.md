@@ -55,3 +55,21 @@ Tela P05 do recon: avaliações sem resposta, resposta sugerida, publica só dep
 ## 6. Fora do Privo Post por enquanto
 
 Instagram, Facebook e outras redes, métricas, cobrança de terceiros.
+
+---
+
+## 7. Instagram (@oadriano_souza) e layout de mini sistema 🆕 (27/10/2026)
+
+Decisão: o Instagram vem antes dos posts no Google (o Windsor já cuida do Google Meu Negócio). Regra de layout para todas as construções: menu lateral à esquerda com ícones, que recolhe e expande, estilo painel do Supabase.
+
+| Código | Função | Comportamento |
+| --- | --- | --- |
+| LAY-01 | Menu lateral | Painel · Canais (Instagram, Google Meu Negócio, cada um com "Meu perfil" e "Clientes") · Sistema (Conexões). Botão "Recolher menu" deixa só os ícones (lembra a escolha). No celular vira gaveta pelo botão ☰. |
+| LAY-02 | Abas do perfil | Instagram → @perfil: Visão geral · Métricas da conta · Métricas por post. |
+| IG-CON-01..06 | Conexão | Login do Instagram (app Meta "Privo Post", testador @oadriano_souza), token de 60 dias renovado sozinho, desconectar em Conexões. |
+| IG-PER-01 | Visão geral | Foto, nome, tipo de conta, **bio**, site, seguidores, seguindo, posts. |
+| IG-MET-04 | Métricas da conta | Visualizações, contas alcançadas, contas engajadas, interações, curtidas, comentários, compartilhamentos, salvamentos, toques em links, começaram/deixaram de seguir — **últimos 7, 14 e 30 dias lado a lado, sem contar hoje**. |
+| IG-MET-01..03 | Métricas por post | Últimos 12 posts: visualizações, alcance, curtidas, comentários, compartilhamentos, salvos. |
+| GMN-PER-02 | Google no menu | Seu perfil e clientes (etiqueta "não usar") listados no menu; página do perfil só leitura. |
+
+Próximo: publicar no Instagram (Reels, foto, carrossel) com aprovação antes de ir ao ar; clientes do Instagram.
