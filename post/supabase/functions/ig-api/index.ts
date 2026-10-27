@@ -124,8 +124,8 @@ async function metricasConta(token: string, dias: number) {
   } catch { /* indisponível */ }
   return {
     dias,
-    de: new Date((since - FUSO) * 1000).toISOString().slice(0, 10),
-    ate: new Date((until - FUSO) * 1000).toISOString().slice(0, 10),
+    de: new Date((since + FUSO) * 1000).toISOString().slice(0, 10),
+    ate: new Date((until + FUSO) * 1000).toISOString().slice(0, 10),
     m: {
       views: saida.views ?? null, reach: saida.reach ?? null, accounts_engaged: saida.accounts_engaged ?? null,
       total_interactions: saida.total_interactions ?? null, likes: saida.likes ?? null, comments: saida.comments ?? null,
