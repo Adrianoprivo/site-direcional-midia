@@ -1,6 +1,6 @@
 # Privo Post — Especificação (spec)
 
-**Versão:** 0.1 · **Data:** 2026-10-27 · **Dono:** Adriano · **Status:** rascunho, aguardando aprovação
+**Versão:** 0.1 · **Data:** 2026-10-27 · **Dono:** Adriano · **Status:** fase 1 aprovada em conversa (27/10/2026)
 
 Este documento diz **o que** o Privo Post faz e **como deve se comportar**. Todo ajuste novo entra aqui antes de virar código. Cada função tem um código (ex.: `CON-02`) para facilitar falar dela e testar.
 
@@ -41,7 +41,7 @@ Objetivo: entrar, conectar a conta do Google uma vez e ver a lista de perfis. **
 | CON-05 | Continua conectado | A autorização fica guardada; o Adriano não precisa reconectar a cada visita. O Supabase renova o acesso sozinho quando vence (cerca de 1 hora). |
 | CON-06 | Desconectar | Pede confirmação, avisa o Google para cancelar a autorização e apaga os tokens guardados. |
 | PER-01 | Lista de perfis | Mostra as contas do Google e, em cada uma, os perfis (nome da empresa e endereço). Ex.: "Adriano Souza \| Direcional Mídia". |
-| PER-02 | Perfil de cliente | Perfis que não são do Adriano aparecem com a etiqueta **Cliente — não usar** até ele liberar (LS Caixas de Papelão). |
+| PER-02 | Perfil de cliente | Só perfis com "Direcional Mídia" no nome ganham a etiqueta **Seu perfil**; todos os outros aparecem como **Cliente — não usar** até o Adriano liberar (ex.: LS Caixas de Papelão). |
 | PER-03 | Erros da API | Cota estourada, acesso negado ou API desligada aparecem em português, com o que fazer. |
 
 ## 4. Fase 2 — Posts ⏳
