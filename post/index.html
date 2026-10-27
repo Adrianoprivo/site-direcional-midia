@@ -70,7 +70,9 @@ svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stro
   display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 24px 10px;min-height:52px}
 .crumb{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;min-width:0;flex:1}
 .crumb b{color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.crumb span{white-space:nowrap}
+.crumb span,.crumb a{white-space:nowrap}
+.crumb a{color:var(--muted);text-decoration:none;border-radius:6px;padding:2px 4px;margin:0 -4px}
+.crumb a:hover{color:var(--ink);background:var(--hover)}
 .burger{display:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;width:34px;height:34px;place-items:center}
 .content{padding:24px;max-width:1180px;width:100%}
 .ph{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
@@ -128,6 +130,13 @@ tbody tr:hover td{background:var(--hover)}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .7s linear infinite;vertical-align:-2px}
 @keyframes r{to{transform:rotate(360deg)}}
 .note{font-size:12px;color:var(--muted);margin-top:10px}
+.filtros{display:flex;gap:10px;flex-wrap:wrap}
+.filtros label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:500}
+.filtros select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:8px;padding:5px 8px}
+th.ord button{all:unset;cursor:pointer;font:inherit;color:inherit;font-weight:600}
+th.ord button:hover{color:var(--ink)}
+th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.cf{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:center}
 
 /* ---------- login ---------- */
 .login{min-height:100vh;display:grid;place-items:center;padding:16px}
@@ -157,7 +166,8 @@ tbody tr:hover td{background:var(--hover)}
   .prof{flex-direction:column}
   .cap{max-width:120px}
   th,td{padding:9px 8px}
-  .crumb span{display:none}
+  .crumb span,.crumb a{display:none}
+  .ch{flex-wrap:wrap}
 }
 </style></head>
 <body>
@@ -246,7 +256,8 @@ $('scrim').onclick=()=>$('shell').classList.remove('open');
 
 /* ---------- rotas ---------- */
 function rota(){return (location.hash.replace(/^#\/?/,'')||'').split('/').filter(Boolean)}
-function crumb(partes){$('crumb').innerHTML=partes.map((p,i)=>i===partes.length-1?`<b>${esc(p)}</b>`:`<span>${esc(p)}</span><span>/</span>`).join('')}
+function crumb(partes){const L=partes.map(p=>Array.isArray(p)?p:[p,null]);
+  $('crumb').innerHTML=L.map(([t,h],i)=>i===L.length-1?`<b>${esc(t)}</b>`:`${h?`<a href="${h}">${esc(t)}</a>`:`<span>${esc(t)}</span>`}<span class="sep">/</span>`).join('')}
 function aviso(tipo,texto){return texto?`<div class="msg ${tipo}" role="status">${esc(texto)}</div>`:''}
 let flash='';
 async function render(){renderSide();$('topact').innerHTML='';const r=rota();const v=$('view');
@@ -271,7 +282,7 @@ function vPainel(v){crumb(['Painel']);const igOn=S.ig&&S.ig.conectado,gOn=S.g&&S
   </div>`;flash=''}
 
 /* ---------- Conexões ---------- */
-function vConexoes(v){crumb(['Sistema','Conexões']);const igOn=S.ig&&S.ig.conectado,gOn=S.g&&S.g.conectado;
+function vConexoes(v){crumb([['Painel','#/'],'Conexões']);const igOn=S.ig&&S.ig.conectado,gOn=S.g&&S.g.conectado;
   v.innerHTML=`${flash}<div class="ph"><div><h1>Conexões</h1><p>Contas que o Privo Post pode acessar. As chaves ficam guardadas no servidor, nunca no navegador.</p></div></div>
   <section class="card list">
     <div class="row"><div style="display:flex;gap:12px;align-items:center">${ic('ig')}<div><b>Instagram</b><span class="muted">${igOn?`@${esc(S.ig.usuario)} · autorização renova sozinha (vence ${esc(dataBR(S.ig.expira_em))})`:(S.ig&&S.ig.erro?esc(S.ig.erro):'Não conectado')}</span></div></div>
@@ -292,7 +303,7 @@ async function desconectar(fn,pergunta,ok){if(!confirm(pergunta))return;
 /* ---------- Instagram: meu perfil ---------- */
 const ABAS=[['perfil','Visão geral'],['metricas','Métricas da conta'],['posts','Métricas por post']];
 async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes';return}
-  crumb(['Instagram','@'+(S.ig.usuario||''),ABAS.find(a=>a[0]===aba)?.[1]||'']);
+  crumb([['Instagram','#/instagram/eu/perfil'],['@'+(S.ig.usuario||''),'#/instagram/eu/perfil'],ABAS.find(a=>a[0]===aba)?.[1]||'']);
   $('topact').innerHTML=`<button class="btn" id="recarregar" type="button">Atualizar</button>`;
   $('recarregar').onclick=()=>{if(aba==='perfil')S.igPerfil=null;if(aba==='metricas')S.igConta=null;if(aba==='posts')S.igPosts=null;render()};
   v.innerHTML=`${flash}<div class="ph"><div><h1>@${esc(S.ig.usuario)}</h1><p>Meu perfil · só leitura nesta etapa, nada é publicado.</p></div>
@@ -303,7 +314,7 @@ async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes'
   try{
     if(aba==='perfil'){S.igPerfil=S.igPerfil||await api('ig-api',{acao:'perfil'});abaPerfil(alvo,S.igPerfil)}
     else if(aba==='metricas'){S.igConta=S.igConta||await api('ig-api',{acao:'conta'});abaConta(alvo,S.igConta)}
-    else if(aba==='posts'){S.igPosts=S.igPosts||await api('ig-api',{acao:'posts'});abaPosts(alvo,S.igPosts.posts)}
+    else if(aba==='posts'){if(!S.igPosts){const r=await api('ig-api',{acao:'posts'});S.igPosts={lista:r.posts,proximo:r.proximo}}abaPosts(alvo)}
     else location.hash='#/instagram/eu/perfil';
   }catch(e){alvo.innerHTML=aviso('bad',e.message)}}
 function abaPerfil(el,f){el.innerHTML=`<section class="card"><div class="cb"><div class="prof">${f.foto?`<img class="av" src="${esc(f.foto)}" alt="">`:'<div class="av"></div>'}
@@ -320,23 +331,46 @@ function abaConta(el,{periodos}){const [d7,d14,d30]=periodos;
     <tbody>${MC.map(([k,l])=>`<tr><td>${l}</td>${periodos.map(p=>`<td class="n num">${num(p.m[k])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
   <p class="note">“—” = o Instagram não informou essa métrica para o período. Dados do Instagram podem levar até 48 h para fechar.</p>`}
 const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
-function abaPosts(el,posts){if(!posts.length){el.innerHTML='<section class="card"><div class="empty">Nenhum post encontrado.</div></section>';return}
-  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Últimos ${posts.length} posts</h2><p>Números desde a publicação de cada post.</p></div></div>
-  <div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th><th>Data</th><th class="n">Visualiz.</th><th class="n">Alcance</th><th class="n">Curtidas</th><th class="n">Coment.</th><th class="n">Compart.</th><th class="n">Salvos</th></tr></thead>
-  <tbody>${posts.map(x=>{const m=x.metricas||{};return `<tr><td>${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</td>
+/* IG-MET-05: engajamento ponderado = (compart.×4 + coment.×3 + salvos×2 + curtidas×1) ÷ alcance */
+const PESOS={shares:4,comments:3,saved:2,likes:1};
+const engaj=m=>m&&m.reach?((m.shares||0)*4+(m.comments||0)*3+(m.saved||0)*2+(m.likes||0))/m.reach*100:null;
+const COLS=[['data','Data'],['views','Visualiz.'],['reach','Alcance'],['likes','Curtidas'],['comments','Coment.'],['shares','Compart.'],['saved','Salvos'],['eng','Engaj. pond.']];
+const F=JSON.parse(store.get('pp-fpost')||'{"ord":"data","dir":-1,"tipo":"","dias":"0"}');
+function valor(x,k){if(k==='data')return new Date(x.data).getTime();if(k==='eng')return engaj(x.metricas)??-1;return (x.metricas||{})[k]??-1}
+function abaPosts(el){const todos=S.igPosts.lista;const agora=Date.now();
+  const lista=todos.filter(x=>(!F.tipo||x.tipo===F.tipo)&&(F.dias==='0'||agora-new Date(x.data).getTime()<=Number(F.dias)*864e5))
+    .sort((a,b)=>(valor(a,F.ord)-valor(b,F.ord))*F.dir);
+  const tipos=[...new Set(todos.map(x=>x.tipo))];
+  el.innerHTML=`<section class="card"><div class="ch"><div><h2>${num(lista.length)} de ${num(todos.length)} posts carregados</h2><p>Clique no título da coluna para ordenar. Números desde a publicação de cada post.</p></div>
+    <div class="filtros"><label>Tipo <select id="f-tipo"><option value="">Todos</option>${tipos.map(t=>`<option value="${esc(t)}"${F.tipo===t?' selected':''}>${esc(TIPO[t]||t)}</option>`).join('')}</select></label>
+    <label>Período <select id="f-dias">${[['0','Todos'],['30','Últimos 30 dias'],['90','Últimos 90 dias'],['365','Últimos 12 meses']].map(([v,l])=>`<option value="${v}"${F.dias===v?' selected':''}>${l}</option>`).join('')}</select></label></div></div>
+  ${lista.length?`<div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th>${COLS.map(([k,l])=>`<th class="${k==='data'?'':'n'} ord"><button type="button" data-ord="${k}" aria-label="Ordenar por ${l}">${l}${F.ord===k?(F.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
+  <tbody>${lista.map(x=>{const m=x.metricas||{},e=engaj(m);return `<tr><td>${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</td>
     <td><div class="cap"><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.legenda||'(sem legenda)')}</a></div></td>
     <td>${esc(TIPO[x.tipo]||x.tipo||'')}</td><td>${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</td>
-    <td class="n num">${num(m.views)}</td><td class="n num">${num(m.reach)}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td></tr>`}).join('')}</tbody></table></div></section>`}
+    <td class="n num">${num(m.views)}</td><td class="n num">${num(m.reach)}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td>
+    <td class="n num"><b>${e==null?'—':e.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'}</b></td></tr>`}).join('')}</tbody></table></div>`
+    :'<div class="empty">Nenhum post com esses filtros.</div>'}
+  <div class="cf">${S.igPosts.proximo?'<button class="btn" id="mais" type="button">Carregar mais 12 posts</button>':'<span class="muted">Todos os posts carregados.</span>'}</div></section>
+  <p class="note"><b>Engajamento ponderado</b> = (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1) ÷ alcance. Compartilhar pesa mais porque é o que leva o post a gente nova; curtida é o engajamento mais leve. Os pesos são nossa escolha e podem mudar.</p>`;
+  el.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{const k=b.dataset.ord;if(F.ord===k)F.dir*=-1;else{F.ord=k;F.dir=-1}salvarF();abaPosts(el)});
+  $('f-tipo').onchange=e=>{F.tipo=e.target.value;salvarF();abaPosts(el)};
+  $('f-dias').onchange=e=>{F.dias=e.target.value;salvarF();abaPosts(el)};
+  const m=$('mais');if(m)m.onclick=async()=>{m.disabled=true;m.innerHTML='<span class="spin"></span> Carregando…';
+    try{const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo;abaPosts(el)}
+    catch(e){m.disabled=false;m.textContent='Carregar mais 12 posts';el.insertAdjacentHTML('afterbegin',aviso('bad',e.message))}};
+}
+function salvarF(){store.set('pp-fpost',JSON.stringify(F))}
 
 /* ---------- Instagram: clientes ---------- */
-function vIgClientes(v){crumb(['Instagram','Clientes']);
+function vIgClientes(v){crumb([['Instagram','#/instagram/eu/perfil'],'Clientes']);
   v.innerHTML=`<div class="ph"><div><h1>Clientes no Instagram</h1><p>Perfis de clientes que você gerencia.</p></div></div>
   <section class="card"><div class="empty">Nenhum cliente conectado ainda.<br><span class="note">Cada cliente vai autorizar o Privo Post pela conta dele. Entra numa próxima etapa.</span></div></section>`}
 
 /* ---------- Google: perfil ---------- */
 function vGoogle(v,id){const p=gPerfis().find(x=>x.id===id);
   if(!p){crumb(['Google Meu Negócio']);v.innerHTML=Array.isArray(S.gContas)?'<section class="card"><div class="empty">Perfil não encontrado.</div></section>':'<p class="muted"><span class="spin"></span> Carregando…</p>';return}
-  crumb(['Google Meu Negócio',p.cliente?'Clientes':'Meu perfil',p.nome]);
+  crumb([['Google Meu Negócio','#/conexoes'],p.cliente?'Clientes':'Meu perfil',p.nome]);
   v.innerHTML=`<div class="ph"><div><h1>${esc(p.nome)}</h1><p>${esc(p.endereco||'Sem endereço público')} · conta ${esc(p.conta)}</p></div>
     <span class="pill ${p.cliente?'warn':'acc'}">${p.cliente?'Cliente — não usar':'Seu perfil'}</span></div>
   <section class="card"><div class="ch"><h2>O que dá para fazer aqui</h2></div><div class="cb">
