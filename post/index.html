@@ -136,6 +136,18 @@ tbody tr:hover td{background:var(--hover)}
 th.ord button{all:unset;cursor:pointer;font:inherit;color:inherit;font-weight:600}
 th.ord button:hover{color:var(--ink)}
 th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.periodo{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.periodo select,.periodo input[type=date]{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:8px;padding:5px 8px}
+.periodo .muted{font-size:12px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);cursor:pointer}
+.kgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.kpi2{background:var(--surface);padding:12px 14px}
+.kpi2 .l{font-size:12px;color:var(--muted)}
+.kpi2 .v{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-top:2px}
+.kpi2 .s{font-size:12px;margin-top:2px}
+.dl{font-weight:600;font-size:12px;white-space:nowrap}.dl.up{color:var(--ok)}.dl.down{color:var(--bad)}
+.tagx{font-size:11px;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.prof .stats{margin-top:0;flex:none}
 .cf{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:center}
 
 /* ---------- login ---------- */
@@ -164,6 +176,7 @@ th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;b
   .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
   .g2{grid-template-columns:minmax(0,1fr)}
   .prof{flex-direction:column}
+  .kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .cap{max-width:120px}
   th,td{padding:9px 8px}
   .crumb span,.crumb a{display:none}
@@ -274,7 +287,7 @@ function vPainel(v){crumb(['Painel']);const igOn=S.ig&&S.ig.conectado,gOn=S.g&&S
   v.innerHTML=`${flash}<div class="ph"><div><h1>Painel</h1><p>Seus canais conectados ao Privo Post.</p></div></div>
   <div class="grid g2">
     <section class="card"><div class="ch"><h2>${ic('ig')} Instagram</h2><span class="pill ${igOn?'ok':''}">${igOn?'Conectado':'Não conectado'}</span></div>
-      <div class="cb">${igOn?`<p style="margin:0 0 12px">Conectado como <b>@${esc(S.ig.usuario)}</b>.</p><a class="btn" href="#/instagram/eu/metricas">Ver métricas da conta</a> <a class="btn" href="#/instagram/eu/posts">Ver posts</a>`
+      <div class="cb">${igOn?`<p style="margin:0 0 12px">Conectado como <b>@${esc(S.ig.usuario)}</b>.</p><a class="btn" href="#/instagram/eu/perfil">Ver desempenho da conta</a> <a class="btn" href="#/instagram/eu/posts">Ver posts</a>`
         :`<p class="muted" style="margin:0 0 12px">Conecte para ver perfil e métricas.</p><a class="btn pri" href="#/conexoes">Conectar</a>`}</div></section>
     <section class="card"><div class="ch"><h2>${ic('gmn')} Google Meu Negócio</h2><span class="pill ${gOn?'ok':''}">${gOn?'Conectado':'Não conectado'}</span></div>
       <div class="cb">${gOn?`<p style="margin:0 0 12px">Conectado como <b>${esc(S.g.email)}</b> · ${num(gPerfis().length)} perfis (${num(gPerfis().filter(p=>p.cliente).length)} de clientes).</p><p class="note" style="margin:0">Posts no Google entram numa próxima fase (hoje o Windsor cuida disso).</p>`
@@ -301,66 +314,158 @@ async function desconectar(fn,pergunta,ok){if(!confirm(pergunta))return;
   try{await api(fn,{acao:'desconectar'});if(fn==='ig-api'){S.igPerfil=S.igPosts=S.igConta=null}else S.gContas=null;await carregarStatus();flash=aviso('ok',ok)}catch(e){flash=aviso('bad',e.message)}render()}
 
 /* ---------- Instagram: meu perfil ---------- */
-const ABAS=[['perfil','Visão geral'],['metricas','Métricas da conta'],['posts','Métricas por post']];
+const ABAS=[['perfil','Visão geral'],['posts','Métricas por post']];
+const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
+const FMT={REEL:'Reels',POST:'Posts do feed',CAROUSEL_CONTAINER:'Carrosséis',STORY:'Stories',AD:'Anúncios',IGTV:'Vídeos',LIVE:'Lives'};
+
+/* ---- período (IG-PER-01): mesmas opções do Gerenciador de Anúncios; "últimos N dias" sem contar hoje ---- */
+const PRESETS=[['hoje','Hoje'],['ontem','Ontem'],['7','Últimos 7 dias'],['14','Últimos 14 dias'],['30','Últimos 30 dias'],['semana','Esta semana'],['semana_passada','Semana passada'],['mes','Este mês'],['mes_passado','Mês passado'],['max','Máximo'],['custom','Personalizado']];
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const dia0=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const soma=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+function intervalo(p,limiteDias){const h=dia0(new Date());let de,ate;
+  const seg=soma(h,-((h.getDay()+6)%7)); // semana começa na segunda
+  switch(p.preset){
+    case 'hoje':de=ate=h;break; case 'ontem':de=ate=soma(h,-1);break;
+    case '7':case '14':case '30':de=soma(h,-Number(p.preset));ate=soma(h,-1);break;
+    case 'semana':de=seg;ate=h;break; case 'semana_passada':de=soma(seg,-7);ate=soma(seg,-1);break;
+    case 'mes':de=new Date(h.getFullYear(),h.getMonth(),1);ate=h;break;
+    case 'mes_passado':de=new Date(h.getFullYear(),h.getMonth()-1,1);ate=new Date(h.getFullYear(),h.getMonth(),0);break;
+    case 'max':de=limiteDias?soma(h,-limiteDias):new Date(2000,0,1);ate=h;break;
+    case 'custom':de=p.de?new Date(p.de+'T00:00:00'):soma(h,-7);ate=p.ate?new Date(p.ate+'T00:00:00'):soma(h,-1);break;
+  }
+  if(limiteDias&&de<soma(h,-limiteDias))de=soma(h,-limiteDias);
+  if(ate<de)ate=de;
+  const n=Math.round((ate-de)/864e5)+1;
+  return {de,ate,n,ant:{de:soma(de,-n),ate:soma(de,-1)}};
+}
+const fmtI=i=>i.n===1?dataBR(iso(i.de)):`${dataBR(iso(i.de))} a ${dataBR(iso(i.ate))}`;
+function seletorPeriodo(id,p,limiteDias){const i=intervalo(p,limiteDias);
+  return `<div class="periodo" id="${id}"><select data-p="preset" aria-label="Período">${PRESETS.map(([k,l])=>`<option value="${k}"${p.preset===k?' selected':''}>${l}</option>`).join('')}</select>
+    ${p.preset==='custom'?`<input type="date" data-p="de" value="${iso(i.de)}" aria-label="De"><input type="date" data-p="ate" value="${iso(i.ate)}" aria-label="Até">`:`<span class="muted">${esc(fmtI(i))}</span>`}
+    <label class="chk"><input type="checkbox" data-p="comparar"${p.comparar?' checked':''}> Comparar com período anterior</label></div>`}
+function ligarPeriodo(id,p,salvar,depois){const el=$(id);if(!el)return;el.querySelectorAll('[data-p]').forEach(x=>x.onchange=()=>{const k=x.dataset.p;
+  p[k]=k==='comparar'?x.checked:x.value;salvar();depois()})}
+const PC=JSON.parse(store.get('pp-pconta')||'{"preset":"7","comparar":true}');
+const PP=JSON.parse(store.get('pp-pposts')||'{"preset":"max","comparar":false}');
+const salvarPC=()=>store.set('pp-pconta',JSON.stringify(PC)),salvarPP=()=>store.set('pp-pposts',JSON.stringify(PP));
+function delta(a,b){if(a==null||b==null)return '';if(b===0)return a>0?'<span class="dl up">novo</span>':'<span class="dl">—</span>';
+  const d=(a-b)/b*100;return `<span class="dl ${d>0?'up':d<0?'down':''}">${d>0?'▲':d<0?'▼':''} ${Math.abs(d).toLocaleString('pt-BR',{maximumFractionDigits:0})}%</span>`}
+
 async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes';return}
+  if(aba==='metricas'){location.hash='#/instagram/eu/perfil';return}
   crumb([['Instagram','#/instagram/eu/perfil'],['@'+(S.ig.usuario||''),'#/instagram/eu/perfil'],ABAS.find(a=>a[0]===aba)?.[1]||'']);
   $('topact').innerHTML=`<button class="btn" id="recarregar" type="button">Atualizar</button>`;
-  $('recarregar').onclick=()=>{if(aba==='perfil')S.igPerfil=null;if(aba==='metricas')S.igConta=null;if(aba==='posts')S.igPosts=null;render()};
+  $('recarregar').onclick=()=>{S.igPerfil=null;S.igPer={};S.igPosts=null;S.igConta=null;render()};
   v.innerHTML=`${flash}<div class="ph"><div><h1>@${esc(S.ig.usuario)}</h1><p>Meu perfil · só leitura nesta etapa, nada é publicado.</p></div>
     <a class="btn" href="https://www.instagram.com/${esc(S.ig.usuario)}/" target="_blank" rel="noopener">${ic('ext')} Abrir no Instagram</a></div>
     <nav class="tabs" aria-label="Seções do perfil">${ABAS.map(([k,l])=>`<a href="#/instagram/eu/${k}"${k===aba?' aria-current="page"':''}>${l}</a>`).join('')}</nav>
     <div id="aba"><p class="muted"><span class="spin"></span> Buscando no Instagram…</p></div>`;flash='';
   const alvo=$('aba');
   try{
-    if(aba==='perfil'){S.igPerfil=S.igPerfil||await api('ig-api',{acao:'perfil'});abaPerfil(alvo,S.igPerfil)}
-    else if(aba==='metricas'){S.igConta=S.igConta||await api('ig-api',{acao:'conta'});abaConta(alvo,S.igConta)}
-    else if(aba==='posts'){if(!S.igPosts){const r=await api('ig-api',{acao:'posts'});S.igPosts={lista:r.posts,proximo:r.proximo}}abaPosts(alvo)}
+    if(aba==='perfil'){S.igPerfil=S.igPerfil||await api('ig-api',{acao:'perfil'});await abaVisao(alvo)}
+    else if(aba==='posts'){await abaPosts(alvo)}
     else location.hash='#/instagram/eu/perfil';
   }catch(e){alvo.innerHTML=aviso('bad',e.message)}}
-function abaPerfil(el,f){el.innerHTML=`<section class="card"><div class="cb"><div class="prof">${f.foto?`<img class="av" src="${esc(f.foto)}" alt="">`:'<div class="av"></div>'}
-  <div style="min-width:0"><h3>${esc(f.nome||f.usuario)}</h3><span class="muted">@${esc(f.usuario)} · ${esc(f.tipo==='MEDIA_CREATOR'?'Criador de conteúdo':f.tipo==='BUSINESS'?'Empresa':f.tipo||'')}</span>
-  <p class="bio">${f.bio?esc(f.bio):'<span class="muted">Sem bio.</span>'}</p>${f.site?`<p style="margin:6px 0 0"><a href="${esc(f.site)}" target="_blank" rel="noopener">${esc(f.site)}</a></p>`:''}
-  <div class="stats"><div><b class="num">${num(f.seguidores)}</b><span>seguidores</span></div><div><b class="num">${num(f.seguindo)}</b><span>seguindo</span></div><div><b class="num">${num(f.posts)}</b><span>posts</span></div></div></div></div></div></section>`}
+
+/* ---- Visão geral: perfil + desempenho da conta (IG-PER-01, IG-MET-04/06/07) ---- */
+const KPI=[['views','Visualizações'],['reach','Contas alcançadas'],['accounts_engaged','Contas engajadas'],['total_interactions','Interações'],
+  ['seguiram','Começaram a seguir'],['deixaram','Deixaram de seguir'],['saves','Salvamentos'],['shares','Compartilhamentos']];
 const MC=[['views','Visualizações'],['reach','Contas alcançadas'],['accounts_engaged','Contas engajadas'],['total_interactions','Interações'],['likes','Curtidas'],['comments','Comentários'],
   ['shares','Compartilhamentos'],['saves','Salvamentos'],['profile_links_taps','Toques em links do perfil'],['seguiram','Começaram a seguir'],['deixaram','Deixaram de seguir']];
-function abaConta(el,{periodos}){const [d7,d14,d30]=periodos;
-  el.innerHTML=`<div class="grid g4">${[['views','Visualizações'],['reach','Contas alcançadas'],['accounts_engaged','Contas engajadas'],['total_interactions','Interações']].map(([k,l])=>
-    `<section class="card kpi"><div class="l">${l}</div><div class="v num">${num(d7.m[k])}</div><div class="s">últimos 7 dias</div></section>`).join('')}</div>
-  <section class="card" style="margin-top:16px"><div class="ch"><div><h2>Métricas da conta</h2><p>Dias corridos, sem contar hoje.</p></div></div>
-    <div class="tw"><table><thead><tr><th>Métrica</th>${periodos.map(p=>`<th class="n">Últimos ${p.dias} dias<br><span style="font-weight:500">${esc(dataBR(p.de))} a ${esc(dataBR(p.ate))}</span></th>`).join('')}</tr></thead>
-    <tbody>${MC.map(([k,l])=>`<tr><td>${l}</td>${periodos.map(p=>`<td class="n num">${num(p.m[k])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
-  <p class="note">“—” = o Instagram não informou essa métrica para o período. Dados do Instagram podem levar até 48 h para fechar.</p>`}
-const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
-/* IG-MET-05: engajamento ponderado = (compart.×4 + coment.×3 + salvos×2 + curtidas×1) ÷ alcance */
-const PESOS={shares:4,comments:3,saved:2,likes:1};
-const engaj=m=>m&&m.reach?((m.shares||0)*4+(m.comments||0)*3+(m.saved||0)*2+(m.likes||0))/m.reach*100:null;
+const OT=JSON.parse(store.get('pp-otend')||'{"ord":"tend","dir":-1}');
+S.igPer={};
+async function abaVisao(el){const f=S.igPerfil;const i=intervalo(PC,90);const chave=iso(i.de)+'|'+iso(i.ate)+'|'+!!PC.comparar;
+  el.innerHTML=`<section class="card"><div class="cb"><div class="prof">${f.foto?`<img class="av" src="${esc(f.foto)}" alt="">`:'<div class="av"></div>'}
+    <div style="min-width:0;flex:1"><h3>${esc(f.nome||f.usuario)}</h3><span class="muted">@${esc(f.usuario)} · ${esc(f.tipo==='MEDIA_CREATOR'?'Criador de conteúdo':f.tipo==='BUSINESS'?'Empresa':f.tipo||'')}</span>
+    <p class="bio">${f.bio?esc(f.bio):'<span class="muted">Sem bio.</span>'}</p>${f.site?`<p style="margin:6px 0 0"><a href="${esc(f.site)}" target="_blank" rel="noopener">${esc(f.site)}</a></p>`:''}</div>
+    <div class="stats"><div><b class="num">${num(f.seguidores)}</b><span>seguidores</span></div><div><b class="num">${num(f.seguindo)}</b><span>seguindo</span></div><div><b class="num">${num(f.posts)}</b><span>posts</span></div></div></div></div></section>
+  <section class="card"><div class="ch"><div><h2>Desempenho da conta</h2><p>O Instagram guarda as métricas da conta por 90 dias.</p></div>${seletorPeriodo('pc',PC,90)}</div>
+    <div class="cb" id="kpis"><p class="muted"><span class="spin"></span> Buscando no Instagram…</p></div></section>
+  <section class="card"><div class="ch"><div><h2>Qual métrica está crescendo</h2><p>Últimos 7, 14 e 30 dias lado a lado, sem contar hoje. Tendência = média por dia dos últimos 7 contra a dos últimos 30. Clique no título da coluna para ordenar.</p></div></div>
+    <div id="tend"><p class="muted cb"><span class="spin"></span> Carregando…</p></div></section>
+  <section class="card"><div class="ch"><div><h2>Resultado por formato</h2><p>No período escolhido acima.</p></div></div><div id="fmt"><p class="muted cb"><span class="spin"></span> Carregando…</p></div></section>`;
+  ligarPeriodo('pc',PC,salvarPC,()=>abaVisao(el));
+  const pegarPer=async()=>{if(!S.igPer[chave])S.igPer[chave]=await api('ig-api',{acao:'periodo',de:iso(i.de),ate:iso(i.ate),comparar:!!PC.comparar});return S.igPer[chave]};
+  const pegarTend=async()=>{if(!S.igConta)S.igConta=await api('ig-api',{acao:'conta'});return S.igConta};
+  pegarPer().then(r=>{const a=r.atual,b=r.anterior;const aprox=new Set(a.aproximado||[]);
+    $('kpis').innerHTML=`<div class="kgrid">${KPI.map(([k,l])=>`<div class="kpi2"><div class="l">${l}${aprox.has(k)?' <span title="Período maior que 30 dias: o Instagram não soma contas únicas, o número é aproximado.">≈</span>':''}</div>
+      <div class="v num">${num(a.m[k])}</div><div class="s">${b?`${delta(a.m[k],b.m[k])} <span class="muted">vs ${num(b.m[k])}</span>`:'&nbsp;'}</div></div>`).join('')}</div>
+      <p class="note">${esc(fmtI({de:new Date(a.de+'T00:00:00'),ate:new Date(a.ate+'T00:00:00'),n:a.dias}))}${b?` · comparado com ${esc(fmtI({de:new Date(b.de+'T00:00:00'),ate:new Date(b.ate+'T00:00:00'),n:b.dias}))}`:''}. Dados do Instagram podem levar até 48 h para fechar.</p>`;
+    const fm=Object.entries(a.formatos||{});
+    $('fmt').innerHTML=fm.length?`<div class="tw"><table><thead><tr><th>Formato</th><th class="n">Visualiz.</th><th class="n">Alcance</th><th class="n">Interações</th><th class="n">Curtidas</th><th class="n">Coment.</th><th class="n">Compart.</th><th class="n">Salvos</th></tr></thead>
+      <tbody>${fm.sort((x,y)=>(y[1].views||0)-(x[1].views||0)).map(([t,m])=>`<tr><td>${esc(FMT[t]||t)}</td>${['views','reach','total_interactions','likes','comments','shares','saves'].map(k=>`<td class="n num">${num(m[k])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`
+      :'<div class="empty">O Instagram não informou números por formato para esse período.</div>'})
+   .catch(e=>{$('kpis').innerHTML=aviso('bad',e.message);$('fmt').innerHTML=''});
+  pegarTend().then(r=>tabelaTend(r.periodos)).catch(e=>{$('tend').innerHTML=`<div class="cb">${aviso('bad',e.message)}</div>`});
+}
+function tabelaTend(periodos){const [d7,d14,d30]=periodos;
+  const linhas=MC.map(([k,l])=>{const a=d7.m[k],c=d30.m[k];const pouco=c!=null&&c<10;const t=!pouco&&a!=null&&c?((a/7)/(c/30)-1)*100:null;return {k,l,v7:a,v14:d14.m[k],v30:c,t,pouco}});
+  const val=(x)=>({nome:x.l,v7:x.v7??-1,v14:x.v14??-1,v30:x.v30??-1,tend:x.t??-1e9})[OT.ord];
+  linhas.sort((x,y)=>{const a=val(x),b=val(y);return (typeof a==='string'?a.localeCompare(b):a-b)*OT.dir});
+  const H=[['nome','Métrica',''],['v7','Últimos 7 dias','n'],['v14','Últimos 14 dias','n'],['v30','Últimos 30 dias','n'],['tend','Tendência','n']];
+  $('tend').innerHTML=`<div class="tw"><table><thead><tr>${H.map(([k,l,c])=>`<th class="${c} ord"><button type="button" data-ot="${k}">${l}${OT.ord===k?(OT.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
+    <tbody>${linhas.map(x=>`<tr><td>${x.l}</td><td class="n num">${num(x.v7)}</td><td class="n num">${num(x.v14)}</td><td class="n num">${num(x.v30)}</td>
+    <td class="n">${x.pouco?'<span class="muted" title="Menos de 10 nos últimos 30 dias: pouco volume para ler tendência.">pouco volume</span>':x.t==null?'<span class="muted">—</span>':`<span class="dl ${x.t>0?'up':x.t<0?'down':''}">${x.t>0?'▲':x.t<0?'▼':''} ${Math.abs(x.t).toLocaleString('pt-BR',{maximumFractionDigits:0})}%</span>`}</td></tr>`).join('')}</tbody></table></div>
+    <p class="note cb" style="margin:0">▲ = nos últimos 7 dias a métrica rendeu mais por dia do que a média dos últimos 30. “Pouco volume” = menos de 10 nos últimos 30 dias, cedo para ler tendência. Para contas alcançadas e engajadas a tendência é aproximada (contas únicas não se somam dia a dia).</p>`;
+  $('tend').querySelectorAll('[data-ot]').forEach(b=>b.onclick=()=>{const k=b.dataset.ot;if(OT.ord===k)OT.dir*=-1;else{OT.ord=k;OT.dir=k==='nome'?1:-1}store.set('pp-otend',JSON.stringify(OT));tabelaTend(periodos)});
+}
+
+/* ---- Métricas por post (IG-MET-01..03, 05, 08) ---- */
+/* Engajamento ponderado = (compart.×4 + coment.×3 + salvos×2 + curtidas×1) ÷ alcance.
+   Alcance menor que as curtidas é impossível: o Instagram não informa alcance confiável para posts antigos (até jun/2024). */
+const confiavel=m=>m&&m.reach!=null&&m.reach>0&&m.reach>=(m.likes||0);
+const pontos=m=>(m.shares||0)*4+(m.comments||0)*3+(m.saved||0)*2+(m.likes||0);
+const engaj=m=>confiavel(m)?pontos(m)/m.reach*100:null;
 const COLS=[['data','Data'],['views','Visualiz.'],['reach','Alcance'],['likes','Curtidas'],['comments','Coment.'],['shares','Compart.'],['saved','Salvos'],['eng','Engaj. pond.']];
-const F=JSON.parse(store.get('pp-fpost')||'{"ord":"data","dir":-1,"tipo":"","dias":"0"}');
+const F=JSON.parse(store.get('pp-fpost')||'{"ord":"data","dir":-1,"tipo":""}');
+function salvarF(){store.set('pp-fpost',JSON.stringify(F))}
 function valor(x,k){if(k==='data')return new Date(x.data).getTime();if(k==='eng')return engaj(x.metricas)??-1;return (x.metricas||{})[k]??-1}
-function abaPosts(el){const todos=S.igPosts.lista;const agora=Date.now();
-  const lista=todos.filter(x=>(!F.tipo||x.tipo===F.tipo)&&(F.dias==='0'||agora-new Date(x.data).getTime()<=Number(F.dias)*864e5))
-    .sort((a,b)=>(valor(a,F.ord)-valor(b,F.ord))*F.dir);
+async function carregarAte(limite){ // carrega posts até cobrir a data pedida (null = todos)
+  if(!S.igPosts){const r=await api('ig-api',{acao:'posts'});S.igPosts={lista:r.posts,proximo:r.proximo}}
+  let n=0;while(S.igPosts.proximo&&n<40){const ult=S.igPosts.lista.at(-1);if(limite&&ult&&new Date(ult.data)<limite)break;
+    const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo;n++}}
+function resumo(lista){const conf=lista.filter(x=>confiavel(x.metricas));
+  const alc=conf.reduce((s,x)=>s+x.metricas.reach,0),pts=conf.reduce((s,x)=>s+pontos(x.metricas),0);
+  const melhor=conf.slice().sort((a,b)=>engaj(b.metricas)-engaj(a.metricas))[0];
+  return {posts:lista.length,views:lista.reduce((s,x)=>s+(x.metricas.views||0),0),alcance:alc,eng:alc?pts/alc*100:null,melhor,semAlcance:lista.length-conf.length}}
+const pct=v=>v==null?'—':v.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+async function abaPosts(el){const i=intervalo(PP,null);
+  el.innerHTML=`<p class="muted"><span class="spin"></span> Carregando os posts do período…</p>`;
+  await carregarAte(PP.preset==='max'?null:(PP.comparar?i.ant.de:i.de));
+  const dentro=(x,a,b)=>{const d=dia0(new Date(x.data));return d>=a&&d<=b};
+  const todos=S.igPosts.lista;
+  const doTipo=todos.filter(x=>!F.tipo||x.tipo===F.tipo);
+  const lista=doTipo.filter(x=>PP.preset==='max'||dentro(x,i.de,i.ate)).sort((a,b)=>(valor(a,F.ord)-valor(b,F.ord))*F.dir);
+  const ant=PP.comparar&&PP.preset!=='max'?doTipo.filter(x=>dentro(x,i.ant.de,i.ant.ate)):null;
+  const R=resumo(lista),RA=ant?resumo(ant):null;
   const tipos=[...new Set(todos.map(x=>x.tipo))];
-  el.innerHTML=`<section class="card"><div class="ch"><div><h2>${num(lista.length)} de ${num(todos.length)} posts carregados</h2><p>Clique no título da coluna para ordenar. Números desde a publicação de cada post.</p></div>
-    <div class="filtros"><label>Tipo <select id="f-tipo"><option value="">Todos</option>${tipos.map(t=>`<option value="${esc(t)}"${F.tipo===t?' selected':''}>${esc(TIPO[t]||t)}</option>`).join('')}</select></label>
-    <label>Período <select id="f-dias">${[['0','Todos'],['30','Últimos 30 dias'],['90','Últimos 90 dias'],['365','Últimos 12 meses']].map(([v,l])=>`<option value="${v}"${F.dias===v?' selected':''}>${l}</option>`).join('')}</select></label></div></div>
-  ${lista.length?`<div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th>${COLS.map(([k,l])=>`<th class="${k==='data'?'':'n'} ord"><button type="button" data-ord="${k}" aria-label="Ordenar por ${l}">${l}${F.ord===k?(F.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
+  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Posts publicados no período</h2><p>${PP.preset==='max'?'Todos os posts que o Instagram entrega pela API.':'Posts publicados entre essas datas.'} Clique no título da coluna para ordenar.</p></div>
+    <div class="filtros">${seletorPeriodo('pp',PP,null)}<label>Tipo <select id="f-tipo"><option value="">Todos</option>${tipos.map(t=>`<option value="${esc(t)}"${F.tipo===t?' selected':''}>${esc(TIPO[t]||t)}</option>`).join('')}</select></label></div></div>
+    <div class="cb"><div class="kgrid">
+      <div class="kpi2"><div class="l">Posts</div><div class="v num">${num(R.posts)}</div><div class="s">${RA?`${delta(R.posts,RA.posts)} <span class="muted">vs ${num(RA.posts)}</span>`:'&nbsp;'}</div></div>
+      <div class="kpi2"><div class="l">Visualizações somadas</div><div class="v num">${num(R.views)}</div><div class="s">${RA?`${delta(R.views,RA.views)} <span class="muted">vs ${num(RA.views)}</span>`:'&nbsp;'}</div></div>
+      <div class="kpi2"><div class="l">Alcance somado</div><div class="v num">${num(R.alcance)}</div><div class="s">${RA?`${delta(R.alcance,RA.alcance)} <span class="muted">vs ${num(RA.alcance)}</span>`:'&nbsp;'}</div></div>
+      <div class="kpi2"><div class="l">Engajamento ponderado</div><div class="v num">${pct(R.eng)}</div><div class="s">${RA?`${R.eng!=null&&RA.eng!=null?`<span class="dl ${R.eng>RA.eng?'up':R.eng<RA.eng?'down':''}">${R.eng>RA.eng?'▲':R.eng<RA.eng?'▼':''} ${Math.abs(R.eng-RA.eng).toLocaleString('pt-BR',{maximumFractionDigits:1})} p.p.</span>`:''} <span class="muted">vs ${pct(RA.eng)}</span>`:'&nbsp;'}</div></div>
+    </div>${R.melhor?`<p class="note">Melhor post do período: <a href="${esc(R.melhor.link)}" target="_blank" rel="noopener">${esc((R.melhor.legenda||'(sem legenda)').slice(0,70))}</a> · ${pct(engaj(R.melhor.metricas))}</p>`:''}
+    ${RA?'<p class="note">Atenção na comparação: os números de cada post somam desde a publicação. Posts mais novos ainda tiveram menos tempo para juntar resultado.</p>':''}</div>
+  ${lista.length?`<div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th>${COLS.map(([k,l])=>`<th class="${k==='data'?'':'n'} ord"><button type="button" data-ord="${k}">${l}${F.ord===k?(F.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
   <tbody>${lista.map(x=>{const m=x.metricas||{},e=engaj(m);return `<tr><td>${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</td>
     <td><div class="cap"><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.legenda||'(sem legenda)')}</a></div></td>
     <td>${esc(TIPO[x.tipo]||x.tipo||'')}</td><td>${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</td>
-    <td class="n num">${num(m.views)}</td><td class="n num">${num(m.reach)}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td>
-    <td class="n num"><b>${e==null?'—':e.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%'}</b></td></tr>`}).join('')}</tbody></table></div>`
-    :'<div class="empty">Nenhum post com esses filtros.</div>'}
-  <div class="cf">${S.igPosts.proximo?'<button class="btn" id="mais" type="button">Carregar mais 12 posts</button>':'<span class="muted">Todos os posts carregados.</span>'}</div></section>
-  <p class="note"><b>Engajamento ponderado</b> = (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1) ÷ alcance. Compartilhar pesa mais porque é o que leva o post a gente nova; curtida é o engajamento mais leve. Os pesos são nossa escolha e podem mudar.</p>`;
+    <td class="n num">${num(m.views)}</td><td class="n num">${confiavel(m)?num(m.reach):`<span class="muted" title="O Instagram informou alcance ${num(m.reach)}, menor que as curtidas.">${num(m.reach)}*</span>`}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td>
+    <td class="n num">${e==null?'<span class="tagx" title="Alcance informado pelo Instagram é menor que as curtidas.">não confiável</span>':`<b>${pct(e)}</b>`}</td></tr>`}).join('')}</tbody></table></div>`
+    :'<div class="empty">Nenhum post publicado nesse período.</div>'}
+  <div class="cf">${PP.preset==='max'&&S.igPosts.proximo?'<button class="btn" id="mais" type="button">Carregar mais 12 posts</button>':`<span class="muted">${num(todos.length)} posts carregados${S.igPosts.proximo?'':' (todos que a API entrega)'}.</span>`}</div></section>
+  <p class="note"><b>Engajamento ponderado</b> = (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1) ÷ alcance. Compartilhar pesa mais porque é o que leva o post a gente nova; curtida é o engajamento mais leve. No período, é a soma dos pontos ÷ a soma do alcance.
+  ${R.semAlcance?`<br>* ${num(R.semAlcance)} post(s) com alcance não confiável ficam fora do engajamento: o Instagram não informa alcance correto para posts antigos (até junho de 2024).`:''}</p>`;
   el.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{const k=b.dataset.ord;if(F.ord===k)F.dir*=-1;else{F.ord=k;F.dir=-1}salvarF();abaPosts(el)});
   $('f-tipo').onchange=e=>{F.tipo=e.target.value;salvarF();abaPosts(el)};
-  $('f-dias').onchange=e=>{F.dias=e.target.value;salvarF();abaPosts(el)};
+  ligarPeriodo('pp',PP,salvarPP,()=>abaPosts(el));
   const m=$('mais');if(m)m.onclick=async()=>{m.disabled=true;m.innerHTML='<span class="spin"></span> Carregando…';
     try{const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo;abaPosts(el)}
     catch(e){m.disabled=false;m.textContent='Carregar mais 12 posts';el.insertAdjacentHTML('afterbegin',aviso('bad',e.message))}};
 }
-function salvarF(){store.set('pp-fpost',JSON.stringify(F))}
 
 /* ---------- Instagram: clientes ---------- */
 function vIgClientes(v){crumb([['Instagram','#/instagram/eu/perfil'],'Clientes']);
