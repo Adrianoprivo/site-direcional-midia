@@ -72,18 +72,21 @@ async function perfil(token: string) {
   };
 }
 
-async function posts(token: string, limite = 12, depois?: string) {
+async function posts(token: string, limite = 12, depois?: string) { // deno-lint-ignore no-explicit-any
   const midia = await ig("me/media", token, {
-    fields: "id,caption,media_type,media_product_type,permalink,thumbnail_url,media_url,timestamp,like_count,comments_count",
+    fields: "id,caption,media_type,media_product_type,permalink,thumbnail_url,media_url,timestamp,like_count,comments_count,children{media_type,media_url,thumbnail_url}",
     limit: String(limite),
     ...(depois ? { after: depois } : {}),
   });
-  const lista = await Promise.all((midia.data ?? []).map(async (m: Record<string, string & number>) => ({
+  const lista = await Promise.all((midia.data ?? []).map(async (m: any) => ({
     id: m.id,
     legenda: (m.caption ?? "").slice(0, 200),
     tipo: m.media_product_type ?? m.media_type,
     link: m.permalink,
-    capa: m.thumbnail_url ?? (m.media_type === "IMAGE" ? m.media_url : null),
+    formato: m.media_type, // IMAGE, VIDEO ou CAROUSEL_ALBUM
+    // capa: vídeo usa a miniatura; foto usa a própria imagem; carrossel usa a 1ª foto (ou a miniatura do 1º vídeo)
+    capa: m.thumbnail_url ?? (m.media_type !== "VIDEO" ? m.media_url : null) ??
+      (m.children?.data?.[0] ? (m.children.data[0].thumbnail_url ?? (m.children.data[0].media_type !== "VIDEO" ? m.children.data[0].media_url : null)) : null) ?? null,
     data: m.timestamp,
     metricas: { likes: m.like_count ?? 0, comments: m.comments_count ?? 0, ...(await metricasDoPost(m.id, token)) },
   })));
