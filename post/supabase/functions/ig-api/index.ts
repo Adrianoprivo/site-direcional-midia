@@ -1,4 +1,4 @@
-// IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..07: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
+// IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..09: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
 // Só leitura no Instagram nesta etapa.
 import { admin, cors, json, usuario } from "../_shared/comum.ts";
 
@@ -179,7 +179,7 @@ Deno.serve(async (req) => {
   try {
     const uid = await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
-    const { acao, depois, de, ate, comparar } = await req.json().catch(() => ({}));
+    const { acao, depois, de, ate, comparar, id } = await req.json().catch(() => ({}));
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
       .select("user_id,username,access_token,obtido_em,expira_em").eq("user_id", uid).maybeSingle();
@@ -193,6 +193,16 @@ Deno.serve(async (req) => {
     if (acao === "posts") {
       const r = await posts(await tokenValido(c as Conexao), 12, typeof depois === "string" ? depois : undefined);
       return json(req, { posts: r.lista, proximo: r.proximo });
+    }
+    if (acao === "midia") { // IG-MET-09: vídeo/fotos do post para tocar na própria página (links do Instagram expiram)
+      if (typeof id !== "string" || !/^\d{5,30}$/.test(id)) return json(req, { erro: "Post inválido." }, 400);
+      const m = await ig(id, await tokenValido(c as Conexao), {
+        fields: "id,media_type,media_product_type,media_url,thumbnail_url,permalink,caption,timestamp,children{media_type,media_url,thumbnail_url}",
+      });
+      const itens = m.children?.data?.length
+        ? m.children.data.map((x: Record<string, string>) => ({ tipo: x.media_type, url: x.media_url, capa: x.thumbnail_url ?? null }))
+        : [{ tipo: m.media_type, url: m.media_url, capa: m.thumbnail_url ?? null }];
+      return json(req, { id: m.id, link: m.permalink, legenda: m.caption ?? "", data: m.timestamp, tipo: m.media_product_type ?? m.media_type, itens });
     }
     if (acao === "periodo") { // IG-MET-06: período escolhido (+ período anterior do mesmo tamanho)
       const ok = (d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d);

@@ -148,6 +148,38 @@ th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;b
 .dl{font-weight:600;font-size:12px;white-space:nowrap}.dl.up{color:var(--ok)}.dl.down{color:var(--bad)}
 .tagx{font-size:11px;font-weight:600;color:var(--warn);background:var(--warn-soft);border-radius:999px;padding:2px 8px;white-space:nowrap}
 .prof .stats{margin-top:0;flex:none}
+.pag{justify-content:space-between!important;gap:10px}
+.thbtn,.lnk{all:unset;cursor:pointer}
+.lnk{color:var(--accent);text-decoration:underline;text-underline-offset:2px;display:block;overflow:hidden;text-overflow:ellipsis}
+.thbtn:focus-visible,.lnk:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.best{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.bc{border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
+.bimg{all:unset;cursor:pointer;position:relative;display:block;aspect-ratio:4/5;background:var(--sunk)}
+.bimg img{width:100%;height:100%;object-fit:cover;display:block}
+.bimg:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.rank{position:absolute;top:10px;left:10px;background:rgb(0 0 0 / .65);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:3px 10px}
+.play{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;color:#fff;text-shadow:0 2px 12px rgb(0 0 0 / .5);pointer-events:none}
+.bb{padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.row1{display:flex;align-items:center;gap:8px;justify-content:space-between}
+.be{font-size:26px;font-weight:600;letter-spacing:-.02em;margin-top:4px}
+.bl{font-size:12px;color:var(--muted);margin-top:-4px}
+.leg{margin:6px 0 0;font-size:13px;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bm{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 10px;margin:8px 0 0}
+.bm dt{font-size:11px;color:var(--muted)}.bm dd{margin:0;font-weight:600}
+.why{font-size:12px;color:var(--ink2);margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+dialog.ver{border:0;padding:0;background:transparent;max-width:min(1000px,96vw);width:100%}
+dialog.ver::backdrop{background:rgb(0 0 0 / .7)}
+.vbox{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);background:var(--surface);border-radius:12px;overflow:hidden;max-height:90vh}
+.vmid{position:relative;background:#000;display:grid;place-items:center;min-height:360px}
+.vmid video,.vmid img{width:100%;height:100%;max-height:90vh;object-fit:contain;display:block}
+.vmid .muted{color:#ccc}
+.vnav{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:0;background:rgb(255 255 255 / .85);color:#111;font-size:24px;line-height:1}
+.vnav.l{left:10px}.vnav.r{right:10px}.vnav[disabled]{opacity:.3}
+.vcount{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgb(0 0 0 / .6);color:#fff;font-size:12px;border-radius:999px;padding:2px 10px}
+.vside{padding:16px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.vx{border:0;background:transparent;font-size:18px;color:var(--muted);width:32px;height:32px;border-radius:8px}
+.vx:hover{background:var(--hover);color:var(--ink)}
+.vleg{white-space:pre-line;font-size:13px;color:var(--ink2);margin:10px 0;flex:1}
 .cf{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:center}
 
 /* ---------- login ---------- */
@@ -161,6 +193,7 @@ th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;b
 
 /* ---------- celular ---------- */
 .scrim{display:none}
+@media (max-width:1100px){.best{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:860px){
   .shell,.shell.mini{grid-template-columns:minmax(0,1fr)}
   .side{position:fixed;inset:0 auto 0 0;width:272px;z-index:50;transform:translateX(-100%);transition:transform .2s;box-shadow:var(--shadow)}
@@ -177,6 +210,9 @@ th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;b
   .g2{grid-template-columns:minmax(0,1fr)}
   .prof{flex-direction:column}
   .kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .best{grid-template-columns:minmax(0,1fr)}
+  .vbox{grid-template-columns:minmax(0,1fr);overflow-y:auto}
+  .vmid{min-height:280px}
   .cap{max-width:120px}
   th,td{padding:9px 8px}
   .crumb span,.crumb a{display:none}
@@ -314,12 +350,12 @@ async function desconectar(fn,pergunta,ok){if(!confirm(pergunta))return;
   try{await api(fn,{acao:'desconectar'});if(fn==='ig-api'){S.igPerfil=S.igPosts=S.igConta=null}else S.gContas=null;await carregarStatus();flash=aviso('ok',ok)}catch(e){flash=aviso('bad',e.message)}render()}
 
 /* ---------- Instagram: meu perfil ---------- */
-const ABAS=[['perfil','Visão geral'],['posts','Métricas por post']];
+const ABAS=[['perfil','Visão geral'],['posts','Métricas por post'],['melhores','Melhores posts']];
 const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
 const FMT={REEL:'Reels',POST:'Posts do feed',CAROUSEL_CONTAINER:'Carrosséis',STORY:'Stories',AD:'Anúncios',IGTV:'Vídeos',LIVE:'Lives'};
 
 /* ---- período (IG-PER-01): mesmas opções do Gerenciador de Anúncios; "últimos N dias" sem contar hoje ---- */
-const PRESETS=[['hoje','Hoje'],['ontem','Ontem'],['7','Últimos 7 dias'],['14','Últimos 14 dias'],['30','Últimos 30 dias'],['semana','Esta semana'],['semana_passada','Semana passada'],['mes','Este mês'],['mes_passado','Mês passado'],['max','Máximo'],['custom','Personalizado']];
+const PRESETS=[['hoje','Hoje'],['ontem','Ontem'],['7','Últimos 7 dias'],['14','Últimos 14 dias'],['30','Últimos 30 dias'],['90','Últimos 90 dias'],['semana','Esta semana'],['semana_passada','Semana passada'],['mes','Este mês'],['mes_passado','Mês passado'],['max','Máximo'],['custom','Personalizado']];
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const dia0=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
 const soma=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
@@ -327,7 +363,7 @@ function intervalo(p,limiteDias){const h=dia0(new Date());let de,ate;
   const seg=soma(h,-((h.getDay()+6)%7)); // semana começa na segunda
   switch(p.preset){
     case 'hoje':de=ate=h;break; case 'ontem':de=ate=soma(h,-1);break;
-    case '7':case '14':case '30':de=soma(h,-Number(p.preset));ate=soma(h,-1);break;
+    case '7':case '14':case '30':case '90':de=soma(h,-Number(p.preset));ate=soma(h,-1);break;
     case 'semana':de=seg;ate=h;break; case 'semana_passada':de=soma(seg,-7);ate=soma(seg,-1);break;
     case 'mes':de=new Date(h.getFullYear(),h.getMonth(),1);ate=h;break;
     case 'mes_passado':de=new Date(h.getFullYear(),h.getMonth()-1,1);ate=new Date(h.getFullYear(),h.getMonth(),0);break;
@@ -347,8 +383,8 @@ function seletorPeriodo(id,p,limiteDias){const i=intervalo(p,limiteDias);
 function ligarPeriodo(id,p,salvar,depois){const el=$(id);if(!el)return;el.querySelectorAll('[data-p]').forEach(x=>x.onchange=()=>{const k=x.dataset.p;
   p[k]=k==='comparar'?x.checked:x.value;salvar();depois()})}
 const PC=JSON.parse(store.get('pp-pconta')||'{"preset":"7","comparar":true}');
-const PP=JSON.parse(store.get('pp-pposts')||'{"preset":"max","comparar":false}');
-const salvarPC=()=>store.set('pp-pconta',JSON.stringify(PC)),salvarPP=()=>store.set('pp-pposts',JSON.stringify(PP));
+const PP=JSON.parse(store.get('pp-pposts2')||'{"preset":"30","comparar":false}');
+const salvarPC=()=>store.set('pp-pconta',JSON.stringify(PC)),salvarPP=()=>store.set('pp-pposts2',JSON.stringify(PP));
 function delta(a,b){if(a==null||b==null)return '';if(b===0)return a>0?'<span class="dl up">novo</span>':'<span class="dl">—</span>';
   const d=(a-b)/b*100;return `<span class="dl ${d>0?'up':d<0?'down':''}">${d>0?'▲':d<0?'▼':''} ${Math.abs(d).toLocaleString('pt-BR',{maximumFractionDigits:0})}%</span>`}
 
@@ -365,6 +401,7 @@ async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes'
   try{
     if(aba==='perfil'){S.igPerfil=S.igPerfil||await api('ig-api',{acao:'perfil'});await abaVisao(alvo)}
     else if(aba==='posts'){await abaPosts(alvo)}
+    else if(aba==='melhores'){await abaMelhores(alvo)}
     else location.hash='#/instagram/eu/perfil';
   }catch(e){alvo.innerHTML=aviso('bad',e.message)}}
 
@@ -421,51 +458,110 @@ const COLS=[['data','Data'],['views','Visualiz.'],['reach','Alcance'],['likes','
 const F=JSON.parse(store.get('pp-fpost')||'{"ord":"data","dir":-1,"tipo":""}');
 function salvarF(){store.set('pp-fpost',JSON.stringify(F))}
 function valor(x,k){if(k==='data')return new Date(x.data).getTime();if(k==='eng')return engaj(x.metricas)??-1;return (x.metricas||{})[k]??-1}
-async function carregarAte(limite){ // carrega posts até cobrir a data pedida (null = todos)
+const POR_PAG=12;let pagina=0;
+async function maisUmaPagina(){const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo}
+async function carregarAte(limite,minimo=0){ // carrega só o necessário: até cobrir a data pedida, ou até ter "minimo" posts
   if(!S.igPosts){const r=await api('ig-api',{acao:'posts'});S.igPosts={lista:r.posts,proximo:r.proximo}}
-  let n=0;while(S.igPosts.proximo&&n<40){const ult=S.igPosts.lista.at(-1);if(limite&&ult&&new Date(ult.data)<limite)break;
-    const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo;n++}}
+  let n=0;while(S.igPosts.proximo&&n<40){const ult=S.igPosts.lista.at(-1);
+    const cobriuData=limite?(ult&&new Date(ult.data)<limite):true;const cobriuQtd=S.igPosts.lista.length>=minimo;
+    if(cobriuData&&cobriuQtd)break;await maisUmaPagina();n++}}
 function resumo(lista){const conf=lista.filter(x=>confiavel(x.metricas));
   const alc=conf.reduce((s,x)=>s+x.metricas.reach,0),pts=conf.reduce((s,x)=>s+pontos(x.metricas),0);
   const melhor=conf.slice().sort((a,b)=>engaj(b.metricas)-engaj(a.metricas))[0];
   return {posts:lista.length,views:lista.reduce((s,x)=>s+(x.metricas.views||0),0),alcance:alc,eng:alc?pts/alc*100:null,melhor,semAlcance:lista.length-conf.length}}
 const pct=v=>v==null?'—':v.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
-async function abaPosts(el){const i=intervalo(PP,null);
+const dentro=(x,a,b)=>{const d=dia0(new Date(x.data));return d>=a&&d<=b};
+/* No "Máximo" os posts vêm de 12 em 12 da API (nada de carregar 1.000 posts de uma vez). Nos outros períodos carrega só o período. */
+async function postsDoPeriodo(P,minimoMax){const i=intervalo(P,null);
+  if(P.preset==='max')await carregarAte(null,minimoMax);else await carregarAte(P.comparar?i.ant.de:i.de);
+  const todos=S.igPosts.lista;const doTipo=todos.filter(x=>!F.tipo||x.tipo===F.tipo);
+  return {i,todos,doTipo,lista:doTipo.filter(x=>P.preset==='max'||dentro(x,i.de,i.ate)),
+    ant:P.comparar&&P.preset!=='max'?doTipo.filter(x=>dentro(x,i.ant.de,i.ant.ate)):null}}
+async function abaPosts(el){
   el.innerHTML=`<p class="muted"><span class="spin"></span> Carregando os posts do período…</p>`;
-  await carregarAte(PP.preset==='max'?null:(PP.comparar?i.ant.de:i.de));
-  const dentro=(x,a,b)=>{const d=dia0(new Date(x.data));return d>=a&&d<=b};
-  const todos=S.igPosts.lista;
-  const doTipo=todos.filter(x=>!F.tipo||x.tipo===F.tipo);
-  const lista=doTipo.filter(x=>PP.preset==='max'||dentro(x,i.de,i.ate)).sort((a,b)=>(valor(a,F.ord)-valor(b,F.ord))*F.dir);
-  const ant=PP.comparar&&PP.preset!=='max'?doTipo.filter(x=>dentro(x,i.ant.de,i.ant.ate)):null;
+  const {todos,lista:l0,ant}=await postsDoPeriodo(PP,(pagina+1)*POR_PAG);
+  const lista=l0.slice().sort((a,b)=>(valor(a,F.ord)-valor(b,F.ord))*F.dir);
+  const max=PP.preset==='max';const total=lista.length;
+  const paginas=Math.max(1,Math.ceil(total/POR_PAG))+(max&&S.igPosts.proximo?1:0);
+  if(pagina>=paginas)pagina=paginas-1;
+  const visiveis=lista.slice(pagina*POR_PAG,(pagina+1)*POR_PAG);
   const R=resumo(lista),RA=ant?resumo(ant):null;
   const tipos=[...new Set(todos.map(x=>x.tipo))];
-  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Posts publicados no período</h2><p>${PP.preset==='max'?'Todos os posts que o Instagram entrega pela API.':'Posts publicados entre essas datas.'} Clique no título da coluna para ordenar.</p></div>
+  const kp=(l,v,va,fmt=num)=>`<div class="kpi2"><div class="l">${l}</div><div class="v num">${fmt(v)}</div><div class="s">${RA?`${fmt===pct?(v!=null&&va!=null?`<span class="dl ${v>va?'up':v<va?'down':''}">${v>va?'▲':v<va?'▼':''} ${Math.abs(v-va).toLocaleString('pt-BR',{maximumFractionDigits:1})} p.p.</span>`:''):delta(v,va)} <span class="muted">vs ${fmt(va)}</span>`:'&nbsp;'}</div></div>`;
+  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Posts publicados no período</h2><p>${max?`Máximo: os posts vêm de 12 em 12. Ordenação e resumo consideram os ${num(todos.length)} já carregados.`:'Posts publicados entre essas datas.'} Clique no título da coluna para ordenar.</p></div>
     <div class="filtros">${seletorPeriodo('pp',PP,null)}<label>Tipo <select id="f-tipo"><option value="">Todos</option>${tipos.map(t=>`<option value="${esc(t)}"${F.tipo===t?' selected':''}>${esc(TIPO[t]||t)}</option>`).join('')}</select></label></div></div>
-    <div class="cb"><div class="kgrid">
-      <div class="kpi2"><div class="l">Posts</div><div class="v num">${num(R.posts)}</div><div class="s">${RA?`${delta(R.posts,RA.posts)} <span class="muted">vs ${num(RA.posts)}</span>`:'&nbsp;'}</div></div>
-      <div class="kpi2"><div class="l">Visualizações somadas</div><div class="v num">${num(R.views)}</div><div class="s">${RA?`${delta(R.views,RA.views)} <span class="muted">vs ${num(RA.views)}</span>`:'&nbsp;'}</div></div>
-      <div class="kpi2"><div class="l">Alcance somado</div><div class="v num">${num(R.alcance)}</div><div class="s">${RA?`${delta(R.alcance,RA.alcance)} <span class="muted">vs ${num(RA.alcance)}</span>`:'&nbsp;'}</div></div>
-      <div class="kpi2"><div class="l">Engajamento ponderado</div><div class="v num">${pct(R.eng)}</div><div class="s">${RA?`${R.eng!=null&&RA.eng!=null?`<span class="dl ${R.eng>RA.eng?'up':R.eng<RA.eng?'down':''}">${R.eng>RA.eng?'▲':R.eng<RA.eng?'▼':''} ${Math.abs(R.eng-RA.eng).toLocaleString('pt-BR',{maximumFractionDigits:1})} p.p.</span>`:''} <span class="muted">vs ${pct(RA.eng)}</span>`:'&nbsp;'}</div></div>
-    </div>${R.melhor?`<p class="note">Melhor post do período: <a href="${esc(R.melhor.link)}" target="_blank" rel="noopener">${esc((R.melhor.legenda||'(sem legenda)').slice(0,70))}</a> · ${pct(engaj(R.melhor.metricas))}</p>`:''}
+    <div class="cb"><div class="kgrid">${kp('Posts',R.posts,RA&&RA.posts)}${kp('Visualizações somadas',R.views,RA&&RA.views)}${kp('Alcance somado',R.alcance,RA&&RA.alcance)}${kp('Engajamento ponderado',R.eng,RA&&RA.eng,pct)}</div>
+    ${R.melhor?`<p class="note">Melhor post do período, pelo engajamento ponderado: <a href="#/instagram/eu/melhores">${esc((R.melhor.legenda||'(sem legenda)').slice(0,60))}</a> · ${pct(engaj(R.melhor.metricas))} · <a href="#/instagram/eu/melhores">ver os melhores</a></p>`:''}
     ${RA?'<p class="note">Atenção na comparação: os números de cada post somam desde a publicação. Posts mais novos ainda tiveram menos tempo para juntar resultado.</p>':''}</div>
-  ${lista.length?`<div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th>${COLS.map(([k,l])=>`<th class="${k==='data'?'':'n'} ord"><button type="button" data-ord="${k}">${l}${F.ord===k?(F.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
-  <tbody>${lista.map(x=>{const m=x.metricas||{},e=engaj(m);return `<tr><td>${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</td>
-    <td><div class="cap"><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.legenda||'(sem legenda)')}</a></div></td>
+  ${visiveis.length?`<div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th>${COLS.map(([k,l])=>`<th class="${k==='data'?'':'n'} ord"><button type="button" data-ord="${k}">${l}${F.ord===k?(F.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
+  <tbody>${visiveis.map(x=>{const m=x.metricas||{},e=engaj(m);return `<tr><td><button class="thbtn" type="button" data-ver="${esc(x.id)}" aria-label="Ver o post aqui">${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</button></td>
+    <td><div class="cap"><button class="lnk" type="button" data-ver="${esc(x.id)}">${esc(x.legenda||'(sem legenda)')}</button></div></td>
     <td>${esc(TIPO[x.tipo]||x.tipo||'')}</td><td>${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</td>
     <td class="n num">${num(m.views)}</td><td class="n num">${confiavel(m)?num(m.reach):`<span class="muted" title="O Instagram informou alcance ${num(m.reach)}, menor que as curtidas.">${num(m.reach)}*</span>`}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td>
     <td class="n num">${e==null?'<span class="tagx" title="Alcance informado pelo Instagram é menor que as curtidas.">não confiável</span>':`<b>${pct(e)}</b>`}</td></tr>`}).join('')}</tbody></table></div>`
     :'<div class="empty">Nenhum post publicado nesse período.</div>'}
-  <div class="cf">${PP.preset==='max'&&S.igPosts.proximo?'<button class="btn" id="mais" type="button">Carregar mais 12 posts</button>':`<span class="muted">${num(todos.length)} posts carregados${S.igPosts.proximo?'':' (todos que a API entrega)'}.</span>`}</div></section>
+  <div class="cf pag"><button class="btn" id="pg-ant" type="button"${pagina===0?' disabled':''}>← Anterior</button>
+    <span class="muted">Página ${pagina+1} de ${paginas}${max&&S.igPosts.proximo?'+':''} · ${num(total)} post(s)</span>
+    <button class="btn" id="pg-prox" type="button"${pagina>=paginas-1?' disabled':''}>Próxima →</button></div></section>
   <p class="note"><b>Engajamento ponderado</b> = (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1) ÷ alcance. Compartilhar pesa mais porque é o que leva o post a gente nova; curtida é o engajamento mais leve. No período, é a soma dos pontos ÷ a soma do alcance.
   ${R.semAlcance?`<br>* ${num(R.semAlcance)} post(s) com alcance não confiável ficam fora do engajamento: o Instagram não informa alcance correto para posts antigos (até junho de 2024).`:''}</p>`;
-  el.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{const k=b.dataset.ord;if(F.ord===k)F.dir*=-1;else{F.ord=k;F.dir=-1}salvarF();abaPosts(el)});
-  $('f-tipo').onchange=e=>{F.tipo=e.target.value;salvarF();abaPosts(el)};
-  ligarPeriodo('pp',PP,salvarPP,()=>abaPosts(el));
-  const m=$('mais');if(m)m.onclick=async()=>{m.disabled=true;m.innerHTML='<span class="spin"></span> Carregando…';
-    try{const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo;abaPosts(el)}
-    catch(e){m.disabled=false;m.textContent='Carregar mais 12 posts';el.insertAdjacentHTML('afterbegin',aviso('bad',e.message))}};
+  el.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{const k=b.dataset.ord;if(F.ord===k)F.dir*=-1;else{F.ord=k;F.dir=-1}salvarF();pagina=0;abaPosts(el)});
+  $('f-tipo').onchange=e=>{F.tipo=e.target.value;salvarF();pagina=0;abaPosts(el)};
+  ligarPeriodo('pp',PP,salvarPP,()=>{pagina=0;abaPosts(el)});
+  $('pg-ant').onclick=()=>{pagina--;abaPosts(el)};$('pg-prox').onclick=()=>{pagina++;abaPosts(el)};
+  ligarVer(el);
 }
+
+/* ---- Melhores posts do período (IG-MET-09): top 6 pelo engajamento ponderado, com o porquê ---- */
+const PM=JSON.parse(store.get('pp-pmelhores')||'{"preset":"90","comparar":false}');
+if(!PRESETS.find(p=>p[0]===PM.preset))PM.preset='30';
+const salvarPM=()=>store.set('pp-pmelhores',JSON.stringify(PM));
+function porque(m,media){const p=[['shares','compartilhamento',4],['comments','comentário',3],['saved','salvo',2],['likes','curtida',1]]
+  .filter(([k])=>m[k]).map(([k,l,w])=>`${num(m[k])} ${l}${m[k]>1?'s':''} (${num(m[k]*w)} pts)`);
+  const e=engaj(m);const x=media?e/media:null;
+  return `${p.join(' · ')||'sem interações'} ÷ ${num(m.reach)} de alcance${x&&isFinite(x)?` · <b>${x.toLocaleString('pt-BR',{maximumFractionDigits:1})}× a média do período</b>`:''}`}
+async function abaMelhores(el){
+  el.innerHTML=`<p class="muted"><span class="spin"></span> Buscando os melhores posts do período…</p>`;
+  const pmPer={...PM,comparar:false};
+  const {lista}=await postsDoPeriodo(pmPer,48);
+  const conf=lista.filter(x=>confiavel(x.metricas));
+  const R=resumo(lista);
+  const top=conf.sort((a,b)=>engaj(b.metricas)-engaj(a.metricas)).slice(0,6);
+  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Melhores posts do período</h2><p>Os 6 com maior <b>engajamento ponderado</b> (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1, dividido pelo alcance). Clique para ver aqui mesmo.</p></div>
+    <div class="filtros">${seletorPeriodo('pm',PM,null).replace(/<label class="chk">[\s\S]*?<\/label>/,'')}</div></div>
+    <div class="cb">${top.length?`<p class="note" style="margin:0 0 14px">${num(conf.length)} post(s) com alcance confiável no período · engajamento médio do período: <b>${pct(R.eng)}</b>${PM.preset==='max'?` · no Máximo, considera os ${num(S.igPosts.lista.length)} posts mais recentes`:''}.</p>
+    <div class="best">${top.map((x,n)=>{const m=x.metricas;return `<article class="bc"><button class="bimg" type="button" data-ver="${esc(x.id)}" aria-label="Ver o post">${x.capa?`<img src="${esc(x.capa)}" alt="" loading="lazy">`:''}<span class="rank">#${n+1}</span>${x.tipo==='REELS'||x.tipo==='VIDEO'?'<span class="play">▶</span>':''}</button>
+      <div class="bb"><div class="row1"><span class="pill acc">${esc(TIPO[x.tipo]||x.tipo)}</span><span class="muted">${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</span></div>
+      <div class="be num">${pct(engaj(m))}</div><div class="bl">engajamento ponderado</div>
+      <p class="leg">${esc((x.legenda||'(sem legenda)').slice(0,110))}</p>
+      <dl class="bm"><div><dt>Visualiz.</dt><dd class="num">${num(m.views)}</dd></div><div><dt>Alcance</dt><dd class="num">${num(m.reach)}</dd></div><div><dt>Curtidas</dt><dd class="num">${num(m.likes)}</dd></div>
+      <div><dt>Coment.</dt><dd class="num">${num(m.comments)}</dd></div><div><dt>Compart.</dt><dd class="num">${num(m.shares)}</dd></div><div><dt>Salvos</dt><dd class="num">${num(m.saved)}</dd></div></dl>
+      <p class="why"><b>Por que está aqui:</b> ${porque(m,R.eng)}</p></div></article>`}).join('')}</div>`
+    :'<div class="empty">Nenhum post com alcance confiável nesse período. Escolha um período maior.</div>'}</div></section>`;
+  ligarPeriodo('pm',PM,salvarPM,()=>abaMelhores(el));
+  ligarVer(el);
+}
+
+/* ---- Visualizador dentro da página (vídeo toca aqui; carrossel passa foto a foto) ---- */
+function ligarVer(el){el.querySelectorAll('[data-ver]').forEach(b=>b.onclick=()=>abrirPost(b.dataset.ver))}
+async function abrirPost(id){const x=(S.igPosts?.lista||[]).find(p=>p.id===id);const m=x?.metricas||{};
+  let d=$('ver');if(!d){d=document.createElement('dialog');d.id='ver';d.className='ver';document.body.appendChild(d);
+    d.addEventListener('click',e=>{if(e.target===d)d.close()});d.addEventListener('close',()=>{d.querySelectorAll('video').forEach(v=>v.pause());d.innerHTML=''})}
+  d.innerHTML=`<div class="vbox"><div class="vmid" id="vmid"><p class="muted"><span class="spin"></span> Carregando…</p></div>
+    <aside class="vside"><div class="row1"><span class="pill acc">${esc(TIPO[x?.tipo]||x?.tipo||'')}</span><span class="muted">${x?esc(new Date(x.data).toLocaleDateString('pt-BR')):''}</span>
+      <button class="vx" type="button" id="vfechar" aria-label="Fechar">✕</button></div>
+      <div class="be num">${pct(engaj(m))}</div><div class="bl">engajamento ponderado</div>
+      <dl class="bm"><div><dt>Visualiz.</dt><dd class="num">${num(m.views)}</dd></div><div><dt>Alcance</dt><dd class="num">${num(m.reach)}</dd></div><div><dt>Curtidas</dt><dd class="num">${num(m.likes)}</dd></div>
+      <div><dt>Coment.</dt><dd class="num">${num(m.comments)}</dd></div><div><dt>Compart.</dt><dd class="num">${num(m.shares)}</dd></div><div><dt>Salvos</dt><dd class="num">${num(m.saved)}</dd></div></dl>
+      <p class="vleg">${esc(x?.legenda||'')}</p><a class="btn" href="${esc(x?.link||'#')}" target="_blank" rel="noopener">${ic('ext')} Abrir no Instagram</a></aside></div>`;
+  $('vfechar').onclick=()=>d.close();d.showModal();
+  try{const r=await api('ig-api',{acao:'midia',id});let k=0;const mid=$('vmid');if(!mid)return;
+    const desenhar=()=>{const it=r.itens[k];mid.innerHTML=`${it.tipo==='VIDEO'?`<video src="${esc(it.url)}" ${it.capa?`poster="${esc(it.capa)}"`:''} controls autoplay playsinline></video>`:`<img src="${esc(it.url)}" alt="">`}
+      ${r.itens.length>1?`<button class="vnav l" type="button" aria-label="Anterior"${k===0?' disabled':''}>‹</button><button class="vnav r" type="button" aria-label="Próxima"${k===r.itens.length-1?' disabled':''}>›</button><span class="vcount">${k+1} / ${r.itens.length}</span>`:''}`;
+      const l=mid.querySelector('.vnav.l'),rr=mid.querySelector('.vnav.r');if(l)l.onclick=()=>{k--;desenhar()};if(rr)rr.onclick=()=>{k++;desenhar()}};
+    if(!r.itens.length||!r.itens[0].url){mid.innerHTML='<p class="muted">O Instagram não liberou o arquivo deste post. Use “Abrir no Instagram”.</p>';return}
+    desenhar()}
+  catch(e){const mid=$('vmid');if(mid)mid.innerHTML=aviso('bad',e.message)}}
 
 /* ---------- Instagram: clientes ---------- */
 function vIgClientes(v){crumb([['Instagram','#/instagram/eu/perfil'],'Clientes']);
