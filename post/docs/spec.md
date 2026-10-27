@@ -26,7 +26,7 @@ Legenda de status: ✅ pronto · 🆕 entra nesta versão · ⏳ depois
 
 ---
 
-## 3. Fase 1 — Conectar o Google 🆕
+## 3. Fase 1 — Conectar o Google ✅ (no ar e testada com a conta real em 27/10/2026)
 
 Objetivo: entrar, conectar a conta do Google uma vez e ver a lista de perfis. **Só leitura**, nada é publicado nem alterado no Google.
 
