@@ -1,6 +1,6 @@
 # Privo Post — Arquitetura
 
-Data: 2026-10-27 · Base: [spec.md](spec.md), [recon.md](recon.md), leitura do repositório `site-direcional-midia` e do Supabase "central de projetos" · Status: rascunho, aguardando aprovação
+Data: 2026-10-27 · Base: [spec.md](spec.md), [recon.md](recon.md), leitura do repositório `site-direcional-midia` e do Supabase "central de projetos" · Status: aprovada em 27/10/2026; tabelas e funções criadas no Supabase
 
 ## Peças
 
@@ -16,7 +16,7 @@ Data: 2026-10-27 · Base: [spec.md](spec.md), [recon.md](recon.md), leitura do r
 ## Fluxo de conexão
 
 1. Página chama `gbp-oauth-start` com o login do Supabase.
-2. Função grava um código aleatório em `gbp_oauth_estados` (vale 10 min) e devolve o endereço do Google com `access_type=offline`, `prompt=consent`, escopo `https://www.googleapis.com/auth/business.manage`.
+2. Função grava um código aleatório em `gbp_oauth_estados` (vale 10 min) e devolve o endereço do Google com `access_type=offline`, `prompt=consent`, escopos `https://www.googleapis.com/auth/business.manage openid email` (openid/email só para mostrar com qual conta conectou).
 3. Adriano clica em "Permitir" no Google.
 4. Google chama `gbp-oauth-callback?code=…&state=…`.
 5. Função confere o código (existe, não venceu, não foi usado), troca por tokens em `oauth2.googleapis.com/token`, lê o e-mail da conta e grava em `gbp_conexoes`.
@@ -52,6 +52,11 @@ alter table public.gbp_oauth_estados enable row level security;
 -- Sem nenhuma regra de acesso: a página não lê nem grava essas tabelas.
 -- Só as funções (chave de serviço) mexem nelas. Tokens nunca chegam ao navegador.
 ```
+
+## Código
+
+- Funções: `post/supabase/functions/` (`_shared/comum.ts` + uma pasta por função). `gbp-oauth-callback` sobe com `verify_jwt = false`; as outras com `true`.
+- Banco: `post/supabase/migrations/20261027_privo_post_conexao_google.sql`.
 
 ## Chamadas ao Google (fase 1, só leitura)
 
