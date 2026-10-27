@@ -2,116 +2,179 @@
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
 <title>Privo Post</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Privo Post — fase 1: entrar, conectar o Google, ver os perfis (só leitura). Ver post/docs/spec.md */
+/* Privo Post — mini sistema: menu lateral (expande/recolhe), áreas por canal, abas por perfil. Ver post/docs/spec.md */
 :root{
-  --bg:#F3F5F8; --surface:#FFFFFF; --sunk:#E8EDF2; --line:#D8DFE6; --ink:#18202C; --muted:#5D6A79;
-  --accent:#0B6477; --accent-ink:#FFFFFF; --accent-soft:#D6ECEF; --bad:#C2303F; --bad-soft:#FBE3E6; --ok:#0E8A5C; --ok-soft:#DDF3EA; --warn:#8A5A00; --warn-soft:#FBEFD6;
-  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
-  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#F6F7F9; --surface:#FFFFFF; --side:#FBFBFC; --sunk:#EEF1F4; --hover:#F1F3F6; --line:#E3E7EC; --line2:#D5DBE2;
+  --ink:#141A22; --ink2:#3B4654; --muted:#6B7684;
+  --accent:#0B6477; --accent-ink:#FFFFFF; --accent-soft:#E2F0F2;
+  --bad:#C2303F; --bad-soft:#FBE7EA; --ok:#0E8A5C; --ok-soft:#E1F4EB; --warn:#8A5A00; --warn-soft:#FBF0DA;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --f-num:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --wside:248px; --shadow:0 12px 32px rgb(15 25 40 / .14);
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F131A; --surface:#171C25; --sunk:#252C37; --line:#2C3541; --ink:#E4E9EF; --muted:#94A0AE;
-  --accent:#3FB2C6; --accent-ink:#06181C; --accent-soft:#14343B; --bad:#F0606F; --bad-soft:#3A1D23; --ok:#27B37F; --ok-soft:#123227; --warn:#E9B44C; --warn-soft:#3A2F14; color-scheme:dark}}
+  --bg:#0E1116; --surface:#151A21; --side:#12161C; --sunk:#1C222B; --hover:#1A2028; --line:#242C36; --line2:#2E3743;
+  --ink:#E6EAEF; --ink2:#C3CBD5; --muted:#8C97A5; --accent:#4CB8CB; --accent-ink:#06181C; --accent-soft:#13313A;
+  --bad:#F0606F; --bad-soft:#3A1D23; --ok:#2DBB85; --ok-soft:#12302A; --warn:#E9B44C; --warn-soft:#382D14; --shadow:0 12px 34px rgb(0 0 0 / .5); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F131A; --surface:#171C25; --sunk:#252C37; --line:#2C3541; --ink:#E4E9EF; --muted:#94A0AE;
-  --accent:#3FB2C6; --accent-ink:#06181C; --accent-soft:#14343B; --bad:#F0606F; --bad-soft:#3A1D23; --ok:#27B37F; --ok-soft:#123227; --warn:#E9B44C; --warn-soft:#3A2F14; color-scheme:dark}
+  --bg:#0E1116; --surface:#151A21; --side:#12161C; --sunk:#1C222B; --hover:#1A2028; --line:#242C36; --line2:#2E3743;
+  --ink:#E6EAEF; --ink2:#C3CBD5; --muted:#8C97A5; --accent:#4CB8CB; --accent-ink:#06181C; --accent-soft:#13313A;
+  --bad:#F0606F; --bad-soft:#3A1D23; --ok:#2DBB85; --ok-soft:#12302A; --warn:#E9B44C; --warn-soft:#382D14; --shadow:0 12px 34px rgb(0 0 0 / .5); color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
-  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
-button{font:inherit;cursor:pointer}
-.wrap{max-width:760px;margin:0 auto;padding:24px 16px 48px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
-.brand small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.brand h1{margin:0;font-family:var(--f-display);font-size:26px;line-height:1.1}
-.brand h1 span{color:var(--accent)}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font-weight:600}
-.btn:hover{border-color:var(--accent);color:var(--accent)}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.5}
+button{font:inherit;cursor:pointer;color:inherit}
+a{color:var(--accent)}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+
+/* ---------- casca ---------- */
+.shell{display:grid;grid-template-columns:var(--wside) minmax(0,1fr);min-height:100vh}
+.shell.mini{--wside:60px}
+.side{position:sticky;top:0;height:100vh;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0px) + 12px) 10px calc(env(safe-area-inset-bottom,0px) + 10px) max(10px,env(safe-area-inset-left,0px));overflow-y:auto;overflow-x:hidden}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 6px 14px;min-height:44px}
+.logo{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+.brand b{display:block;font-size:14px;line-height:1.1}
+.brand small{display:block;font-size:11px;color:var(--muted)}
+.nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav .sec{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:14px 8px 4px}
+.ni{position:relative;display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;border-radius:8px;padding:7px 8px;text-align:left;color:var(--ink2);text-decoration:none;font-weight:500;min-height:34px}
+.ni:hover{background:var(--hover);color:var(--ink)}
+.ni[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.ni .lbl{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ni .chev{width:14px;height:14px;transition:transform .15s;opacity:.7}
+.ni[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.ni .dot{width:7px;height:7px;border-radius:50%;background:var(--line2);flex:none}
+.ni .dot.on{background:var(--ok)}
+.sub{display:flex;flex-direction:column;gap:1px;margin:1px 0 4px 17px;padding-left:11px;border-left:1px solid var(--line)}
+.sub .ni{font-size:13px;min-height:30px;padding:5px 8px}
+.sub .grp{font-size:11px;color:var(--muted);padding:8px 8px 2px;font-weight:600}
+.sub .tag{font-size:10px;font-weight:700;border-radius:999px;padding:1px 7px;background:var(--warn-soft);color:var(--warn);flex:none}
+.sidefoot{border-top:1px solid var(--line);padding-top:8px;margin-top:8px;display:flex;flex-direction:column;gap:2px}
+.who{font-size:12px;color:var(--muted);padding:4px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tip{position:absolute;left:52px;top:50%;transform:translateY(-50%);background:var(--ink);color:var(--surface);font-size:12px;font-weight:600;padding:4px 9px;border-radius:6px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .12s;z-index:60}
+.shell.mini .side{padding-left:10px;padding-right:10px}
+.shell.mini .brand div,.shell.mini .ni .lbl,.shell.mini .ni .chev,.shell.mini .nav .sec,.shell.mini .sub,.shell.mini .who,.shell.mini .ni .dot{display:none}
+.shell.mini .ni{justify-content:center;padding:8px}
+.shell.mini .ni:hover .tip{opacity:1}
+.shell.mini .brand{justify-content:center;padding:4px 0 14px}
+.shell.mini .side{overflow:visible}
+.shell.mini .toggle svg{transform:rotate(180deg)}
+
+/* ---------- área principal ---------- */
+.main{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 24px 10px;min-height:52px}
+.crumb{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;min-width:0;flex:1}
+.crumb b{color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb span{white-space:nowrap}
+.burger{display:none;border:1px solid var(--line);background:var(--surface);border-radius:8px;width:34px;height:34px;place-items:center}
+.content{padding:24px;max-width:1180px;width:100%}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.ph h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.ph p{margin:2px 0 0;color:var(--muted)}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-4px 0 20px;overflow-x:auto;scrollbar-width:none}
+.tabs a{padding:9px 12px;color:var(--muted);text-decoration:none;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs a:hover{color:var(--ink)}
+.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.card+.card{margin-top:16px}
+.grid>.card+.card{margin-top:0}
+.ch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.ch h2{margin:0;font-size:14px;font-weight:600}
+.ch p{margin:0;color:var(--muted);font-size:12px}
+.cb{padding:16px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--hover)}
 .btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.pri:hover{filter:brightness(1.07);color:var(--accent-ink)}
-.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.pri:hover{filter:brightness(1.07)}
 .btn[disabled]{opacity:.55;cursor:default}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
-.card+.card{margin-top:14px}
-.card h2{margin:0 0 4px;font-family:var(--f-display);font-size:18px}
 .muted{color:var(--muted)}
-.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.row.sp{justify-content:space-between}
-.msg{border-radius:10px;padding:10px 14px;margin-bottom:14px;font-weight:500}
-.msg.ok{background:var(--ok-soft);color:var(--ok)}
-.msg.bad{background:var(--bad-soft);color:var(--bad)}
-.msg.warn{background:var(--warn-soft);color:var(--warn)}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-right:6px}
-.dot.on{background:var(--ok)}
-.acc{margin-top:16px}
-.acc h3{margin:0 0 8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.prof{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
-.prof b{display:block}
-.prof .end{font-size:13px;color:var(--muted)}
-.tag{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
-.tag.meu{background:var(--accent-soft);color:var(--accent)}
-.tag.cli{background:var(--warn-soft);color:var(--warn)}
-.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
-.login form{display:flex;flex-direction:column;gap:14px}
-.login label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
-.login input{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px}
-.login input:focus{outline:2px solid var(--accent);outline-offset:1px}
-.login .err{color:var(--bad);min-height:1.2em;margin:0;font-size:14px}
-.gbtn{display:inline-flex;align-items:center;gap:10px}
-.gbtn svg{width:18px;height:18px}
+.msg{border-radius:8px;padding:10px 14px;margin-bottom:16px;font-weight:500}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}.msg.bad{background:var(--bad-soft);color:var(--bad)}.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--sunk);color:var(--ink2);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}.pill.acc{background:var(--accent-soft);color:var(--accent)}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.kpi{padding:14px 16px}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .v{font-size:24px;font-weight:600;margin-top:2px;letter-spacing:-.02em}
+.kpi .s{font-size:12px;color:var(--muted)}
+.prof{display:flex;gap:16px;align-items:flex-start}
+.av{width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--sunk);flex:none;border:1px solid var(--line)}
+.prof h3{margin:0;font-size:16px}
+.bio{white-space:pre-line;margin:8px 0 0;color:var(--ink2)}
+.stats{display:flex;gap:22px;margin-top:10px;flex-wrap:wrap}
+.stats b{display:block;font-size:16px}
+.stats span{font-size:12px;color:var(--muted)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;font-weight:600;color:var(--muted);background:var(--side)}
+td.n,th.n{text-align:right}
+tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--hover)}
+.thumb{width:40px;height:50px;border-radius:6px;object-fit:cover;background:var(--sunk);display:block}
+.cap{max-width:280px;overflow:hidden;text-overflow:ellipsis;color:var(--ink2)}
+.list .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.list .row:last-child{border-bottom:0}
+.list .row b{display:block;font-weight:600}
+.empty{padding:28px 16px;text-align:center;color:var(--muted)}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .7s linear infinite;vertical-align:-2px}
 @keyframes r{to{transform:rotate(360deg)}}
-.ig-top{display:flex;gap:14px;align-items:center;margin-top:14px}
-.ig-top img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:var(--sunk)}
-.nums{display:flex;gap:18px;flex-wrap:wrap;margin-top:4px}
-.nums b{font-size:18px;display:block;line-height:1.1}
-.nums span{font-size:12px;color:var(--muted)}
-.posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:16px}
-.post{border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
-.post .capa{aspect-ratio:4/5;background:var(--sunk);display:block}
-.post .capa img{width:100%;height:100%;object-fit:cover;display:block}
-.post .info{padding:10px 12px;display:flex;flex-direction:column;gap:6px}
-.post .meta{font-size:12px;color:var(--muted)}
-.post .leg{font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.post dl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:4px 0 0}
-.post dt{font-size:11px;color:var(--muted)}
-.post dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
-@media (max-width:520px){.posts{grid-template-columns:1fr 1fr;gap:8px}.post .info{padding:8px}.post dl{grid-template-columns:1fr 1fr}.brand h1{font-size:22px}.prof{flex-direction:column}.row.sp{flex-direction:column;align-items:flex-start}}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+
+/* ---------- login ---------- */
+.login{min-height:100vh;display:grid;place-items:center;padding:16px}
+.login form{width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px}
+.login label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:13px}
+.login input{font:inherit;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 11px}
+.login input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.login .err{color:var(--bad);min-height:1.2em;margin:0;font-size:13px}
+.login .btn{justify-content:center;padding:10px}
+
+/* ---------- celular ---------- */
+.scrim{display:none}
+@media (max-width:860px){
+  .shell,.shell.mini{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;inset:0 auto 0 0;width:272px;z-index:50;transform:translateX(-100%);transition:transform .2s;box-shadow:var(--shadow)}
+  .shell.open .side{transform:none}
+  .shell.mini .brand div,.shell.mini .ni .lbl,.shell.mini .ni .chev,.shell.mini .nav .sec,.shell.mini .sub,.shell.mini .who,.shell.mini .ni .dot{display:revert}
+  .shell.mini .ni{justify-content:flex-start;padding:7px 8px}
+  .toggle{display:none!important}
+  .scrim{display:block;position:fixed;inset:0;background:rgb(0 0 0 / .35);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+  .shell.open .scrim{opacity:1;pointer-events:auto}
+  .burger{display:grid}
+  .top{padding-left:16px;padding-right:16px}
+  .content{padding:16px}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g2{grid-template-columns:minmax(0,1fr)}
+  .prof{flex-direction:column}
+  .cap{max-width:120px}
+  th,td{padding:9px 8px}
+  .crumb span{display:none}
+}
 </style></head>
 <body>
-<div class="login" id="login" hidden><form id="lg-form"><div class="brand"><small>Direcional Mídia</small><h1>Privo <span>Post</span></h1></div>
-<label>E-mail<input id="lg-email" type="email" autocomplete="username" required></label>
-<label>Senha<input id="lg-pass" type="password" autocomplete="current-password" required></label>
-<p class="err" id="lg-msg" role="alert"></p><button class="btn pri" id="lg-btn" type="submit">Entrar</button></form></div>
+<div class="login" id="login" hidden><form id="lg-form">
+  <div class="brand" style="padding:0"><span class="logo">PP</span><div><b>Privo Post</b><small>Direcional Mídia</small></div></div>
+  <label>E-mail<input id="lg-email" type="email" autocomplete="username" required></label>
+  <label>Senha<input id="lg-pass" type="password" autocomplete="current-password" required></label>
+  <p class="err" id="lg-msg" role="alert"></p><button class="btn pri" id="lg-btn" type="submit">Entrar</button></form></div>
 
-<div class="wrap" id="app" hidden>
-  <div class="top"><div class="brand"><small>Direcional Mídia</small><h1>Privo <span>Post</span></h1></div>
-    <button class="btn ghost" id="sair" type="button">Sair</button></div>
-  <div id="aviso" role="status"></div>
-
-  <section class="card" id="ig-conexao" aria-labelledby="ig-t">
-    <h2 id="ig-t">Instagram</h2>
-    <div id="ig-corpo" class="muted"><span class="spin"></span> Carregando…</div>
-  </section>
-
-  <section class="card" id="ig-perfil" aria-labelledby="igp-t" hidden>
-    <div class="row sp"><div><h2 id="igp-t">Perfil e últimos posts</h2><span class="muted">Só leitura nesta etapa. Nada é publicado no Instagram.</span></div>
-      <button class="btn" id="ig-atualizar" type="button">Atualizar</button></div>
-    <div id="igp-corpo"></div>
-  </section>
-
-  <section class="card" id="conexao" aria-labelledby="cx-t">
-    <h2 id="cx-t">Conta do Google</h2>
-    <div id="cx-corpo" class="muted"><span class="spin"></span> Carregando…</div>
-  </section>
-
-  <section class="card" id="perfis" aria-labelledby="pf-t" hidden>
-    <div class="row sp"><div><h2 id="pf-t">Perfis da Empresa</h2><span class="muted">Só leitura nesta fase. Nada é publicado ou alterado no Google.</span></div>
-      <button class="btn" id="atualizar" type="button">Atualizar lista</button></div>
-    <div id="pf-corpo"></div>
-  </section>
+<div class="shell" id="shell" hidden>
+  <aside class="side" id="side" aria-label="Menu principal"></aside>
+  <div class="scrim" id="scrim"></div>
+  <div class="main">
+    <header class="top"><button class="burger" id="burger" type="button" aria-label="Abrir menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <nav class="crumb" id="crumb" aria-label="Você está em"></nav><div id="topact"></div></header>
+    <main class="content" id="view"></main>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -120,92 +183,181 @@ const SB_URL='https://ftahvdzbyqnvarukytws.supabase.co',SB_KEY='sb_publishable_T
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const G_ICON='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+const num=n=>n==null?'—':Number(n).toLocaleString('pt-BR');
+const dataBR=d=>{if(!d)return '';const x=new Date(d+(String(d).length===10?'T12:00:00':''));return isNaN(x)?'':x.toLocaleDateString('pt-BR')};
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 
-/* CON-02/03: mensagem da volta do Google */
-const VOLTA={conectado:['ok','Google conectado.'],cancelado:['warn','Conexão cancelada. Nada foi guardado.'],expirado:['bad','O pedido de conexão venceu ou já foi usado. Clique em Conectar de novo.'],
-  'sem-permissao':['bad','O Google não deu a permissão de gerenciar os perfis. Conecte de novo e marque a permissão.'],erro:['bad','Não deu para conectar. Tente de novo.']};
-function aviso(tipo,texto){$('aviso').innerHTML=texto?`<div class="msg ${tipo}">${esc(texto)}</div>`:''}
-const VOLTA_IG={conectado:['ok','Instagram conectado.'],cancelado:['warn','Conexão com o Instagram cancelada. Nada foi guardado.'],expirado:['bad','O pedido de conexão venceu ou já foi usado. Clique em Conectar de novo.'],
-  'sem-permissao':['bad','O Instagram não deu a permissão de publicar. Conecte de novo e deixe todas as permissões marcadas.'],erro:['bad','Não deu para conectar o Instagram. Tente de novo.']};
-(()=>{const q=new URLSearchParams(location.search),g=q.get('google'),i=q.get('instagram');
-  if(g){const v=VOLTA[g]||VOLTA.erro;aviso(v[0],v[1])}else if(i){const v=VOLTA_IG[i]||VOLTA_IG.erro;aviso(v[0],v[1])}
-  if(g||i)history.replaceState(null,'',location.pathname)})();
+/* ---------- ícones ---------- */
+const P={
+  home:'<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/>',
+  ig:'<rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="currentColor"/>',
+  gmn:'<path d="M3 9.5 4.5 5h15L21 9.5"/><path d="M3 9.5a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-4h4v4"/>',
+  plug:'<path d="M9 7V3M15 7V3"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v4"/>',
+  chev:'<path d="m9 6 6 6-6 6"/>',panel:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/><path d="m15 10-2 2 2 2"/>',
+  out:'<path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4"/><path d="M6 12h10"/>',ext:'<path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M19 14v6H4V5h6"/>'};
+const ic=(n,cls='i')=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n]}</svg>`;
 
+/* ---------- dados ---------- */
+const S={user:null,ig:null,igPerfil:null,igPosts:null,igConta:null,g:null,gContas:null,aberto:JSON.parse(store.get('pp-aberto')||'{"ig":true,"gmn":true}')};
 async function api(fn,corpo){const r=await sb.functions.invoke(fn,{body:corpo||{}});
   if(r.error){let m='Não deu para falar com o servidor. Tente de novo.';try{const j=await r.error.context.json();if(j&&j.erro)m=j.erro}catch(e){}throw new Error(m)}
   return r.data}
+async function carregarStatus(){
+  const [i,g]=await Promise.allSettled([api('ig-api',{acao:'status'}),api('gbp-api',{acao:'status'})]);
+  S.ig=i.status==='fulfilled'?i.value:{conectado:false,erro:i.reason.message};
+  S.g=g.status==='fulfilled'?g.value:{conectado:false,erro:g.reason.message};
+  if(S.g.conectado&&!S.gContas){try{S.gContas=(await api('gbp-api',{acao:'perfis'})).contas}catch(e){S.gContas={erro:e.message}}}
+}
+const gPerfis=()=>Array.isArray(S.gContas)?S.gContas.flatMap(a=>a.perfis.map(p=>({...p,conta:a.nome}))):[];
+const slug=id=>encodeURIComponent(id);
 
-/* ACE-01/02 */
+/* ---------- menu lateral ---------- */
+function renderSide(){const r=rota();const cur=h=>location.hash===h||(h!=='#/'&&location.hash.startsWith(h+'/'))?' aria-current="page"':'';
+  const meus=gPerfis().filter(p=>!p.cliente),cli=gPerfis().filter(p=>p.cliente);
+  const igU=S.ig&&S.ig.conectado?'@'+(S.ig.usuario||'meu perfil'):null;
+  $('side').innerHTML=`<div class="brand"><span class="logo">PP</span><div><b>Privo Post</b><small>Direcional Mídia</small></div></div>
+  <nav class="nav">
+    <a class="ni" href="#/"${location.hash===''||location.hash==='#/'?' aria-current="page"':''}>${ic('home')}<span class="lbl">Painel</span><span class="tip">Painel</span></a>
+    <div class="sec">Canais</div>
+    <button class="ni" type="button" data-tg="ig" aria-expanded="${!!S.aberto.ig}">${ic('ig')}<span class="lbl">Instagram</span><span class="dot${S.ig&&S.ig.conectado?' on':''}"></span>${ic('chev','i chev')}<span class="tip">Instagram</span></button>
+    ${S.aberto.ig?`<div class="sub"><div class="grp">Meu perfil</div>
+      ${igU?`<a class="ni" href="#/instagram/eu/perfil"${cur('#/instagram/eu')}><span class="lbl">${esc(igU)}</span></a>`:`<a class="ni" href="#/conexoes"><span class="lbl muted">Conectar…</span></a>`}
+      <div class="grp">Clientes</div><a class="ni" href="#/instagram/clientes"${cur('#/instagram/clientes')}><span class="lbl">Nenhum ainda</span></a></div>`:''}
+    <button class="ni" type="button" data-tg="gmn" aria-expanded="${!!S.aberto.gmn}">${ic('gmn')}<span class="lbl">Google Meu Negócio</span><span class="dot${S.g&&S.g.conectado?' on':''}"></span>${ic('chev','i chev')}<span class="tip">Google Meu Negócio</span></button>
+    ${S.aberto.gmn?`<div class="sub"><div class="grp">Meu perfil</div>
+      ${S.g&&S.g.conectado?(meus.length?meus.map(p=>`<a class="ni" href="#/google/${slug(p.id)}"${cur('#/google/'+slug(p.id))}><span class="lbl">${esc(p.nome)}</span></a>`).join(''):'<span class="ni"><span class="lbl muted">Carregando…</span></span>'):`<a class="ni" href="#/conexoes"><span class="lbl muted">Conectar…</span></a>`}
+      ${cli.length?`<div class="grp">Clientes</div>${cli.map(p=>`<a class="ni" href="#/google/${slug(p.id)}"${cur('#/google/'+slug(p.id))}><span class="lbl">${esc(p.nome)}</span><span class="tag">não usar</span></a>`).join('')}`:''}</div>`:''}
+    <div class="sec">Sistema</div>
+    <a class="ni" href="#/conexoes"${cur('#/conexoes')}>${ic('plug')}<span class="lbl">Conexões</span><span class="tip">Conexões</span></a>
+  </nav>
+  <div class="sidefoot"><div class="who" title="${esc(S.user&&S.user.email)}">${esc(S.user&&S.user.email)}</div>
+    <button class="ni toggle" type="button" id="tgl">${ic('panel')}<span class="lbl">Recolher menu</span><span class="tip">Expandir menu</span></button>
+    <button class="ni" type="button" id="sair">${ic('out')}<span class="lbl">Sair</span><span class="tip">Sair</span></button></div>`;
+  $('side').querySelectorAll('[data-tg]').forEach(b=>b.onclick=()=>{const k=b.dataset.tg;
+    if($('shell').classList.contains('mini')){setMini(false);S.aberto[k]=true}else S.aberto[k]=!S.aberto[k];
+    store.set('pp-aberto',JSON.stringify(S.aberto));renderSide()});
+  $('tgl').onclick=()=>setMini(!$('shell').classList.contains('mini'));
+  $('sair').onclick=async()=>{await sb.auth.signOut();location.hash='';location.reload()};
+  $('side').querySelectorAll('a.ni').forEach(a=>a.addEventListener('click',()=>$('shell').classList.remove('open')));
+}
+function setMini(v){$('shell').classList.toggle('mini',v);store.set('pp-mini',v?'1':'0');renderSide()}
+$('burger').onclick=()=>$('shell').classList.add('open');
+$('scrim').onclick=()=>$('shell').classList.remove('open');
+
+/* ---------- rotas ---------- */
+function rota(){return (location.hash.replace(/^#\/?/,'')||'').split('/').filter(Boolean)}
+function crumb(partes){$('crumb').innerHTML=partes.map((p,i)=>i===partes.length-1?`<b>${esc(p)}</b>`:`<span>${esc(p)}</span><span>/</span>`).join('')}
+function aviso(tipo,texto){return texto?`<div class="msg ${tipo}" role="status">${esc(texto)}</div>`:''}
+let flash='';
+async function render(){renderSide();$('topact').innerHTML='';const r=rota();const v=$('view');
+  if(!r.length)return vPainel(v);
+  if(r[0]==='conexoes')return vConexoes(v);
+  if(r[0]==='instagram'&&r[1]==='clientes')return vIgClientes(v);
+  if(r[0]==='instagram'&&r[1]==='eu')return vIg(v,r[2]||'perfil');
+  if(r[0]==='google'&&r[1])return vGoogle(v,decodeURIComponent(r.slice(1).join('/')));
+  location.hash='#/'}
+window.addEventListener('hashchange',render);
+
+/* ---------- Painel ---------- */
+function vPainel(v){crumb(['Painel']);const igOn=S.ig&&S.ig.conectado,gOn=S.g&&S.g.conectado;
+  v.innerHTML=`${flash}<div class="ph"><div><h1>Painel</h1><p>Seus canais conectados ao Privo Post.</p></div></div>
+  <div class="grid g2">
+    <section class="card"><div class="ch"><h2>${ic('ig')} Instagram</h2><span class="pill ${igOn?'ok':''}">${igOn?'Conectado':'Não conectado'}</span></div>
+      <div class="cb">${igOn?`<p style="margin:0 0 12px">Conectado como <b>@${esc(S.ig.usuario)}</b>.</p><a class="btn" href="#/instagram/eu/metricas">Ver métricas da conta</a> <a class="btn" href="#/instagram/eu/posts">Ver posts</a>`
+        :`<p class="muted" style="margin:0 0 12px">Conecte para ver perfil e métricas.</p><a class="btn pri" href="#/conexoes">Conectar</a>`}</div></section>
+    <section class="card"><div class="ch"><h2>${ic('gmn')} Google Meu Negócio</h2><span class="pill ${gOn?'ok':''}">${gOn?'Conectado':'Não conectado'}</span></div>
+      <div class="cb">${gOn?`<p style="margin:0 0 12px">Conectado como <b>${esc(S.g.email)}</b> · ${num(gPerfis().length)} perfis (${num(gPerfis().filter(p=>p.cliente).length)} de clientes).</p><p class="note" style="margin:0">Posts no Google entram numa próxima fase (hoje o Windsor cuida disso).</p>`
+        :`<p class="muted" style="margin:0 0 12px">Conecte para listar seus perfis.</p><a class="btn pri" href="#/conexoes">Conectar</a>`}</div></section>
+  </div>`;flash=''}
+
+/* ---------- Conexões ---------- */
+function vConexoes(v){crumb(['Sistema','Conexões']);const igOn=S.ig&&S.ig.conectado,gOn=S.g&&S.g.conectado;
+  v.innerHTML=`${flash}<div class="ph"><div><h1>Conexões</h1><p>Contas que o Privo Post pode acessar. As chaves ficam guardadas no servidor, nunca no navegador.</p></div></div>
+  <section class="card list">
+    <div class="row"><div style="display:flex;gap:12px;align-items:center">${ic('ig')}<div><b>Instagram</b><span class="muted">${igOn?`@${esc(S.ig.usuario)} · autorização renova sozinha (vence ${esc(dataBR(S.ig.expira_em))})`:(S.ig&&S.ig.erro?esc(S.ig.erro):'Não conectado')}</span></div></div>
+      ${igOn?'<button class="btn" id="ig-off" type="button">Desconectar</button>':'<button class="btn pri" id="ig-on" type="button">Conectar o Instagram</button>'}</div>
+    <div class="row"><div style="display:flex;gap:12px;align-items:center">${ic('gmn')}<div><b>Google Meu Negócio</b><span class="muted">${gOn?esc(S.g.email):(S.g&&S.g.erro?esc(S.g.erro):'Não conectado')}</span></div></div>
+      ${gOn?'<button class="btn" id="g-off" type="button">Desconectar</button>':'<button class="btn pri" id="g-on" type="button">Conectar com o Google</button>'}</div>
+  </section>`;flash='';
+  const on=(id,fn)=>{const b=$(id);if(b)b.onclick=fn};
+  on('ig-on',()=>conectar('ig-oauth-start','ig-on'));on('g-on',()=>conectar('gbp-oauth-start','g-on'));
+  on('ig-off',()=>desconectar('ig-api','Desconectar o Instagram? Para tirar o acesso de vez, remova também o "Privo Post-IG" em Instagram > Configurações > Apps e sites.','Instagram desconectado.'));
+  on('g-off',()=>desconectar('gbp-api','Desconectar a conta do Google? O Privo Post deixa de acessar seus perfis até você conectar de novo.','Google desconectado.'));
+}
+async function conectar(fn,id){const b=$(id);b.disabled=true;b.innerHTML='<span class="spin"></span> Abrindo…';
+  try{location.href=(await api(fn)).url}catch(e){flash=aviso('bad',e.message);render()}}
+async function desconectar(fn,pergunta,ok){if(!confirm(pergunta))return;
+  try{await api(fn,{acao:'desconectar'});if(fn==='ig-api'){S.igPerfil=S.igPosts=S.igConta=null}else S.gContas=null;await carregarStatus();flash=aviso('ok',ok)}catch(e){flash=aviso('bad',e.message)}render()}
+
+/* ---------- Instagram: meu perfil ---------- */
+const ABAS=[['perfil','Visão geral'],['metricas','Métricas da conta'],['posts','Métricas por post']];
+async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes';return}
+  crumb(['Instagram','@'+(S.ig.usuario||''),ABAS.find(a=>a[0]===aba)?.[1]||'']);
+  $('topact').innerHTML=`<button class="btn" id="recarregar" type="button">Atualizar</button>`;
+  $('recarregar').onclick=()=>{if(aba==='perfil')S.igPerfil=null;if(aba==='metricas')S.igConta=null;if(aba==='posts')S.igPosts=null;render()};
+  v.innerHTML=`${flash}<div class="ph"><div><h1>@${esc(S.ig.usuario)}</h1><p>Meu perfil · só leitura nesta etapa, nada é publicado.</p></div>
+    <a class="btn" href="https://www.instagram.com/${esc(S.ig.usuario)}/" target="_blank" rel="noopener">${ic('ext')} Abrir no Instagram</a></div>
+    <nav class="tabs" aria-label="Seções do perfil">${ABAS.map(([k,l])=>`<a href="#/instagram/eu/${k}"${k===aba?' aria-current="page"':''}>${l}</a>`).join('')}</nav>
+    <div id="aba"><p class="muted"><span class="spin"></span> Buscando no Instagram…</p></div>`;flash='';
+  const alvo=$('aba');
+  try{
+    if(aba==='perfil'){S.igPerfil=S.igPerfil||await api('ig-api',{acao:'perfil'});abaPerfil(alvo,S.igPerfil)}
+    else if(aba==='metricas'){S.igConta=S.igConta||await api('ig-api',{acao:'conta'});abaConta(alvo,S.igConta)}
+    else if(aba==='posts'){S.igPosts=S.igPosts||await api('ig-api',{acao:'posts'});abaPosts(alvo,S.igPosts.posts)}
+    else location.hash='#/instagram/eu/perfil';
+  }catch(e){alvo.innerHTML=aviso('bad',e.message)}}
+function abaPerfil(el,f){el.innerHTML=`<section class="card"><div class="cb"><div class="prof">${f.foto?`<img class="av" src="${esc(f.foto)}" alt="">`:'<div class="av"></div>'}
+  <div style="min-width:0"><h3>${esc(f.nome||f.usuario)}</h3><span class="muted">@${esc(f.usuario)} · ${esc(f.tipo==='MEDIA_CREATOR'?'Criador de conteúdo':f.tipo==='BUSINESS'?'Empresa':f.tipo||'')}</span>
+  <p class="bio">${f.bio?esc(f.bio):'<span class="muted">Sem bio.</span>'}</p>${f.site?`<p style="margin:6px 0 0"><a href="${esc(f.site)}" target="_blank" rel="noopener">${esc(f.site)}</a></p>`:''}
+  <div class="stats"><div><b class="num">${num(f.seguidores)}</b><span>seguidores</span></div><div><b class="num">${num(f.seguindo)}</b><span>seguindo</span></div><div><b class="num">${num(f.posts)}</b><span>posts</span></div></div></div></div></div></section>`}
+const MC=[['views','Visualizações'],['reach','Contas alcançadas'],['accounts_engaged','Contas engajadas'],['total_interactions','Interações'],['likes','Curtidas'],['comments','Comentários'],
+  ['shares','Compartilhamentos'],['saves','Salvamentos'],['profile_links_taps','Toques em links do perfil'],['seguiram','Começaram a seguir'],['deixaram','Deixaram de seguir']];
+function abaConta(el,{periodos}){const [d7,d14,d30]=periodos;
+  el.innerHTML=`<div class="grid g4">${[['views','Visualizações'],['reach','Contas alcançadas'],['accounts_engaged','Contas engajadas'],['total_interactions','Interações']].map(([k,l])=>
+    `<section class="card kpi"><div class="l">${l}</div><div class="v num">${num(d7.m[k])}</div><div class="s">últimos 7 dias</div></section>`).join('')}</div>
+  <section class="card" style="margin-top:16px"><div class="ch"><div><h2>Métricas da conta</h2><p>Dias corridos, sem contar hoje.</p></div></div>
+    <div class="tw"><table><thead><tr><th>Métrica</th>${periodos.map(p=>`<th class="n">Últimos ${p.dias} dias<br><span style="font-weight:500">${esc(dataBR(p.de))} a ${esc(dataBR(p.ate))}</span></th>`).join('')}</tr></thead>
+    <tbody>${MC.map(([k,l])=>`<tr><td>${l}</td>${periodos.map(p=>`<td class="n num">${num(p.m[k])}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+  <p class="note">“—” = o Instagram não informou essa métrica para o período. Dados do Instagram podem levar até 48 h para fechar.</p>`}
+const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
+function abaPosts(el,posts){if(!posts.length){el.innerHTML='<section class="card"><div class="empty">Nenhum post encontrado.</div></section>';return}
+  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Últimos ${posts.length} posts</h2><p>Números desde a publicação de cada post.</p></div></div>
+  <div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th><th>Data</th><th class="n">Visualiz.</th><th class="n">Alcance</th><th class="n">Curtidas</th><th class="n">Coment.</th><th class="n">Compart.</th><th class="n">Salvos</th></tr></thead>
+  <tbody>${posts.map(x=>{const m=x.metricas||{};return `<tr><td>${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</td>
+    <td><div class="cap"><a href="${esc(x.link)}" target="_blank" rel="noopener">${esc(x.legenda||'(sem legenda)')}</a></div></td>
+    <td>${esc(TIPO[x.tipo]||x.tipo||'')}</td><td>${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</td>
+    <td class="n num">${num(m.views)}</td><td class="n num">${num(m.reach)}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td></tr>`}).join('')}</tbody></table></div></section>`}
+
+/* ---------- Instagram: clientes ---------- */
+function vIgClientes(v){crumb(['Instagram','Clientes']);
+  v.innerHTML=`<div class="ph"><div><h1>Clientes no Instagram</h1><p>Perfis de clientes que você gerencia.</p></div></div>
+  <section class="card"><div class="empty">Nenhum cliente conectado ainda.<br><span class="note">Cada cliente vai autorizar o Privo Post pela conta dele. Entra numa próxima etapa.</span></div></section>`}
+
+/* ---------- Google: perfil ---------- */
+function vGoogle(v,id){const p=gPerfis().find(x=>x.id===id);
+  if(!p){crumb(['Google Meu Negócio']);v.innerHTML=Array.isArray(S.gContas)?'<section class="card"><div class="empty">Perfil não encontrado.</div></section>':'<p class="muted"><span class="spin"></span> Carregando…</p>';return}
+  crumb(['Google Meu Negócio',p.cliente?'Clientes':'Meu perfil',p.nome]);
+  v.innerHTML=`<div class="ph"><div><h1>${esc(p.nome)}</h1><p>${esc(p.endereco||'Sem endereço público')} · conta ${esc(p.conta)}</p></div>
+    <span class="pill ${p.cliente?'warn':'acc'}">${p.cliente?'Cliente — não usar':'Seu perfil'}</span></div>
+  <section class="card"><div class="ch"><h2>O que dá para fazer aqui</h2></div><div class="cb">
+    <p style="margin:0">Por enquanto o Privo Post só lê a lista de perfis do Google. Publicar posts e responder avaliações entram numa próxima fase, quando o Google liberar a API de posts para o projeto.</p>
+    ${p.cliente?'<p class="note">Perfil de cliente: o Privo Post não faz nada nele até você liberar.</p>':''}</div></section>`}
+
+/* ---------- volta das conexões ---------- */
+const VOLTA={google:{conectado:['ok','Google conectado.'],cancelado:['warn','Conexão com o Google cancelada. Nada foi guardado.'],expirado:['bad','O pedido de conexão venceu ou já foi usado. Conecte de novo.'],'sem-permissao':['bad','O Google não deu a permissão de gerenciar os perfis. Conecte de novo e marque a permissão.'],erro:['bad','Não deu para conectar o Google. Tente de novo.']},
+  instagram:{conectado:['ok','Instagram conectado.'],cancelado:['warn','Conexão com o Instagram cancelada. Nada foi guardado.'],expirado:['bad','O pedido de conexão venceu ou já foi usado. Conecte de novo.'],'sem-permissao':['bad','O Instagram não deu a permissão de publicar. Conecte de novo e deixe as permissões marcadas.'],erro:['bad','Não deu para conectar o Instagram. Tente de novo.']}};
+(()=>{const q=new URLSearchParams(location.search);for(const k of ['google','instagram']){const x=q.get(k);if(x){const t=VOLTA[k][x]||VOLTA[k].erro;flash=aviso(t[0],t[1]);
+  history.replaceState(null,'',location.pathname+(k==='instagram'&&x==='conectado'?'#/instagram/eu/perfil':'#/conexoes'))}}})();
+
+/* ---------- login ---------- */
 async function boot(){const {data:{session}}=await sb.auth.getSession();
-  if(!session){$('app').hidden=true;$('login').hidden=false;setTimeout(()=>$('lg-email').focus(),50);return}
-  $('login').hidden=true;$('app').hidden=false;igStatus();status()}
+  if(!session){$('shell').hidden=true;$('login').hidden=false;setTimeout(()=>$('lg-email').focus(),50);return}
+  S.user=session.user;$('login').hidden=true;$('shell').hidden=false;$('shell').classList.toggle('mini',store.get('pp-mini')==='1');
+  renderSide();$('view').innerHTML='<p class="muted"><span class="spin"></span> Carregando…</p>';
+  await carregarStatus();render()}
 $('lg-form').addEventListener('submit',async e=>{e.preventDefault();const b=$('lg-btn'),m=$('lg-msg');b.disabled=true;m.textContent='';
   const {error}=await sb.auth.signInWithPassword({email:$('lg-email').value.trim(),password:$('lg-pass').value});
   b.disabled=false;if(error){m.textContent='E-mail ou senha incorretos.';return}boot()});
-$('sair').onclick=async()=>{await sb.auth.signOut();location.reload()};
-
-/* CON-01 */
-async function status(){const c=$('cx-corpo');c.innerHTML='<span class="spin"></span> Carregando…';$('perfis').hidden=true;
-  try{const s=await api('gbp-api',{acao:'status'});
-    if(!s.conectado){c.innerHTML=`<p class="muted" style="margin:4px 0 14px"><span class="dot"></span>Google não conectado.</p>
-      <button class="btn pri gbtn" id="conectar" type="button">${G_ICON} Conectar com o Google</button>`;$('conectar').onclick=conectar;return}
-    c.innerHTML=`<div class="row sp" style="margin-top:6px"><span><span class="dot on"></span>Conectado como <b>${esc(s.email)}</b></span>
-      <button class="btn" id="desconectar" type="button">Desconectar</button></div>`;$('desconectar').onclick=desconectar;
-    $('perfis').hidden=false;perfis()}
-  catch(e){c.innerHTML=`<p class="muted">${esc(e.message)}</p><button class="btn" type="button" onclick="status()">Tentar de novo</button>`}}
-
-/* CON-02 */
-async function conectar(){const b=$('conectar');b.disabled=true;b.innerHTML='<span class="spin"></span> Abrindo o Google…';
-  try{const r=await api('gbp-oauth-start');location.href=r.url}
-  catch(e){aviso('bad',e.message);b.disabled=false;b.innerHTML=`${G_ICON} Conectar com o Google`}}
-
-/* CON-06 */
-async function desconectar(){if(!confirm('Desconectar a conta do Google? O Privo Post deixa de acessar seus perfis até você conectar de novo.'))return;
-  const b=$('desconectar');b.disabled=true;
-  try{await api('gbp-api',{acao:'desconectar'});aviso('ok','Google desconectado.');status()}
-  catch(e){aviso('bad',e.message);b.disabled=false}}
-
-/* PER-01/02/03 */
-async function perfis(){const p=$('pf-corpo'),b=$('atualizar');b.disabled=true;p.innerHTML='<p class="muted"><span class="spin"></span> Buscando seus perfis no Google…</p>';
-  try{const {contas}=await api('gbp-api',{acao:'perfis'});
-    if(!contas.length){p.innerHTML='<p class="muted">Nenhuma conta do Perfil da Empresa encontrada nesta conta do Google.</p>';return}
-    p.innerHTML=contas.map(a=>`<div class="acc"><h3>${esc(a.nome)}</h3>${a.perfis.length?a.perfis.map(x=>`<div class="prof"><div><b>${esc(x.nome)}</b><span class="end">${esc(x.endereco||'Sem endereço público')}</span></div>
-      <span class="tag ${x.cliente?'cli':'meu'}">${x.cliente?'Cliente — não usar':'Seu perfil'}</span></div>`).join(''):'<p class="muted" style="margin:0">Nenhum perfil nesta conta.</p>'}</div>`).join('')}
-  catch(e){p.innerHTML=`<p class="msg bad" style="margin-top:14px">${esc(e.message)}</p>`}
-  finally{b.disabled=false}}
-$('atualizar').onclick=perfis;
-
-/* Instagram: IG-CON-01..06, IG-MET-01..03 */
-const num=n=>n==null?'—':Number(n).toLocaleString('pt-BR');
-const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
-async function igStatus(){const c=$('ig-corpo');c.innerHTML='<span class="spin"></span> Carregando…';$('ig-perfil').hidden=true;
-  try{const s=await api('ig-api',{acao:'status'});
-    if(!s.conectado){c.innerHTML=`<p class="muted" style="margin:4px 0 14px"><span class="dot"></span>Instagram não conectado.</p>
-      <button class="btn pri" id="ig-conectar" type="button">Conectar o Instagram</button>`;$('ig-conectar').onclick=igConectar;return}
-    const venc=s.expira_em?new Date(s.expira_em).toLocaleDateString('pt-BR'):'';
-    c.innerHTML=`<div class="row sp" style="margin-top:6px"><span><span class="dot on"></span>Conectado como <b>@${esc(s.usuario||'')}</b>${venc?` <span class="muted">· autorização renova sozinha (vence ${esc(venc)})</span>`:''}</span>
-      <button class="btn" id="ig-desconectar" type="button">Desconectar</button></div>`;$('ig-desconectar').onclick=igDesconectar;
-    $('ig-perfil').hidden=false;igPerfil()}
-  catch(e){c.innerHTML=`<p class="muted">${esc(e.message)}</p><button class="btn" type="button" onclick="igStatus()">Tentar de novo</button>`}}
-async function igConectar(){const b=$('ig-conectar');b.disabled=true;b.innerHTML='<span class="spin"></span> Abrindo o Instagram…';
-  try{const r=await api('ig-oauth-start');location.href=r.url}catch(e){aviso('bad',e.message);b.disabled=false;b.textContent='Conectar o Instagram'}}
-async function igDesconectar(){if(!confirm('Desconectar o Instagram? O Privo Post apaga a autorização guardada. Para tirar o acesso de vez, remova também o "Privo Post-IG" em Instagram > Configurações > Apps e sites.'))return;
-  try{await api('ig-api',{acao:'desconectar'});aviso('ok','Instagram desconectado.');igStatus()}catch(e){aviso('bad',e.message)}}
-async function igPerfil(){const p=$('igp-corpo'),b=$('ig-atualizar');b.disabled=true;p.innerHTML='<p class="muted"><span class="spin"></span> Buscando perfil e métricas no Instagram…</p>';
-  try{const {perfil:f,posts}=await api('ig-api',{acao:'perfil'});
-    p.innerHTML=`<div class="ig-top">${f.foto?`<img src="${esc(f.foto)}" alt="">`:''}<div><b>@${esc(f.usuario)}</b>${f.nome?` <span class="muted">${esc(f.nome)}</span>`:''}
-      <div class="nums"><div><b>${num(f.seguidores)}</b><span>seguidores</span></div><div><b>${num(f.seguindo)}</b><span>seguindo</span></div><div><b>${num(f.posts)}</b><span>posts</span></div></div></div></div>
-      ${posts.length?`<div class="posts">${posts.map(x=>{const m=x.metricas||{};return `<article class="post">
-        <a class="capa" href="${esc(x.link)}" target="_blank" rel="noopener">${x.capa?`<img src="${esc(x.capa)}" alt="" loading="lazy">`:''}</a>
-        <div class="info"><span class="meta">${esc(TIPO[x.tipo]||x.tipo||'')} · ${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</span>
-        <span class="leg">${esc(x.legenda||'(sem legenda)')}</span>
-        <dl><div><dt>Visualiz.</dt><dd>${num(m.views)}</dd></div><div><dt>Alcance</dt><dd>${num(m.reach)}</dd></div><div><dt>Curtidas</dt><dd>${num(m.likes)}</dd></div>
-        <div><dt>Coment.</dt><dd>${num(m.comments)}</dd></div><div><dt>Compart.</dt><dd>${num(m.shares)}</dd></div><div><dt>Salvos</dt><dd>${num(m.saved)}</dd></div></dl></div></article>`}).join('')}</div>`
-      :'<p class="muted">Nenhum post encontrado.</p>'}`}
-  catch(e){p.innerHTML=`<p class="msg bad" style="margin-top:14px">${esc(e.message)}</p>`}
-  finally{b.disabled=false}}
-$('ig-atualizar').onclick=igPerfil;
 boot();
 </script>
 </body></html>

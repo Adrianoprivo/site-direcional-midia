@@ -1,4 +1,4 @@
-// IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..03: status, perfil, posts recentes com métricas, desconectar.
+// IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..04: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
 // Só leitura no Instagram nesta etapa.
 import { admin, cors, json, usuario } from "../_shared/comum.ts";
 
@@ -61,32 +61,78 @@ async function metricasDoPost(id: string, token: string) {
   return saida;
 }
 
-async function perfilEPosts(token: string) {
-  const perfil = await ig("me", token, {
-    fields: "user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count",
+async function perfil(token: string) {
+  const f = await ig("me", token, {
+    fields: "user_id,username,name,account_type,profile_picture_url,biography,website,followers_count,follows_count,media_count",
   });
+  return {
+    usuario: f.username, nome: f.name, tipo: f.account_type, foto: f.profile_picture_url,
+    bio: f.biography ?? "", site: f.website ?? "",
+    seguidores: f.followers_count, seguindo: f.follows_count, posts: f.media_count,
+  };
+}
+
+async function posts(token: string, limite = 12) {
   const midia = await ig("me/media", token, {
     fields: "id,caption,media_type,media_product_type,permalink,thumbnail_url,media_url,timestamp,like_count,comments_count",
-    limit: "6",
+    limit: String(limite),
   });
-  const posts = [];
-  for (const m of midia.data ?? []) {
-    posts.push({
-      id: m.id,
-      legenda: (m.caption ?? "").slice(0, 160),
-      tipo: m.media_product_type ?? m.media_type,
-      link: m.permalink,
-      capa: m.thumbnail_url ?? (m.media_type === "IMAGE" ? m.media_url : null),
-      data: m.timestamp,
-      metricas: { likes: m.like_count ?? 0, comments: m.comments_count ?? 0, ...(await metricasDoPost(m.id, token)) },
-    });
+  const lista = await Promise.all((midia.data ?? []).map(async (m: Record<string, string & number>) => ({
+    id: m.id,
+    legenda: (m.caption ?? "").slice(0, 200),
+    tipo: m.media_product_type ?? m.media_type,
+    link: m.permalink,
+    capa: m.thumbnail_url ?? (m.media_type === "IMAGE" ? m.media_url : null),
+    data: m.timestamp,
+    metricas: { likes: m.like_count ?? 0, comments: m.comments_count ?? 0, ...(await metricasDoPost(m.id, token)) },
+  })));
+  return lista;
+}
+
+// IG-MET-04: métricas da conta. Regra do Adriano: "últimos N dias" = N dias corridos SEM o dia de hoje (fuso de São Paulo).
+const METRICAS_CONTA = ["views", "reach", "accounts_engaged", "total_interactions", "likes", "comments", "shares", "saves", "profile_links_taps", "follows_and_unfollows"];
+const FUSO = -3 * 3600; // São Paulo, sem horário de verão
+
+function janela(dias: number) {
+  const agoraLocal = Math.floor(Date.now() / 1000) + FUSO;
+  const hojeLocal0 = agoraLocal - (agoraLocal % 86400); // 00:00 de hoje (local) em "segundos locais"
+  const until = hojeLocal0 - FUSO - 1;                  // 23:59:59 de ontem, em UTC
+  const since = hojeLocal0 - dias * 86400 - FUSO;       // 00:00 de N dias atrás, em UTC
+  return { since, until };
+}
+
+async function metricasConta(token: string, dias: number) {
+  const { since, until } = janela(dias);
+  const base = { period: "day", metric_type: "total_value", since: String(since), until: String(until) };
+  const saida: Record<string, number> = {};
+  const juntar = (r: { data?: { name: string; total_value?: { value: number; breakdowns?: { results?: { dimension_values: string[]; value: number }[] }[] } }[] }) => {
+    for (const m of r.data ?? []) {
+      if (m.total_value?.breakdowns?.length) {
+        for (const b of m.total_value.breakdowns[0].results ?? []) saida[`${m.name}:${b.dimension_values.join("|")}`] = b.value;
+      } else saida[m.name] = m.total_value?.value ?? 0;
+    }
+  };
+  try {
+    juntar(await ig("me/insights", token, { ...base, metric: METRICAS_CONTA.join(",") }));
+  } catch {
+    for (const m of METRICAS_CONTA) {
+      try { juntar(await ig("me/insights", token, { ...base, metric: m })); } catch { /* indisponível */ }
+    }
   }
+  try { // seguidores ganhos x perdidos
+    juntar(await ig("me/insights", token, { ...base, metric: "follows_and_unfollows", breakdown: "follow_type" }));
+  } catch { /* indisponível */ }
   return {
-    perfil: {
-      usuario: perfil.username, nome: perfil.name, tipo: perfil.account_type, foto: perfil.profile_picture_url,
-      seguidores: perfil.followers_count, seguindo: perfil.follows_count, posts: perfil.media_count,
+    dias,
+    de: new Date((since - FUSO) * 1000).toISOString().slice(0, 10),
+    ate: new Date((until - FUSO) * 1000).toISOString().slice(0, 10),
+    m: {
+      views: saida.views ?? null, reach: saida.reach ?? null, accounts_engaged: saida.accounts_engaged ?? null,
+      total_interactions: saida.total_interactions ?? null, likes: saida.likes ?? null, comments: saida.comments ?? null,
+      shares: saida.shares ?? null, saves: saida.saves ?? null, profile_links_taps: saida.profile_links_taps ?? null,
+      seguiram: saida["follows_and_unfollows:FOLLOWER"] ?? null, deixaram: saida["follows_and_unfollows:NON_FOLLOWER"] ?? null,
     },
-    posts,
+    quebras: Object.fromEntries(Object.entries(saida).filter(([k]) => k.includes(":"))), // conferência dos nomes da quebra
   };
 }
 
@@ -111,7 +157,13 @@ Deno.serve(async (req) => {
     }
     if (!c) return json(req, { erro: "Instagram não conectado." }, 409);
 
-    if (acao === "perfil") return json(req, await perfilEPosts(await tokenValido(c as Conexao)));
+    if (acao === "perfil") return json(req, await perfil(await tokenValido(c as Conexao)));
+    if (acao === "posts") return json(req, { posts: await posts(await tokenValido(c as Conexao)) });
+    if (acao === "conta") {
+      const t = await tokenValido(c as Conexao);
+      const [d7, d14, d30] = await Promise.all([7, 14, 30].map((d) => metricasConta(t, d)));
+      return json(req, { periodos: [d7, d14, d30] });
+    }
 
     if (acao === "desconectar") {
       await db.from("ig_conexoes").delete().eq("user_id", uid);
