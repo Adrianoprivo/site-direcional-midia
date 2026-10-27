@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
+<title>Privo Post</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Privo Post — fase 1: entrar, conectar o Google, ver os perfis (só leitura). Ver post/docs/spec.md */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --sunk:#E8EDF2; --line:#D8DFE6; --ink:#18202C; --muted:#5D6A79;
+  --accent:#0B6477; --accent-ink:#FFFFFF; --accent-soft:#D6ECEF; --bad:#C2303F; --bad-soft:#FBE3E6; --ok:#0E8A5C; --ok-soft:#DDF3EA; --warn:#8A5A00; --warn-soft:#FBEFD6;
+  --f-display:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --f-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F131A; --surface:#171C25; --sunk:#252C37; --line:#2C3541; --ink:#E4E9EF; --muted:#94A0AE;
+  --accent:#3FB2C6; --accent-ink:#06181C; --accent-soft:#14343B; --bad:#F0606F; --bad-soft:#3A1D23; --ok:#27B37F; --ok-soft:#123227; --warn:#E9B44C; --warn-soft:#3A2F14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F131A; --surface:#171C25; --sunk:#252C37; --line:#2C3541; --ink:#E4E9EF; --muted:#94A0AE;
+  --accent:#3FB2C6; --accent-ink:#06181C; --accent-soft:#14343B; --bad:#F0606F; --bad-soft:#3A1D23; --ok:#27B37F; --ok-soft:#123227; --warn:#E9B44C; --warn-soft:#3A2F14; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
+.brand small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.brand h1{margin:0;font-family:var(--f-display);font-size:26px;line-height:1.1}
+.brand h1 span{color:var(--accent)}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;font-weight:600}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.pri:hover{filter:brightness(1.07);color:var(--accent-ink)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn[disabled]{opacity:.55;cursor:default}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card+.card{margin-top:14px}
+.card h2{margin:0 0 4px;font-family:var(--f-display);font-size:18px}
+.muted{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.row.sp{justify-content:space-between}
+.msg{border-radius:10px;padding:10px 14px;margin-bottom:14px;font-weight:500}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}
+.msg.bad{background:var(--bad-soft);color:var(--bad)}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-right:6px}
+.dot.on{background:var(--ok)}
+.acc{margin-top:16px}
+.acc h3{margin:0 0 8px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.prof{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.prof b{display:block}
+.prof .end{font-size:13px;color:var(--muted)}
+.tag{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.tag.meu{background:var(--accent-soft);color:var(--accent)}
+.tag.cli{background:var(--warn-soft);color:var(--warn)}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.login form{display:flex;flex-direction:column;gap:14px}
+.login label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px}
+.login input{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px}
+.login input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.login .err{color:var(--bad);min-height:1.2em;margin:0;font-size:14px}
+.gbtn{display:inline-flex;align-items:center;gap:10px}
+.gbtn svg{width:18px;height:18px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .7s linear infinite;vertical-align:-2px}
+@keyframes r{to{transform:rotate(360deg)}}
+@media (max-width:520px){.brand h1{font-size:22px}.prof{flex-direction:column}.row.sp{flex-direction:column;align-items:flex-start}}
+</style></head>
+<body>
+<div class="login" id="login" hidden><form id="lg-form"><div class="brand"><small>Direcional Mídia</small><h1>Privo <span>Post</span></h1></div>
+<label>E-mail<input id="lg-email" type="email" autocomplete="username" required></label>
+<label>Senha<input id="lg-pass" type="password" autocomplete="current-password" required></label>
+<p class="err" id="lg-msg" role="alert"></p><button class="btn pri" id="lg-btn" type="submit">Entrar</button></form></div>
+
+<div class="wrap" id="app" hidden>
+  <div class="top"><div class="brand"><small>Direcional Mídia</small><h1>Privo <span>Post</span></h1></div>
+    <button class="btn ghost" id="sair" type="button">Sair</button></div>
+  <div id="aviso" role="status"></div>
+
+  <section class="card" id="conexao" aria-labelledby="cx-t">
+    <h2 id="cx-t">Conta do Google</h2>
+    <div id="cx-corpo" class="muted"><span class="spin"></span> Carregando…</div>
+  </section>
+
+  <section class="card" id="perfis" aria-labelledby="pf-t" hidden>
+    <div class="row sp"><div><h2 id="pf-t">Perfis da Empresa</h2><span class="muted">Só leitura nesta fase. Nada é publicado ou alterado no Google.</span></div>
+      <button class="btn" id="atualizar" type="button">Atualizar lista</button></div>
+    <div id="pf-corpo"></div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL='https://ftahvdzbyqnvarukytws.supabase.co',SB_KEY='sb_publishable_TRsKX1yVSB8EYPxbaSOFAg_HM8AVpI7';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const G_ICON='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+
+/* CON-02/03: mensagem da volta do Google */
+const VOLTA={conectado:['ok','Google conectado.'],cancelado:['warn','Conexão cancelada. Nada foi guardado.'],expirado:['bad','O pedido de conexão venceu ou já foi usado. Clique em Conectar de novo.'],
+  'sem-permissao':['bad','O Google não deu a permissão de gerenciar os perfis. Conecte de novo e marque a permissão.'],erro:['bad','Não deu para conectar. Tente de novo.']};
+function aviso(tipo,texto){$('aviso').innerHTML=texto?`<div class="msg ${tipo}">${esc(texto)}</div>`:''}
+(()=>{const q=new URLSearchParams(location.search).get('google');if(q){const v=VOLTA[q]||VOLTA.erro;aviso(v[0],v[1]);history.replaceState(null,'',location.pathname)}})();
+
+async function api(fn,corpo){const r=await sb.functions.invoke(fn,{body:corpo||{}});
+  if(r.error){let m='Não deu para falar com o servidor. Tente de novo.';try{const j=await r.error.context.json();if(j&&j.erro)m=j.erro}catch(e){}throw new Error(m)}
+  return r.data}
+
+/* ACE-01/02 */
+async function boot(){const {data:{session}}=await sb.auth.getSession();
+  if(!session){$('app').hidden=true;$('login').hidden=false;setTimeout(()=>$('lg-email').focus(),50);return}
+  $('login').hidden=true;$('app').hidden=false;status()}
+$('lg-form').addEventListener('submit',async e=>{e.preventDefault();const b=$('lg-btn'),m=$('lg-msg');b.disabled=true;m.textContent='';
+  const {error}=await sb.auth.signInWithPassword({email:$('lg-email').value.trim(),password:$('lg-pass').value});
+  b.disabled=false;if(error){m.textContent='E-mail ou senha incorretos.';return}boot()});
+$('sair').onclick=async()=>{await sb.auth.signOut();location.reload()};
+
+/* CON-01 */
+async function status(){const c=$('cx-corpo');c.innerHTML='<span class="spin"></span> Carregando…';$('perfis').hidden=true;
+  try{const s=await api('gbp-api',{acao:'status'});
+    if(!s.conectado){c.innerHTML=`<p class="muted" style="margin:4px 0 14px"><span class="dot"></span>Google não conectado.</p>
+      <button class="btn pri gbtn" id="conectar" type="button">${G_ICON} Conectar com o Google</button>`;$('conectar').onclick=conectar;return}
+    c.innerHTML=`<div class="row sp" style="margin-top:6px"><span><span class="dot on"></span>Conectado como <b>${esc(s.email)}</b></span>
+      <button class="btn" id="desconectar" type="button">Desconectar</button></div>`;$('desconectar').onclick=desconectar;
+    $('perfis').hidden=false;perfis()}
+  catch(e){c.innerHTML=`<p class="muted">${esc(e.message)}</p><button class="btn" type="button" onclick="status()">Tentar de novo</button>`}}
+
+/* CON-02 */
+async function conectar(){const b=$('conectar');b.disabled=true;b.innerHTML='<span class="spin"></span> Abrindo o Google…';
+  try{const r=await api('gbp-oauth-start');location.href=r.url}
+  catch(e){aviso('bad',e.message);b.disabled=false;b.innerHTML=`${G_ICON} Conectar com o Google`}}
+
+/* CON-06 */
+async function desconectar(){if(!confirm('Desconectar a conta do Google? O Privo Post deixa de acessar seus perfis até você conectar de novo.'))return;
+  const b=$('desconectar');b.disabled=true;
+  try{await api('gbp-api',{acao:'desconectar'});aviso('ok','Google desconectado.');status()}
+  catch(e){aviso('bad',e.message);b.disabled=false}}
+
+/* PER-01/02/03 */
+async function perfis(){const p=$('pf-corpo'),b=$('atualizar');b.disabled=true;p.innerHTML='<p class="muted"><span class="spin"></span> Buscando seus perfis no Google…</p>';
+  try{const {contas}=await api('gbp-api',{acao:'perfis'});
+    if(!contas.length){p.innerHTML='<p class="muted">Nenhuma conta do Perfil da Empresa encontrada nesta conta do Google.</p>';return}
+    p.innerHTML=contas.map(a=>`<div class="acc"><h3>${esc(a.nome)}</h3>${a.perfis.length?a.perfis.map(x=>`<div class="prof"><div><b>${esc(x.nome)}</b><span class="end">${esc(x.endereco||'Sem endereço público')}</span></div>
+      <span class="tag ${x.cliente?'cli':'meu'}">${x.cliente?'Cliente — não usar':'Seu perfil'}</span></div>`).join(''):'<p class="muted" style="margin:0">Nenhum perfil nesta conta.</p>'}</div>`).join('')}
+  catch(e){p.innerHTML=`<p class="msg bad" style="margin-top:14px">${esc(e.message)}</p>`}
+  finally{b.disabled=false}}
+$('atualizar').onclick=perfis;
+boot();
+</script>
+</body></html>
