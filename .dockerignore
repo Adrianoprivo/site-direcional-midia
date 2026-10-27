@@ -3,3 +3,6 @@
 .dockerignore
 Dockerfile
 README.md
+post/docs
+post/supabase
+mind/docs
