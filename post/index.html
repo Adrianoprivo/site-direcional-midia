@@ -152,21 +152,21 @@ th.ord button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;b
 .thbtn,.lnk{all:unset;cursor:pointer}
 .lnk{color:var(--accent);text-decoration:underline;text-underline-offset:2px;display:block;overflow:hidden;text-overflow:ellipsis}
 .thbtn:focus-visible,.lnk:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-.best{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.best{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
 .bc{border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;background:var(--surface)}
 .bimg{all:unset;cursor:pointer;position:relative;display:block;aspect-ratio:4/5;background:var(--sunk)}
 .bimg img{width:100%;height:100%;object-fit:cover;display:block}
 .bimg:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.rank{position:absolute;top:10px;left:10px;background:rgb(0 0 0 / .65);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:3px 10px}
-.play{position:absolute;inset:0;display:grid;place-items:center;font-size:34px;color:#fff;text-shadow:0 2px 12px rgb(0 0 0 / .5);pointer-events:none}
-.bb{padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.rank{position:absolute;top:8px;left:8px;background:rgb(0 0 0 / .65);color:#fff;font-weight:700;font-size:12px;border-radius:999px;padding:2px 8px}
+.play{position:absolute;inset:0;display:grid;place-items:center;font-size:26px;color:#fff;text-shadow:0 2px 12px rgb(0 0 0 / .5);pointer-events:none}
+.bb{padding:10px 12px;display:flex;flex-direction:column;gap:4px}
 .row1{display:flex;align-items:center;gap:8px;justify-content:space-between}
-.be{font-size:26px;font-weight:600;letter-spacing:-.02em;margin-top:4px}
+.be{font-size:20px;font-weight:600;letter-spacing:-.02em;margin-top:4px}
 .bl{font-size:12px;color:var(--muted);margin-top:-4px}
-.leg{margin:6px 0 0;font-size:13px;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.bm{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 10px;margin:8px 0 0}
+.leg{margin:4px 0 0;font-size:12px;color:var(--ink2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bm{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;margin:6px 0 0;font-size:12px}
 .bm dt{font-size:11px;color:var(--muted)}.bm dd{margin:0;font-weight:600}
-.why{font-size:12px;color:var(--ink2);margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.why{font-size:11px;color:var(--ink2);margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line)}
 dialog.ver{border:0;padding:0;background:transparent;max-width:min(1000px,96vw);width:100%}
 dialog.ver::backdrop{background:rgb(0 0 0 / .7)}
 .vbox{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);background:var(--surface);border-radius:12px;overflow:hidden;max-height:90vh}
@@ -193,7 +193,6 @@ dialog.ver::backdrop{background:rgb(0 0 0 / .7)}
 
 /* ---------- celular ---------- */
 .scrim{display:none}
-@media (max-width:1100px){.best{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:860px){
   .shell,.shell.mini{grid-template-columns:minmax(0,1fr)}
   .side{position:fixed;inset:0 auto 0 0;width:272px;z-index:50;transform:translateX(-100%);transition:transform .2s;box-shadow:var(--shadow)}
@@ -210,7 +209,7 @@ dialog.ver::backdrop{background:rgb(0 0 0 / .7)}
   .g2{grid-template-columns:minmax(0,1fr)}
   .prof{flex-direction:column}
   .kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .best{grid-template-columns:minmax(0,1fr)}
+  .best{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .vbox{grid-template-columns:minmax(0,1fr);overflow-y:auto}
   .vmid{min-height:280px}
   .cap{max-width:120px}
@@ -416,13 +415,14 @@ async function abaVisao(el){const f=S.igPerfil;const i=intervalo(PC,90);const ch
   el.innerHTML=`<section class="card"><div class="cb"><div class="prof">${f.foto?`<img class="av" src="${esc(f.foto)}" alt="">`:'<div class="av"></div>'}
     <div style="min-width:0;flex:1"><h3>${esc(f.nome||f.usuario)}</h3><span class="muted">@${esc(f.usuario)} · ${esc(f.tipo==='MEDIA_CREATOR'?'Criador de conteúdo':f.tipo==='BUSINESS'?'Empresa':f.tipo||'')}</span>
     <p class="bio">${f.bio?esc(f.bio):'<span class="muted">Sem bio.</span>'}</p>${f.site?`<p style="margin:6px 0 0"><a href="${esc(f.site)}" target="_blank" rel="noopener">${esc(f.site)}</a></p>`:''}</div>
-    <div class="stats"><div><b class="num">${num(f.seguidores)}</b><span>seguidores</span></div><div><b class="num">${num(f.seguindo)}</b><span>seguindo</span></div><div><b class="num">${num(f.posts)}</b><span>posts</span></div></div></div></div></section>
+    <div class="stats"><div><b class="num">${num(f.seguidores)}</b><span>seguidores</span></div><div><b class="num">${num(f.seguindo)}</b><span>seguindo</span></div><div><b class="num">${num(f.posts)}</b><span>posts</span></div><div title="(média de curtidas + comentários dos 12 posts mais recentes) ÷ seguidores, padrão do Social Blade"><b class="num" id="txpub">…</b><span>tx. engaj. pública</span></div></div></div></div></section>
   <section class="card"><div class="ch"><div><h2>Desempenho da conta</h2><p>O Instagram guarda as métricas da conta por 90 dias.</p></div>${seletorPeriodo('pc',PC,90)}</div>
     <div class="cb" id="kpis"><p class="muted"><span class="spin"></span> Buscando no Instagram…</p></div></section>
   <section class="card"><div class="ch"><div><h2>Qual métrica está crescendo</h2><p>Últimos 7, 14 e 30 dias lado a lado, sem contar hoje. Tendência = média por dia dos últimos 7 contra a dos últimos 30. Clique no título da coluna para ordenar.</p></div></div>
     <div id="tend"><p class="muted cb"><span class="spin"></span> Carregando…</p></div></section>
   <section class="card"><div class="ch"><div><h2>Resultado por formato</h2><p>No período escolhido acima.</p></div></div><div id="fmt"><p class="muted cb"><span class="spin"></span> Carregando…</p></div></section>`;
   ligarPeriodo('pc',PC,salvarPC,()=>abaVisao(el));
+  carregarAte(null,12).then(()=>{const u=S.igPosts.lista.slice(0,12);const el2=$('txpub');if(el2&&u.length&&f.seguidores)el2.textContent=pct(u.reduce((s,x)=>s+(x.metricas.likes||0)+(x.metricas.comments||0),0)/u.length/f.seguidores*100)}).catch(()=>{});
   const pegarPer=async()=>{if(!S.igPer[chave])S.igPer[chave]=await api('ig-api',{acao:'periodo',de:iso(i.de),ate:iso(i.ate),comparar:!!PC.comparar});return S.igPer[chave]};
   const pegarTend=async()=>{if(!S.igConta)S.igConta=await api('ig-api',{acao:'conta'});return S.igConta};
   pegarPer().then(r=>{const a=r.atual,b=r.anterior;const aprox=new Set(a.aproximado||[]);
@@ -449,16 +449,22 @@ function tabelaTend(periodos){const [d7,d14,d30]=periodos;
 }
 
 /* ---- Métricas por post (IG-MET-01..03, 05, 08) ---- */
-/* Engajamento ponderado = (compart.×4 + coment.×3 + salvos×2 + curtidas×1) ÷ alcance.
+/* IG-MET-10 (padrão de mercado, igual à mLabs):
+   Taxa de engajamento     = (curtidas + comentários + compartilhamentos + salvos) ÷ alcance × 100   (relatórios mLabs / Meta)
+   Taxa de engajamento pública = (curtidas + comentários) ÷ seguidores × 100                       (Social Blade / concorrentes)
    Alcance menor que as curtidas é impossível: o Instagram não informa alcance confiável para posts antigos (até jun/2024). */
 const confiavel=m=>m&&m.reach!=null&&m.reach>0&&m.reach>=(m.likes||0);
-const pontos=m=>(m.shares||0)*4+(m.comments||0)*3+(m.saved||0)*2+(m.likes||0);
+const pontos=m=>(m.likes||0)+(m.comments||0)+(m.shares||0)+(m.saved||0);
 const engaj=m=>confiavel(m)?pontos(m)/m.reach*100:null;
-const COLS=[['data','Data'],['views','Visualiz.'],['reach','Alcance'],['likes','Curtidas'],['comments','Coment.'],['shares','Compart.'],['saved','Salvos'],['eng','Engaj. pond.']];
+const seg=()=>S.igPerfil&&S.igPerfil.seguidores;
+const engPub=m=>seg()?((m.likes||0)+(m.comments||0))/seg()*100:null;
+const COLS=[['data','Data'],['views','Visualiz.'],['reach','Alcance'],['likes','Curtidas'],['comments','Coment.'],['shares','Compart.'],['saved','Salvos'],['eng','Tx. engaj.'],['pub','Tx. pública']];
 const F=JSON.parse(store.get('pp-fpost')||'{"ord":"data","dir":-1,"tipo":""}');
 function salvarF(){store.set('pp-fpost',JSON.stringify(F))}
-function valor(x,k){if(k==='data')return new Date(x.data).getTime();if(k==='eng')return engaj(x.metricas)??-1;return (x.metricas||{})[k]??-1}
+function valor(x,k){if(k==='data')return new Date(x.data).getTime();if(k==='eng')return engaj(x.metricas)??-1;if(k==='pub')return engPub(x.metricas)??-1;return (x.metricas||{})[k]??-1}
 const POR_PAG=12;let pagina=0;
+const NOTA_TAXAS=`<p class="note"><b>Taxa de engajamento</b> = (curtidas + comentários + compartilhamentos + salvos) ÷ alcance × 100, a mesma conta dos relatórios da mLabs. No período, é a soma das interações ÷ a soma do alcance.
+  <br><b>Taxa de engajamento pública</b> = (curtidas + comentários) ÷ seguidores × 100, padrão do Social Blade, serve para comparar com outros perfis. Referência de mercado (mLabs): média geral de 0,36% na pública; a taxa pelo alcance costuma ser de 3 a 6 vezes maior.</p>`;
 async function maisUmaPagina(){const r=await api('ig-api',{acao:'posts',depois:S.igPosts.proximo});S.igPosts.lista.push(...r.posts);S.igPosts.proximo=r.proximo}
 async function carregarAte(limite,minimo=0){ // carrega só o necessário: até cobrir a data pedida, ou até ter "minimo" posts
   if(!S.igPosts){const r=await api('ig-api',{acao:'posts'});S.igPosts={lista:r.posts,proximo:r.proximo}}
@@ -468,8 +474,9 @@ async function carregarAte(limite,minimo=0){ // carrega só o necessário: até 
 function resumo(lista){const conf=lista.filter(x=>confiavel(x.metricas));
   const alc=conf.reduce((s,x)=>s+x.metricas.reach,0),pts=conf.reduce((s,x)=>s+pontos(x.metricas),0);
   const melhor=conf.slice().sort((a,b)=>engaj(b.metricas)-engaj(a.metricas))[0];
-  return {posts:lista.length,views:lista.reduce((s,x)=>s+(x.metricas.views||0),0),alcance:alc,eng:alc?pts/alc*100:null,melhor,semAlcance:lista.length-conf.length}}
-const pct=v=>v==null?'—':v.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+  const lc=lista.reduce((s,x)=>s+(x.metricas.likes||0)+(x.metricas.comments||0),0);
+  return {posts:lista.length,views:lista.reduce((s,x)=>s+(x.metricas.views||0),0),alcance:alc,eng:alc?pts/alc*100:null,pub:lista.length&&seg()?lc/lista.length/seg()*100:null,melhor,semAlcance:lista.length-conf.length}}
+const pct=v=>v==null?'—':v.toLocaleString('pt-BR',{minimumFractionDigits:v<10?2:1,maximumFractionDigits:v<10?2:1})+'%';
 const dentro=(x,a,b)=>{const d=dia0(new Date(x.data));return d>=a&&d<=b};
 /* No "Máximo" os posts vêm de 12 em 12 da API (nada de carregar 1.000 posts de uma vez). Nos outros períodos carrega só o período. */
 async function postsDoPeriodo(P,minimoMax){const i=intervalo(P,null);
@@ -477,8 +484,9 @@ async function postsDoPeriodo(P,minimoMax){const i=intervalo(P,null);
   const todos=S.igPosts.lista;const doTipo=todos.filter(x=>!F.tipo||x.tipo===F.tipo);
   return {i,todos,doTipo,lista:doTipo.filter(x=>P.preset==='max'||dentro(x,i.de,i.ate)),
     ant:P.comparar&&P.preset!=='max'?doTipo.filter(x=>dentro(x,i.ant.de,i.ant.ate)):null}}
+async function garantirPerfil(){if(!S.igPerfil)S.igPerfil=await api('ig-api',{acao:'perfil'})}
 async function abaPosts(el){
-  el.innerHTML=`<p class="muted"><span class="spin"></span> Carregando os posts do período…</p>`;
+  el.innerHTML=`<p class="muted"><span class="spin"></span> Carregando os posts do período…</p>`;await garantirPerfil();
   const {todos,lista:l0,ant}=await postsDoPeriodo(PP,(pagina+1)*POR_PAG);
   const lista=l0.slice().sort((a,b)=>(valor(a,F.ord)-valor(b,F.ord))*F.dir);
   const max=PP.preset==='max';const total=lista.length;
@@ -490,21 +498,20 @@ async function abaPosts(el){
   const kp=(l,v,va,fmt=num)=>`<div class="kpi2"><div class="l">${l}</div><div class="v num">${fmt(v)}</div><div class="s">${RA?`${fmt===pct?(v!=null&&va!=null?`<span class="dl ${v>va?'up':v<va?'down':''}">${v>va?'▲':v<va?'▼':''} ${Math.abs(v-va).toLocaleString('pt-BR',{maximumFractionDigits:1})} p.p.</span>`:''):delta(v,va)} <span class="muted">vs ${fmt(va)}</span>`:'&nbsp;'}</div></div>`;
   el.innerHTML=`<section class="card"><div class="ch"><div><h2>Posts publicados no período</h2><p>${max?`Máximo: os posts vêm de 12 em 12. Ordenação e resumo consideram os ${num(todos.length)} já carregados.`:'Posts publicados entre essas datas.'} Clique no título da coluna para ordenar.</p></div>
     <div class="filtros">${seletorPeriodo('pp',PP,null)}<label>Tipo <select id="f-tipo"><option value="">Todos</option>${tipos.map(t=>`<option value="${esc(t)}"${F.tipo===t?' selected':''}>${esc(TIPO[t]||t)}</option>`).join('')}</select></label></div></div>
-    <div class="cb"><div class="kgrid">${kp('Posts',R.posts,RA&&RA.posts)}${kp('Visualizações somadas',R.views,RA&&RA.views)}${kp('Alcance somado',R.alcance,RA&&RA.alcance)}${kp('Engajamento ponderado',R.eng,RA&&RA.eng,pct)}</div>
-    ${R.melhor?`<p class="note">Melhor post do período, pelo engajamento ponderado: <a href="#/instagram/eu/melhores">${esc((R.melhor.legenda||'(sem legenda)').slice(0,60))}</a> · ${pct(engaj(R.melhor.metricas))} · <a href="#/instagram/eu/melhores">ver os melhores</a></p>`:''}
+    <div class="cb"><div class="kgrid">${kp('Posts',R.posts,RA&&RA.posts)}${kp('Visualizações somadas',R.views,RA&&RA.views)}${kp('Alcance somado',R.alcance,RA&&RA.alcance)}${kp('Taxa de engajamento',R.eng,RA&&RA.eng,pct)}${kp('Taxa de engajamento pública',R.pub,RA&&RA.pub,pct)}</div>
+    ${R.melhor?`<p class="note">Melhor post do período, pela taxa de engajamento: <a href="#/instagram/eu/melhores">${esc((R.melhor.legenda||'(sem legenda)').slice(0,60))}</a> · ${pct(engaj(R.melhor.metricas))} · <a href="#/instagram/eu/melhores">ver os melhores</a></p>`:''}
     ${RA?'<p class="note">Atenção na comparação: os números de cada post somam desde a publicação. Posts mais novos ainda tiveram menos tempo para juntar resultado.</p>':''}</div>
   ${visiveis.length?`<div class="tw"><table><thead><tr><th></th><th>Post</th><th>Tipo</th>${COLS.map(([k,l])=>`<th class="${k==='data'?'':'n'} ord"><button type="button" data-ord="${k}">${l}${F.ord===k?(F.dir<0?' ↓':' ↑'):''}</button></th>`).join('')}</tr></thead>
   <tbody>${visiveis.map(x=>{const m=x.metricas||{},e=engaj(m);return `<tr><td><button class="thbtn" type="button" data-ver="${esc(x.id)}" aria-label="Ver o post aqui">${x.capa?`<img class="thumb" src="${esc(x.capa)}" alt="" loading="lazy">`:'<span class="thumb"></span>'}</button></td>
     <td><div class="cap"><button class="lnk" type="button" data-ver="${esc(x.id)}">${esc(x.legenda||'(sem legenda)')}</button></div></td>
     <td>${esc(TIPO[x.tipo]||x.tipo||'')}</td><td>${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</td>
     <td class="n num">${num(m.views)}</td><td class="n num">${confiavel(m)?num(m.reach):`<span class="muted" title="O Instagram informou alcance ${num(m.reach)}, menor que as curtidas.">${num(m.reach)}*</span>`}</td><td class="n num">${num(m.likes)}</td><td class="n num">${num(m.comments)}</td><td class="n num">${num(m.shares)}</td><td class="n num">${num(m.saved)}</td>
-    <td class="n num">${e==null?'<span class="tagx" title="Alcance informado pelo Instagram é menor que as curtidas.">não confiável</span>':`<b>${pct(e)}</b>`}</td></tr>`}).join('')}</tbody></table></div>`
+    <td class="n num">${e==null?'<span class="tagx" title="Alcance informado pelo Instagram é menor que as curtidas.">não confiável</span>':`<b>${pct(e)}</b>`}</td><td class="n num">${pct(engPub(m))}</td></tr>`}).join('')}</tbody></table></div>`
     :'<div class="empty">Nenhum post publicado nesse período.</div>'}
   <div class="cf pag"><button class="btn" id="pg-ant" type="button"${pagina===0?' disabled':''}>← Anterior</button>
     <span class="muted">Página ${pagina+1} de ${paginas}${max&&S.igPosts.proximo?'+':''} · ${num(total)} post(s)</span>
     <button class="btn" id="pg-prox" type="button"${pagina>=paginas-1?' disabled':''}>Próxima →</button></div></section>
-  <p class="note"><b>Engajamento ponderado</b> = (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1) ÷ alcance. Compartilhar pesa mais porque é o que leva o post a gente nova; curtida é o engajamento mais leve. No período, é a soma dos pontos ÷ a soma do alcance.
-  ${R.semAlcance?`<br>* ${num(R.semAlcance)} post(s) com alcance não confiável ficam fora do engajamento: o Instagram não informa alcance correto para posts antigos (até junho de 2024).`:''}</p>`;
+  ${NOTA_TAXAS}${R.semAlcance?`<p class="note">* ${num(R.semAlcance)} post(s) com alcance não confiável ficam fora da taxa de engajamento (a pública continua valendo): o Instagram não informa alcance correto para posts antigos (até junho de 2024).</p>`:''}`;
   el.querySelectorAll('[data-ord]').forEach(b=>b.onclick=()=>{const k=b.dataset.ord;if(F.ord===k)F.dir*=-1;else{F.ord=k;F.dir=-1}salvarF();pagina=0;abaPosts(el)});
   $('f-tipo').onchange=e=>{F.tipo=e.target.value;salvarF();pagina=0;abaPosts(el)};
   ligarPeriodo('pp',PP,salvarPP,()=>{pagina=0;abaPosts(el)});
@@ -512,33 +519,34 @@ async function abaPosts(el){
   ligarVer(el);
 }
 
-/* ---- Melhores posts do período (IG-MET-09): top 6 pelo engajamento ponderado, com o porquê ---- */
-const PM=JSON.parse(store.get('pp-pmelhores')||'{"preset":"90","comparar":false}');
-if(!PRESETS.find(p=>p[0]===PM.preset))PM.preset='30';
+/* ---- Melhores posts do período (IG-MET-09): top N pela taxa de engajamento, com o porquê ---- */
+const PM=JSON.parse(store.get('pp-pmelhores')||'{"preset":"90","comparar":false,"qtd":6}');
+if(!PRESETS.find(p=>p[0]===PM.preset))PM.preset='90';if(![3,6,9,12].includes(Number(PM.qtd)))PM.qtd=6;
 const salvarPM=()=>store.set('pp-pmelhores',JSON.stringify(PM));
-function porque(m,media){const p=[['shares','compartilhamento',4],['comments','comentário',3],['saved','salvo',2],['likes','curtida',1]]
-  .filter(([k])=>m[k]).map(([k,l,w])=>`${num(m[k])} ${l}${m[k]>1?'s':''} (${num(m[k]*w)} pts)`);
+function porque(m,media){const p=[['likes','curtida'],['comments','comentário'],['shares','compartilhamento'],['saved','salvo']]
+  .filter(([k])=>m[k]).map(([k,l])=>`${num(m[k])} ${l}${m[k]>1?'s':''}`);
   const e=engaj(m);const x=media?e/media:null;
-  return `${p.join(' · ')||'sem interações'} ÷ ${num(m.reach)} de alcance${x&&isFinite(x)?` · <b>${x.toLocaleString('pt-BR',{maximumFractionDigits:1})}× a média do período</b>`:''}`}
+  return `${num(pontos(m))} interações (${p.join(', ')||'nenhuma'}) ÷ ${num(m.reach)} de alcance${x&&isFinite(x)?` · <b>${x.toLocaleString('pt-BR',{maximumFractionDigits:1})}× a média do período</b>`:''}`}
 async function abaMelhores(el){
-  el.innerHTML=`<p class="muted"><span class="spin"></span> Buscando os melhores posts do período…</p>`;
-  const pmPer={...PM,comparar:false};
-  const {lista}=await postsDoPeriodo(pmPer,48);
+  el.innerHTML=`<p class="muted"><span class="spin"></span> Buscando os melhores posts do período…</p>`;await garantirPerfil();
+  const {lista}=await postsDoPeriodo({...PM,comparar:false},48);
   const conf=lista.filter(x=>confiavel(x.metricas));
-  const R=resumo(lista);
-  const top=conf.sort((a,b)=>engaj(b.metricas)-engaj(a.metricas)).slice(0,6);
-  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Melhores posts do período</h2><p>Os 6 com maior <b>engajamento ponderado</b> (compartilhamentos × 4 + comentários × 3 + salvos × 2 + curtidas × 1, dividido pelo alcance). Clique para ver aqui mesmo.</p></div>
-    <div class="filtros">${seletorPeriodo('pm',PM,null).replace(/<label class="chk">[\s\S]*?<\/label>/,'')}</div></div>
-    <div class="cb">${top.length?`<p class="note" style="margin:0 0 14px">${num(conf.length)} post(s) com alcance confiável no período · engajamento médio do período: <b>${pct(R.eng)}</b>${PM.preset==='max'?` · no Máximo, considera os ${num(S.igPosts.lista.length)} posts mais recentes`:''}.</p>
+  const R=resumo(lista);const qtd=Number(PM.qtd);
+  const top=conf.sort((a,b)=>engaj(b.metricas)-engaj(a.metricas)).slice(0,qtd);
+  el.innerHTML=`<section class="card"><div class="ch"><div><h2>Melhores posts do período</h2><p>Até ${qtd} posts com maior <b>taxa de engajamento</b> (curtidas + comentários + compartilhamentos + salvos ÷ alcance). Clique para ver aqui mesmo.</p></div>
+    <div class="filtros">${seletorPeriodo('pm',PM,null).replace(/<label class="chk">[\s\S]*?<\/label>/,'')}
+      <label>Mostrar <select id="m-qtd">${[3,6,9,12].map(n=>`<option value="${n}"${qtd===n?' selected':''}>${n} posts</option>`).join('')}</select></label></div></div>
+    <div class="cb">${top.length?`<p class="note" style="margin:0 0 14px">${num(conf.length)} post(s) com alcance confiável no período · taxa de engajamento do período: <b>${pct(R.eng)}</b> · taxa pública: <b>${pct(R.pub)}</b>${PM.preset==='max'?` · no Máximo, considera os ${num(S.igPosts.lista.length)} posts mais recentes`:''}.</p>
     <div class="best">${top.map((x,n)=>{const m=x.metricas;return `<article class="bc"><button class="bimg" type="button" data-ver="${esc(x.id)}" aria-label="Ver o post">${x.capa?`<img src="${esc(x.capa)}" alt="" loading="lazy">`:''}<span class="rank">#${n+1}</span>${x.tipo==='REELS'||x.tipo==='VIDEO'?'<span class="play">▶</span>':''}</button>
       <div class="bb"><div class="row1"><span class="pill acc">${esc(TIPO[x.tipo]||x.tipo)}</span><span class="muted">${esc(new Date(x.data).toLocaleDateString('pt-BR'))}</span></div>
-      <div class="be num">${pct(engaj(m))}</div><div class="bl">engajamento ponderado</div>
-      <p class="leg">${esc((x.legenda||'(sem legenda)').slice(0,110))}</p>
+      <div class="be num">${pct(engaj(m))}</div><div class="bl">taxa de engajamento · pública ${pct(engPub(m))}</div>
+      <p class="leg">${esc((x.legenda||'(sem legenda)').slice(0,90))}</p>
       <dl class="bm"><div><dt>Visualiz.</dt><dd class="num">${num(m.views)}</dd></div><div><dt>Alcance</dt><dd class="num">${num(m.reach)}</dd></div><div><dt>Curtidas</dt><dd class="num">${num(m.likes)}</dd></div>
       <div><dt>Coment.</dt><dd class="num">${num(m.comments)}</dd></div><div><dt>Compart.</dt><dd class="num">${num(m.shares)}</dd></div><div><dt>Salvos</dt><dd class="num">${num(m.saved)}</dd></div></dl>
       <p class="why"><b>Por que está aqui:</b> ${porque(m,R.eng)}</p></div></article>`}).join('')}</div>`
-    :'<div class="empty">Nenhum post com alcance confiável nesse período. Escolha um período maior.</div>'}</div></section>`;
+    :'<div class="empty">Nenhum post com alcance confiável nesse período. Escolha um período maior.</div>'}</div></section>${NOTA_TAXAS}`;
   ligarPeriodo('pm',PM,salvarPM,()=>abaMelhores(el));
+  $('m-qtd').onchange=e=>{PM.qtd=Number(e.target.value);salvarPM();abaMelhores(el)};
   ligarVer(el);
 }
 
@@ -550,7 +558,7 @@ async function abrirPost(id){const x=(S.igPosts?.lista||[]).find(p=>p.id===id);c
   d.innerHTML=`<div class="vbox"><div class="vmid" id="vmid"><p class="muted"><span class="spin"></span> Carregando…</p></div>
     <aside class="vside"><div class="row1"><span class="pill acc">${esc(TIPO[x?.tipo]||x?.tipo||'')}</span><span class="muted">${x?esc(new Date(x.data).toLocaleDateString('pt-BR')):''}</span>
       <button class="vx" type="button" id="vfechar" aria-label="Fechar">✕</button></div>
-      <div class="be num">${pct(engaj(m))}</div><div class="bl">engajamento ponderado</div>
+      <div class="be num">${pct(engaj(m))}</div><div class="bl">taxa de engajamento · pública ${pct(engPub(m))}</div>
       <dl class="bm"><div><dt>Visualiz.</dt><dd class="num">${num(m.views)}</dd></div><div><dt>Alcance</dt><dd class="num">${num(m.reach)}</dd></div><div><dt>Curtidas</dt><dd class="num">${num(m.likes)}</dd></div>
       <div><dt>Coment.</dt><dd class="num">${num(m.comments)}</dd></div><div><dt>Compart.</dt><dd class="num">${num(m.shares)}</dd></div><div><dt>Salvos</dt><dd class="num">${num(m.saved)}</dd></div></dl>
       <p class="vleg">${esc(x?.legenda||'')}</p><a class="btn" href="${esc(x?.link||'#')}" target="_blank" rel="noopener">${ic('ext')} Abrir no Instagram</a></aside></div>`;
