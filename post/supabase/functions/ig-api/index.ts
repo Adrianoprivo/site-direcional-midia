@@ -1,4 +1,4 @@
-// IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..04: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
+// IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..07: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
 // Só leitura no Instagram nesta etapa.
 import { admin, cors, json, usuario } from "../_shared/comum.ts";
 
@@ -90,27 +90,31 @@ async function posts(token: string, limite = 12, depois?: string) {
   return { lista, proximo: midia.paging?.next ? (midia.paging?.cursors?.after ?? null) : null };
 }
 
-// IG-MET-04: métricas da conta. Regra do Adriano: "últimos N dias" = N dias corridos SEM o dia de hoje (fuso de São Paulo).
+// IG-MET-04/06: métricas da conta. Regra do Adriano: "últimos N dias" = N dias corridos SEM o dia de hoje (fuso de São Paulo).
+// O Instagram guarda as métricas da conta por 90 dias. Cada consulta vai em janelas de até 30 dias.
 const METRICAS_CONTA = ["views", "reach", "accounts_engaged", "total_interactions", "likes", "comments", "shares", "saves", "profile_links_taps", "follows_and_unfollows"];
+const UNICAS = new Set(["reach", "accounts_engaged"]); // contas únicas: somar janelas superestima
 const FUSO = -3 * 3600; // São Paulo, sem horário de verão
+const DIA = 86400;
+
+/** "AAAA-MM-DD" (data local de SP) -> segundos UTC do início desse dia */
+function inicioDia(d: string) { return Math.floor(Date.parse(d + "T00:00:00Z") / 1000) - FUSO; }
+function dataLocal(seg: number) { return new Date((seg + FUSO) * 1000).toISOString().slice(0, 10); }
+function hojeLocal() { return dataLocal(Math.floor(Date.now() / 1000)); }
 
 function janela(dias: number) {
-  const agoraLocal = Math.floor(Date.now() / 1000) + FUSO;
-  const hojeLocal0 = agoraLocal - (agoraLocal % 86400); // 00:00 de hoje (local) em "segundos locais"
-  const until = hojeLocal0 - FUSO - 1;                  // 23:59:59 de ontem, em UTC
-  const since = hojeLocal0 - dias * 86400 - FUSO;       // 00:00 de N dias atrás, em UTC
-  return { since, until };
+  const hoje0 = inicioDia(hojeLocal());
+  return { since: hoje0 - dias * DIA, until: hoje0 - 1 };
 }
 
-async function metricasConta(token: string, dias: number) {
-  const { since, until } = janela(dias);
+async function totaisJanela(token: string, since: number, until: number) {
   const base = { period: "day", metric_type: "total_value", since: String(since), until: String(until) };
   const saida: Record<string, number> = {};
-  const juntar = (r: { data?: { name: string; total_value?: { value: number; breakdowns?: { results?: { dimension_values: string[]; value: number }[] }[] } }[] }) => {
+  const juntar = (r: { data?: { name: string; total_value?: { value: number; breakdowns?: { results?: { dimension_values: string[]; value: number }[] }[] } }[] }, pref = "") => {
     for (const m of r.data ?? []) {
       if (m.total_value?.breakdowns?.length) {
-        for (const b of m.total_value.breakdowns[0].results ?? []) saida[`${m.name}:${b.dimension_values.join("|")}`] = b.value;
-      } else saida[m.name] = m.total_value?.value ?? 0;
+        for (const b of m.total_value.breakdowns[0].results ?? []) saida[`${pref}${m.name}:${b.dimension_values.join("|")}`] = b.value;
+      } else saida[pref + m.name] = m.total_value?.value ?? 0;
     }
   };
   try {
@@ -120,21 +124,48 @@ async function metricasConta(token: string, dias: number) {
       try { juntar(await ig("me/insights", token, { ...base, metric: m })); } catch { /* indisponível */ }
     }
   }
-  try { // seguidores ganhos x perdidos
-    juntar(await ig("me/insights", token, { ...base, metric: "follows_and_unfollows", breakdown: "follow_type" }));
+  try { juntar(await ig("me/insights", token, { ...base, metric: "follows_and_unfollows", breakdown: "follow_type" })); } catch { /* indisponível */ }
+  // IG-MET-07: por formato (Reels, posts, stories…)
+  try {
+    juntar(await ig("me/insights", token, { ...base, metric: "views,reach,likes,comments,shares,saves,total_interactions", breakdown: "media_product_type" }), "fmt:");
   } catch { /* indisponível */ }
+  return saida;
+}
+
+async function metricasPeriodo(token: string, since: number, until: number) {
+  const agora = Math.floor(Date.now() / 1000);
+  const limite = inicioDia(hojeLocal()) - 90 * DIA;
+  since = Math.max(since, limite);
+  until = Math.min(until, agora);
+  const janelas: [number, number][] = [];
+  for (let a = since; a <= until; a += 30 * DIA) janelas.push([a, Math.min(a + 30 * DIA - 1, until)]);
+  const partes = await Promise.all(janelas.map(([a, b]) => totaisJanela(token, a, b)));
+  const soma: Record<string, number> = {};
+  for (const p of partes) for (const [k, v] of Object.entries(p)) soma[k] = (soma[k] ?? 0) + v;
+  const tem = (k: string) => partes.some((p) => k in p);
+  const v = (k: string) => (tem(k) ? soma[k] : null);
+  const formatos: Record<string, Record<string, number>> = {};
+  for (const [k, val] of Object.entries(soma)) {
+    if (!k.startsWith("fmt:")) continue;
+    const [met, tipo] = k.slice(4).split(":");
+    (formatos[tipo] ??= {})[met] = val;
+  }
   return {
-    dias,
-    de: new Date((since + FUSO) * 1000).toISOString().slice(0, 10),
-    ate: new Date((until + FUSO) * 1000).toISOString().slice(0, 10),
+    de: dataLocal(since), ate: dataLocal(until), dias: Math.round((until - since + 1) / DIA),
+    aproximado: janelas.length > 1 ? [...UNICAS] : [],
     m: {
-      views: saida.views ?? null, reach: saida.reach ?? null, accounts_engaged: saida.accounts_engaged ?? null,
-      total_interactions: saida.total_interactions ?? null, likes: saida.likes ?? null, comments: saida.comments ?? null,
-      shares: saida.shares ?? null, saves: saida.saves ?? null, profile_links_taps: saida.profile_links_taps ?? null,
-      seguiram: saida["follows_and_unfollows:FOLLOWER"] ?? null, deixaram: saida["follows_and_unfollows:NON_FOLLOWER"] ?? null,
+      views: v("views"), reach: v("reach"), accounts_engaged: v("accounts_engaged"), total_interactions: v("total_interactions"),
+      likes: v("likes"), comments: v("comments"), shares: v("shares"), saves: v("saves"), profile_links_taps: v("profile_links_taps"),
+      seguiram: v("follows_and_unfollows:FOLLOWER"), deixaram: v("follows_and_unfollows:NON_FOLLOWER"),
     },
-    quebras: Object.fromEntries(Object.entries(saida).filter(([k]) => k.includes(":"))), // conferência dos nomes da quebra
+    formatos,
   };
+}
+
+async function metricasConta(token: string, dias: number) {
+  const { since, until } = janela(dias);
+  const r = await metricasPeriodo(token, since, until);
+  return { ...r, dias };
 }
 
 const MSG: Record<string, string> = {
@@ -148,7 +179,7 @@ Deno.serve(async (req) => {
   try {
     const uid = await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
-    const { acao, depois } = await req.json().catch(() => ({}));
+    const { acao, depois, de, ate, comparar } = await req.json().catch(() => ({}));
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
       .select("user_id,username,access_token,obtido_em,expira_em").eq("user_id", uid).maybeSingle();
@@ -162,6 +193,18 @@ Deno.serve(async (req) => {
     if (acao === "posts") {
       const r = await posts(await tokenValido(c as Conexao), 12, typeof depois === "string" ? depois : undefined);
       return json(req, { posts: r.lista, proximo: r.proximo });
+    }
+    if (acao === "periodo") { // IG-MET-06: período escolhido (+ período anterior do mesmo tamanho)
+      const ok = (d: unknown) => typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d);
+      if (!ok(de) || !ok(ate)) return json(req, { erro: "Período inválido." }, 400);
+      const t = await tokenValido(c as Conexao);
+      const since = inicioDia(de), until = inicioDia(ate) + DIA - 1;
+      const tam = until - since + 1;
+      const [atual, anterior] = await Promise.all([
+        metricasPeriodo(t, since, until),
+        comparar ? metricasPeriodo(t, since - tam, since - 1) : Promise.resolve(null),
+      ]);
+      return json(req, { atual, anterior, limite_dias: 90 });
     }
     if (acao === "conta") {
       const t = await tokenValido(c as Conexao);
