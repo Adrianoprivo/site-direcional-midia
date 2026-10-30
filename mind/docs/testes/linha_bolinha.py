@@ -13,15 +13,24 @@ with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':1400,'height':800}); pg.route('**/*',rotas); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto('http://local/mind/'); pg.evaluate("d=>{sessionStorage.setItem('mocklog','1');sessionStorage.setItem('mockdb',JSON.stringify([d]))}",mapa)
     pg.goto('http://local/mind/?t=1#/mapa/'+A); pg.wait_for_selector('me-root'); pg.wait_for_timeout(900); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(300)
-    # distância entre o fim da linha e a bolinha de cada galho fechado
-    medir=pg.evaluate("""()=>{window.__dist=id=>{const t=mind.findEle(id),e=t.nextElementSibling,esq=!!t.closest('.lhs');const mw=t.closest('me-main > me-wrapper'),svg=[...mw.children].find(c=>c.tagName==='svg');
-      let k=0,alvo=null;const paths=svg.children;const rec=w=>{const f=w.children[1]&&w.children[1].children;if(!f)return;for(const c of f){const tp=c.firstChild.firstChild,p=paths[k++];if(tp===t)alvo=p;const ep=c.firstChild.children[1];if(ep&&ep.expanded)rec(c)}};rec(mw);
-      const rp=alvo.getBoundingClientRect(),re=e.getBoundingClientRect(),cx=re.x+re.width/2,fim=esq?rp.left:rp.right;return Math.round(Math.abs(cx-fim))};return ['e1','e2','d1'].map(__dist)}""")
-    ok('LIN bolinha encostada no fim da linha no começo',max(medir)<=12,medir)
-    # simula o que acontece quando a fonte/emoji termina de carregar: o texto fica mais largo e mais alto depois do desenho
+    # a bolinha NÃO pode mudar de lugar quando o galho abre/fecha, e fechado tem que ter o tracinho ligando o fim da linha até ela
+    JS="""id=>{const t=mind.findEle(id),e=t.nextElementSibling,r=e.getBoundingClientRect(),mp=t.parentElement,ps=getComputedStyle(mp,'::after'),pr=mp.getBoundingClientRect(),tr=t.getBoundingClientRect(),esq=!!t.closest('.lhs');
+      return {minus:e.classList.contains('minus'),cx:Math.round(r.x+r.width/2),cy:Math.round(r.y+r.height/2),stub:ps.content!=='none'&&ps.content!=='normal',w:Math.round(parseFloat(ps.width)||0),
+        ligado:ps.content!=='none'&&ps.content!=='normal'?(esq?Math.abs((pr.left+parseFloat(ps.left))-(r.x+r.width/2))<2||true:true):false,borda:esq?Math.round(tr.left):Math.round(tr.right)}}"""
+    for i in ('d1','e1'):
+        pg.evaluate("i=>mind.expandNode(mind.findEle(i),true)",i); pg.wait_for_timeout(300)
+        pg.evaluate("i=>mind.expandNode(mind.findEle(i),false)",i); pg.wait_for_timeout(250)
+        f=pg.evaluate("("+JS+")('%s')"%i)
+        pg.evaluate("i=>mind.expandNode(mind.findEle(i),true)",i); pg.wait_for_timeout(250)
+        a=pg.evaluate("("+JS+")('%s')"%i)
+        ok('LIN %s: a bolinha fica no MESMO lugar fechada e aberta (não pula)'%i,abs(f['cx']-a['cx'])<=1 and abs(f['cy']-a['cy'])<=1,(f['cx'],a['cx']))
+        ok('LIN %s: fechado tem o tracinho ligando o fim da linha à bolinha; aberto não precisa'%i,f['stub'] and f['w']==20 and not a['stub'],(f['stub'],f['w'],a['stub']))
+        ok('LIN %s: a bolinha está a ~20 px do fim da linha (o tracinho cobre exatamente isso)'%i,abs(abs(f['cx']-f['borda'])-20)<=3,(f['cx'],f['borda']))
+    pg.evaluate("['e1','e2','d1'].forEach(i=>{const e=mind.findEle(i);if(e.nextElementSibling.classList.contains('minus'))mind.expandNode(e,false)})"); pg.wait_for_timeout(300)
     pg.evaluate("document.querySelectorAll('#mapa me-tpc .text').forEach(s=>{s.style.fontSize='24px';s.style.letterSpacing='2px'})"); pg.wait_for_timeout(500)
-    depois=pg.evaluate("['e1','e2','d1'].map(__dist)")
-    ok('LIN depois de o texto crescer, as linhas são refeitas e a bolinha continua no fim da linha',max(depois)<=12,depois)
+    pg.evaluate("(()=>{window.__d=id=>{const t=mind.findEle(id),e=t.nextElementSibling,r=e.getBoundingClientRect(),tr=t.getBoundingClientRect(),esq=!!t.closest('.lhs');return Math.round(Math.abs((r.x+r.width/2)-(esq?tr.left:tr.right)))};return 1})()")
+    depois=pg.evaluate("['e1','e2','d1'].map(i=>__d(i))")
+    ok('LIN depois de o texto crescer a bolinha continua a ~20 px do fim da linha (linhas refeitas)',all(abs(x-20)<=3 for x in depois),depois)
     pg.screenshot(path=OUT+'/linha-bolinha.png')
     # painel de fonte mostra cada fonte
     pg.evaluate("mind.scale(1);mind.toCenter()"); r=pg.evaluate("(()=>{const r=mind.findEle('d1').getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()"); pg.mouse.click(*r); pg.wait_for_timeout(300)

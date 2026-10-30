@@ -449,10 +449,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* sublinhado e riscado do tópico valem para o texto (que é um bloco interno e não herdava a decoração) */
 #mapa me-tpc>.text,.pv me-tpc>.text{text-decoration:inherit}
 
-/* bolinha com número (galho fechado): não tem linha saindo dela, então ficava solta ~11px depois do fim da linha do tópico; aqui ela encosta no fim da linha */
-:is(#mapa,.pv) .rhs me-children me-parent me-epd:not(.minus){transform:translateX(-10px)}
-:is(#mapa,.pv) .lhs me-children me-parent me-epd:not(.minus){transform:translateX(10px)}
-:is(#mapa,.pv).caixa .rhs me-children me-parent me-epd:not(.minus),:is(#mapa,.pv).caixa .lhs me-children me-parent me-epd:not(.minus){transform:none}
+/* bolinha de galho fechado: fica exatamente no mesmo lugar da bolinha de galho aberto (não pula ao clicar).
+   Aberto, as linhas dos filhos passam por ela; fechado não há filhos, então um tracinho da mesma cor liga o fim da linha do tópico até a bolinha. */
+:is(#mapa,.pv):not(.caixa) me-children me-parent:has(>me-epd:not(.minus))::after{content:'';position:absolute;bottom:-1px;height:2px;width:20px;background:var(--cor-galho,var(--accent));z-index:0;pointer-events:none}
+:is(#mapa,.pv):not(.caixa) .rhs me-children me-parent:has(>me-epd:not(.minus))::after{right:14px}
+:is(#mapa,.pv):not(.caixa) .lhs me-children me-parent:has(>me-epd:not(.minus))::after{left:14px}
 </style></head>
 <body>
 
