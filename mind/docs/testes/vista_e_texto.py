@@ -41,6 +41,7 @@ with sync_playwright() as p:
     def clicaEm(x,y):
         pg.mouse.move(x,y,steps=4); pg.wait_for_timeout(80); pg.mouse.down(); pg.wait_for_timeout(70); pg.mouse.up(); pg.wait_for_timeout(300)
     s0=estado('d1'); clicaEm(c[0]+14,c[1]); ok('CLQ clicar na linha logo ao lado (para fora) abre/fecha o galho da direita',estado('d1')!=s0)
+    c=pg.evaluate("i=>{const r=mind.findEle(i).nextElementSibling.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]}",'d1')
     s0=estado('d1'); clicaEm(c[0],c[1]); ok('CLQ clicar na bolinha também abre/fecha',estado('d1')!=s0)
     ce=pg.evaluate("i=>{const r=mind.findEle(i).nextElementSibling.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]}",'e1')
     s0=estado('e1'); clicaEm(ce[0]-14,ce[1]); ok('CLQ clicar na linha ao lado da bolinha do lado esquerdo também funciona',estado('e1')!=s0)
