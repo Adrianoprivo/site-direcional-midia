@@ -9,8 +9,8 @@ Recolher e expandir galhos,editor,must,yes,yes,
 Zoom e arrastar a tela,editor,must,yes,yes,
 Desfazer e refazer,editor,must,yes,yes,
 Salvar automático,editor,must,yes,yes,
-Cor / fonte / ícone / emoji no tópico,estilo,should,yes,partial,negrito/itálico/sublinhado/riscado/cor no tópico ou no trecho (TXT); ícone/emoji ainda não
-Notas e links no tópico,editor,should,yes,partial,links feitos (LNK); notas ainda não
+Cor / fonte / ícone / emoji no tópico,estilo,should,yes,yes,"negrito/itálico/sublinhado/riscado/cor (TXT); 4 fontes, forma, preenchimento, borda, linha, limite (seção 13); ícones e emoji (ICO/EMO)"
+Notas e links no tópico,editor,should,yes,yes,links (LNK) e notas (NOT-01)
 Imagem no tópico,editor,should,yes,yes,"colar, soltar arquivo, escolher, link; P/M/G; armazenamento privado (IMG)"
 Modo tópicos (lista recuada),editor,should,yes,yes,vista em lista editável no rodapé (VIS-L)
 Temas do mapa,estilo,should,yes,yes,5 temas de cor sólida + estilo Linha/Caixa por mapa (VIS-02/03)
@@ -19,7 +19,7 @@ Modelos prontos,painel,should,yes,no,criar modelos próprios (não copiar os del
 Modo apresentação,apresentar,could,yes,no,
 Compartilhar por link (somente leitura),compartilhar,could,yes,no,
 Colaboração em tempo real,compartilhar,could,yes,no,projeto grande sozinho
-Comentários com @menção,compartilhar,could,yes,no,
+Comentários com @menção,compartilhar,could,yes,partial,comentário pessoal por tópico feito (COM-01); @menção e resposta só com compartilhamento
 Histórico de versões,mapa,could,yes,no,
 Gerar mapa com IA a partir de tema ou arquivo,ia,could,yes,no,precisa de chave de API (custo)
 Exportar Word e PowerPoint,exportar,could,yes,no,
@@ -37,3 +37,6 @@ Bolinha de abrir/fechar galho sempre visível,editor,should,yes,yes,"v2: refinad
 Resumo (chave) e modo foco,editor,could,yes,yes,botão direito
 Criar sempre à direita a partir do centro,editor,should,yes,yes,EST-02; esquerda só pelo + da esquerda
 Rodapé com vista e zoom (− % +),editor,should,yes,yes,ROD-01..04
+Tarefa no tópico (prazo e prioridade),editor,should,yes,yes,TAR-01
+Menu ⋯ do tópico (copiar/colar/colar estilo/detalhe/alinhamento/ramo/link),editor,should,yes,yes,MEN-01..09
+Copiar link para o tópico,editor,could,yes,yes,MEN-09
