@@ -11,7 +11,7 @@ def rotas(route):
     if u.startswith('http://local/'): 
         p=SITE+u[len('http://local'):].split('#')[0].split('?')[0]
         if p.endswith('/'): p+='index.html'
-        return route.fulfill(path=p,content_type='text/html')
+        import mimetypes; return route.fulfill(path=p,content_type=mimetypes.guess_type(p)[0] or 'text/html')
     return route.abort()
 with sync_playwright() as p:
     b=p.chromium.launch()
@@ -51,8 +51,11 @@ with sync_playwright() as p:
     pg.set_viewport_size({'width':390,'height':800}); pg.screenshot(path=OUT+'/6-lista-celular.png')
     pg.click('button[data-a=abrir]'); pg.wait_for_selector('me-root'); pg.wait_for_timeout(600); pg.screenshot(path=OUT+'/7-editor-celular.png')
     pg.click('#voltar'); pg.wait_for_selector('#lista',state='visible')
-    pg.once('dialog',lambda d:d.accept()); pg.click('button[data-a=del]'); pg.wait_for_timeout(300)
-    print('depois de apagar:',pg.text_content('#mapas')[:60], '| db:',pg.evaluate('window.__db.length'))
+    pg.click('button[data-a=del]'); pg.wait_for_timeout(300)
+    print('depois de apagar:',pg.text_content('#mapas')[:60], '| db (vai pra lixeira, continua no banco):',pg.evaluate('window.__db.length'),pg.evaluate('!!window.__db[0].excluido_em'))
+    pg.goto('http://local/mind/#/lixeira'); pg.wait_for_timeout(500); pg.once('dialog',lambda d:d.accept()); pg.click('button[data-a=del-forever]'); pg.wait_for_timeout(300)
+    print('depois de apagar para sempre | db:',pg.evaluate('window.__db.length'))
+    pg.goto('http://local/mind/#/')
     # tema escuro
     pg.emulate_media(color_scheme='dark'); pg.set_viewport_size({'width':1280,'height':800}); pg.click('#novo'); pg.wait_for_selector('me-root'); pg.wait_for_timeout(600); pg.screenshot(path=OUT+'/8-editor-escuro.png')
     print('ERROS:',erros)

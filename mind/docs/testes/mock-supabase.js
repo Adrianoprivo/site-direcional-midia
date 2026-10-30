@@ -34,6 +34,7 @@
     async createSignedUrl(path){return files[path]?{data:{signedUrl:files[path]},error:null}:{data:null,error:{message:'not found'}}},
     async createSignedUrls(paths){return {data:paths.map(p=>({path:p,signedUrl:files[p]||null,error:files[p]?null:'not found'})),error:null}},
     async list(prefix){return {data:Object.keys(files).filter(k=>k.startsWith(prefix+'/')).map(k=>({name:k.slice(prefix.length+1)})),error:null}},
+    async copy(a,b){if(!files[a])return {data:null,error:{message:'not found'}};files[b]=files[a];salvaF();return {data:{path:b},error:null}},
     async remove(paths){paths.forEach(p=>delete files[p]);salvaF();return {data:null,error:null}}
   })};
   window.supabase={createClient:()=>({storage,
