@@ -49,6 +49,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* ===== painel inicial: menu lateral, modelos, importar ===== */
 .shell{display:grid;grid-template-columns:268px 1fr;min-height:100vh}
 .shell>*{min-width:0}
+
 .lat{background:linear-gradient(180deg,#171433 0%,#0F0D22 100%);color:#E9E7FA;padding:calc(env(safe-area-inset-top,0px) + 22px) 14px 18px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh}
 .lat-marca{display:flex;align-items:center;gap:11px;padding:0 6px}
 .lat-marca img{width:42px;height:42px;flex:none}
@@ -403,6 +404,22 @@ button{font:inherit;color:inherit;cursor:pointer}
   .menu-vista,.painel-ap{right:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 132px)}
 }
 @media (max-width:560px){.status{display:none}.esconde-cel{display:none!important}}
+/* ===== cores da tela inicial (fica no fim para valer sobre as regras anteriores) ===== */
+.shell{background:radial-gradient(46% 38% at 88% 0%,rgb(124 58 237 / .24),transparent 72%),radial-gradient(42% 40% at 30% 100%,rgb(6 182 212 / .2),transparent 72%),radial-gradient(30% 30% at 60% 45%,rgb(244 63 94 / .06),transparent 72%),var(--bg)}
+.ola h2 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.chips button{--c:#6D28D9;border:1.5px solid var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 11%,var(--surface));font-weight:700}
+.chips button:hover{background:var(--c);color:#fff;border-color:var(--c)}
+.mapas li{--c:#6D28D9}
+.mapas li::before{opacity:1;background:var(--c);width:4px}
+.mapas li:nth-child(5n+2){--c:#2563EB}.mapas li:nth-child(5n+3){--c:#047857}.mapas li:nth-child(5n+4){--c:#BE185D}.mapas li:nth-child(5n+5){--c:#B45309}
+.mapas li:hover{background:color-mix(in srgb,var(--c) 7%,var(--surface))}
+.cartao{--c:#6D28D9;background:color-mix(in srgb,var(--c) 11%,var(--surface));border:1.5px solid color-mix(in srgb,var(--c) 28%,transparent)}
+.cartao:hover{border-color:var(--c)}
+.cartao:nth-child(5n+2){--c:#2563EB}.cartao:nth-child(5n+3){--c:#047857}.cartao:nth-child(5n+4){--c:#BE185D}.cartao:nth-child(5n+5){--c:#B45309}
+.lat-nav a.on{background:linear-gradient(135deg,rgb(124 58 237 / .55),rgb(6 182 212 / .28))}
+.pv{min-width:0;overflow:hidden;width:100%}
+.pvw{overflow:hidden}
+.cartao svg{height:66px}
 </style></head>
 <body>
 
@@ -428,7 +445,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <button class="btn ghost" id="btn-modelos" type="button">Navegue pelos modelos</button>
       <button class="btn ghost" id="btn-importar" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Importar</button>
     </div>
-    <section class="ola" id="sec-lar"><h2 id="ola-t">Oi! O que você deseja criar?</h2><p>Comece do zero ou de um modelo pronto.</p>
+    <section class="ola" id="sec-lar"><h2 id="ola-t">Oi! O que você deseja <span>criar?</span></h2><p>Comece do zero ou de um modelo pronto.</p>
       <div class="chips" id="chips"></div></section>
     <div class="sec-t"><h3 id="sec-titulo">Mapas recentes</h3><span class="cont" id="cont"></span><p id="sec-sub" hidden></p></div>
     <div class="barra"><input class="busca" id="busca" type="search" placeholder="Pesquisar mapas" autocomplete="off"><button class="btn ghost" id="esvaziar" type="button" hidden>Esvaziar lixeira</button></div>
@@ -771,7 +788,7 @@ function dadosDoModelo(m){
   const d=ME.new(raiz.topic);d.nodeData=raiz;return d;
 }
 function miniatura(m){
-  const f=(m.def[1]||[]).slice(0,6),cores=TEMAS.direcional.paleta.map(c=>clarear(c,.35)),n=f.length;
+  const f=(m.def[1]||[]).slice(0,6),cores=TEMAS.direcional.paleta.map(c=>clarear(c,.12)),n=f.length;
   let h='<svg viewBox="0 0 150 62" aria-hidden="true">';
   const dir=(i)=>i%2===0?1:-1,lados=[f.filter((_,i)=>dir(i)===1),f.filter((_,i)=>dir(i)===-1)];
   lados.forEach((arr,li)=>arr.forEach((c,k)=>{const i=f.indexOf(c),cor=cores[i%cores.length],y=arr.length===1?31:8+k*(46/(arr.length-1)),x=li===0?104:12,w=34;
@@ -799,7 +816,8 @@ $('m-cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');
 $('m-grade').addEventListener('click',e=>{const b=e.target.closest('[data-mod]');if(!b)return;abrirPrevia(b.dataset.mod)});
 document.querySelectorAll('.modal-fundo').forEach(f=>f.addEventListener('pointerdown',e=>{if(e.target===f)fecharModais()}));
 /* chips da tela inicial */
-$('chips').innerHTML=['dever','projeto','swot','semana'].map(id=>`<button type="button" data-mod="${id}">${esc(MODELOS.find(m=>m.id===id).nome)}</button>`).join('');
+const COR_CHIP={dever:'#6D28D9',projeto:'#2563EB',swot:'#047857',semana:'#B45309'};
+$('chips').innerHTML=['dever','projeto','swot','semana'].map(id=>`<button type="button" data-mod="${id}" style="--c:${COR_CHIP[id]}">${esc(MODELOS.find(m=>m.id===id).nome)}</button>`).join('');
 $('chips').addEventListener('click',e=>{const b=e.target.closest('[data-mod]');if(b){modLista=MODELOS;abrirPrevia(b.dataset.mod)}});
 
 /* prévia do modelo: o mapa de verdade, só para olhar e mexer o zoom */
@@ -808,6 +826,14 @@ function corrigirRamosPrevia(){
   if(!prev)return;const el=prev.container;
   el.querySelectorAll('me-main > me-wrapper > me-parent > me-tpc').forEach(t=>{const c=t.style.borderColor;if(c){t.style.setProperty('--ramo',c);t.parentElement.parentElement.style.setProperty('--cor-galho',c)}});
   el.querySelectorAll('me-children > me-wrapper').forEach(w=>{const t=w.firstElementChild&&w.firstElementChild.firstElementChild,c=t&&t.nodeObj&&t.nodeObj.branchColor;if(c)w.style.setProperty('--cor-galho',c)});
+}
+/* deixa o tópico central (raiz) no meio da área da prévia */
+function centrarRaizPrevia(){
+  if(!prev)return;const r=prev.container.querySelector('me-root me-tpc'),c=prev.container.getBoundingClientRect();if(!r)return;
+  for(let i=0;i<3;i++){const b=r.getBoundingClientRect(),dx=c.left+c.width/2-(b.left+b.width/2),dy=c.top+c.height/2-(b.top+b.height/2);
+    if(Math.abs(dx)<2&&Math.abs(dy)<2)break;
+    const t=prev.map.style.transform.match(/translate3d\(([-\d.]+)px,\s*([-\d.]+)px/);if(!t)break;
+    prev.map.style.transform=prev.map.style.transform.replace(/translate3d\([^)]*\)/,`translate3d(${+t[1]+dx}px, ${+t[2]+dy}px, 0)`)}
 }
 function abrirPrevia(id){
   const i=modLista.findIndex(m=>m.id===id),m=i>=0?modLista[i]:MODELOS.find(x=>x.id===id);if(!m)return;
@@ -818,7 +844,8 @@ function abrirPrevia(id){
   prev=new ME({el:'#pv',direction:ME.SIDE,draggable:false,editable:false,toolBar:false,keypress:false,contextMenu:false,mouseSelectionButton:2,scaleMin:.15,scaleMax:1.6,markdown:t=>md(t),theme:montarTema()});
   prev.init(dadosDoModelo(m));corrigirRamosPrevia();prev.bus.addListener('linkDiv',corrigirRamosPrevia);
   prev.bus.addListener('scale',v=>{$('pz-val').textContent=Math.round(v*100)+'%'});
-  setTimeout(()=>{if(!prev)return;prev.scaleFit();const v=Math.round(Math.min(1,prev.scaleVal||1)*88)/100;prev.scale(v);prev.toCenter();$('pz-val').textContent=Math.round((prev.scaleVal||1)*100)+'%'},30);
+  const ajustar=()=>{if(!prev)return;prev.scaleFit();const v=Math.round(Math.min(1,prev.scaleVal||1)*95)/100;prev.scale(v);prev.toCenter();centrarRaizPrevia();$('pz-val').textContent=Math.round((prev.scaleVal||1)*100)+'%'};
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ajustar();setTimeout(centrarRaizPrevia,120)}));
 }
 $('p-volta').onclick=()=>{fecharPrevia();$('m-previa').hidden=true;$('m-modelos').hidden=false};
 $('p-fecha').onclick=fecharModais;
