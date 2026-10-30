@@ -221,6 +221,8 @@ Pedido do Adriano a partir dos prints do MindMeister. Tudo no mesmo arquivo `min
 | IMP-01 | Importar | Arrastar o arquivo, procurar, ou colar um texto. Lê **texto com recuo e Markdown** (`#`, `-`, `*`, `1.`), **Freemind (.mm)** (lados e links), **OPML** e **JSON do PrivoMind/Mind Elixir**. Cria um mapa novo (limite de 3000 tópicos). Formatos compactados (.xmind, .mind, .mmap, .zip) ainda não: avisa e sugere exportar como texto, Freemind ou OPML. |
 | ZOOM-01 | Zoom ao abrir | Todo mapa com conteúdo abre com **50%** de zoom e o tópico central no meio. Mapa novo e vazio abre em 100%. O zoom não é salvo (muda só enquanto você usa). |
 | CLQ-01 | Clique na bolinha de abrir/fechar | A biblioteca do mapa cancelava o clique se o mouse mexesse 1 pixel entre apertar e soltar (e a trava ficava presa depois de arrastar a tela). Agora o clique vale com até 8 px de tremida e a trava é limpa antes de cada clique. A área de clique da bolinha ganhou uma margem invisível; o desenho dela não mudou. Teste: `bolinha_clique.py` (antes da correção: 0 de 10 cliques com 1 px de tremida; depois: 10 de 10). |
+| LIN-02 | Linhas sempre acompanham o tamanho do tópico | Fontes, emoji e imagens carregam depois do primeiro desenho e mudam o tamanho dos tópicos. Antes, a bolinha de abrir/fechar (presa à caixa) ficava longe do fim da linha. Agora o mapa observa o tamanho de cada tópico e refaz as linhas quando ele muda (e quando termina de carregar uma fonte). Teste `linha_bolinha.py`: depois de o texto crescer, a bolinha estava a 175 e 247 px do fim da linha; agora fica a ~20 px (o normal). |
+| FNT-05 | Painel de fonte mostra cada fonte | Os 4 botões "Abc" usam a própria fonte (antes o estilo era quebrado por aspas e todos apareciam iguais). |
 | CPY-01 | Colar entre mapas | Selecionar um tópico, **Ctrl+C**, abrir outro mapa, selecionar o destino, **Ctrl+V**: leva o tópico com tudo que sai dele, com ids novos. Imagens ganham um arquivo próprio na pasta do mapa de destino (apagar o mapa de origem não quebra a cópia). Ctrl+C avisa "Copiado". |
 
 Banco: `alter table mapas add column excluido_em timestamptz` (migração `privomind_mapas_lixeira`, aplicada em 2026-10-30).
@@ -239,6 +241,7 @@ Testes automáticos em `testes/` (navegador sem tela + banco e armazenamento sim
 | `lista.py` | VIS-L1..3 |
 | `painel_modelos.py` | seção 14: menu lateral, lixeira, modelos e prévia, importar (texto, md, mm, opml, json), colar entre mapas, celular |
 | `bolinha_clique.py` | CLQ-01: cliques com mouse tremendo e logo depois de arrastar a tela |
+| `linha_bolinha.py` | LIN-02 e FNT-05: bolinha no fim da linha depois de o texto mudar de tamanho; botões de fonte diferentes |
 | `estilo_menu.py` | seção 13: estilo (forma, preenchimento, borda, linha, limite), fonte, ícone/emoji, comentário, nota, tarefa, menu ⋯, link do tópico, celular |
 | `celular.py` | barra de baixo, formato no celular |
 | `duplo_clique.py` | edição sempre abre |

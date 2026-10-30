@@ -1019,6 +1019,7 @@ async function fecharEditor(){
   if(document.querySelector('#outline .tx:focus'))document.activeElement.blur();
   if(pendente){await salvar()}
   try{mind.destroy()}catch(_){}
+  if(roMapa){roMapa.disconnect();roMapa=null}
   mind=null;atual=null;arr=null;ligarDe=null;vista='mapa';dadosLista=null;ramoLista=null;fmtCel=false;$('rodape').style.visibility='';
   $('mapa').innerHTML='';$('outline').innerHTML='';fecharFlutuantes();$('acoes').hidden=true;$('fmt').hidden=true;$('sair-foco').hidden=true;dica('');document.title='PrivoMind';
   mapas.sort((a,b)=>b.atualizado_em>a.atualizado_em?1:-1);
@@ -1053,10 +1054,21 @@ function depoisDasLinhas(){
     if(c)w.style.setProperty('--cor-galho',c);else w.style.removeProperty('--cor-galho')});
   document.querySelectorAll('#mapa me-epd:not(.minus)').forEach(e=>{const t=e.previousElementSibling;if(t&&t.nodeObj){const n=contar(t.nodeObj);e.dataset.n=n>99?'99+':n}});
   if(mudou)redesenhar();
-  marcarTopicos();estiloLinhas();
+  marcarTopicos();estiloLinhas();vigiarTamanhos();
   posBarra();
 }
 
+/* Fontes, emoji e imagens carregam depois do primeiro desenho e mudam o tamanho dos tópicos; sem religar, a bolinha de
+   abrir/fechar (que acompanha a caixa) fica longe do fim da linha. Aqui as linhas são refeitas sempre que um tópico muda de tamanho. */
+const tamTpc=new WeakMap();let roMapa=null,roTimer=0;
+function vigiarTamanhos(){
+  if(!mind||typeof ResizeObserver==='undefined')return;
+  if(!roMapa)roMapa=new ResizeObserver(es=>{let mudou=false;
+    for(const en of es){const t=en.target,w=Math.round(en.contentRect.width),h=Math.round(en.contentRect.height),a=tamTpc.get(t);tamTpc.set(t,[w,h]);if(a&&(a[0]!==w||a[1]!==h))mudou=true}
+    if(mudou){clearTimeout(roTimer);roTimer=setTimeout(()=>{if(mind&&!(arr&&arr.moved)&&vista==='mapa')redesenhar()},50)}});
+  document.querySelectorAll('#mapa me-tpc').forEach(t=>{if(!tamTpc.has(t)){tamTpc.set(t,null);roMapa.observe(t)}});
+}
+if(document.fonts){document.fonts.addEventListener('loadingdone',()=>{if(mind&&vista==='mapa')setTimeout(redesenhar,30)});document.fonts.ready.then(()=>{if(mind&&vista==='mapa')redesenhar()})}
 /* ---------- ARR: arrastar que encaixa na estrutura ---------- */
 let arr=null,quadro=0,alvo=null;
 function marcarAlvo(a){
@@ -1820,7 +1832,7 @@ function popFonte(p,botao){
   const desenhar=()=>{
     const t=selecionado();if(!t)return fecharPop();const no=t.nodeObj,st=no.style||{},m=no.metadata||{},dec=st.textDecoration||'';
     const neg=+st.fontWeight>=700||st.fontWeight==='bold',cor=(m.est&&m.est.inkAuto)?'':(st.color||'');
-    p.innerHTML='<div class="fontes">'+Object.entries(FONTES).map(([k,F])=>`<button type="button" data-fonte="${k}" class="${(m.fonte||'padrao')===k?'on':''}" style="font-family:${F.css||'inherit'}" title="${F.nome}" aria-label="${F.nome}">Abc</button>`).join('')+'</div>'+
+    p.innerHTML='<div class="fontes">'+Object.entries(FONTES).map(([k,F])=>`<button type="button" data-fonte="${k}" class="${(m.fonte||'padrao')===k?'on':''}" style="font-family:${esc(F.css||'inherit')}" title="${F.nome}" aria-label="${F.nome}">Abc</button>`).join('')+'</div>'+
       `<div class="fmt2"><button type="button" data-f2="b" class="${neg?'on':''}" title="Negrito (Ctrl + B)" style="font-weight:800">N</button><button type="button" data-f2="i" class="${st.fontStyle==='italic'?'on':''}" title="Itálico (Ctrl + I)" style="font-style:italic;font-family:Georgia,serif;font-weight:600">I</button><span class="sepv"></span>`+
       `<button type="button" data-f2="s" class="${dec.includes('line-through')?'on':''}" title="Riscado" style="text-decoration:line-through">A</button><button type="button" data-f2="u" class="${dec.includes('underline')?'on':''}" title="Sublinhado (Ctrl + U)" style="text-decoration:underline">A</button><button type="button" data-f2="limpar" class="${dec?'':'on'}" title="Sem riscado nem sublinhado">A</button></div>`+
       '<h5>Cor do texto</h5>'+htmlCores(cor,'ctx')+htmlPers(cor,'ctx');
