@@ -200,10 +200,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* VIS-04: bolinha de abrir/fechar refinada (aberto = anel pequeno; fechado = bolinha cheia com o número escondido) */
 :is(#mapa,.pv) me-parent me-epd,:is(#mapa,.pv) me-parent me-epd.minus{opacity:1!important;background:var(--bg)!important;background-image:none!important;border:1.5px solid var(--cor-galho,var(--accent));border-radius:50%;box-sizing:border-box;transform:scale(.55);transition:transform .15s,box-shadow .15s}
-:is(#mapa,.pv) me-parent me-epd:hover{transform:scale(.85)}
+:is(#mapa,.pv) me-parent me-epd:hover{box-shadow:0 0 0 4px color-mix(in srgb,var(--cor-galho,var(--accent)) 28%,transparent)}
 :is(#mapa,.pv) me-parent me-epd:not(.minus){background:var(--cor-galho,var(--accent))!important;transform:none;box-shadow:0 2px 6px -2px var(--cor-galho,var(--accent))}
 :is(#mapa,.pv) me-parent me-epd:not(.minus)::after{content:attr(data-n);position:absolute;inset:0;display:grid;place-items:center;font:600 9.5px/1 var(--f-num);color:#fff}
-:is(#mapa,.pv) me-parent me-epd:not(.minus):hover{transform:scale(1.15)}
 
 /* bolinhas "+" ao lado do tópico */
 .mais{position:absolute;z-index:44;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);display:grid;place-items:center;padding:0;box-shadow:0 2px 6px rgb(20 10 60 / .14);opacity:.7;transition:opacity .12s,transform .12s,background .12s,color .12s}
@@ -443,7 +442,12 @@ button{font:inherit;color:inherit;cursor:pointer}
   .lat-nav a{position:relative}
 }
 
-#mapa me-parent me-epd::before,.pv me-parent me-epd::before{content:'';position:absolute;inset:-7px;border-radius:50%}
+/* área de clique da bolinha: cobre ela e o pedaço da linha que sai dela (para fora do tópico), sem mudar o desenho */
+#mapa me-parent me-epd::before,.pv me-parent me-epd::before{content:'';position:absolute;inset:-8px;border-radius:8px}
+#mapa .rhs me-parent me-epd::before,.pv .rhs me-parent me-epd::before{right:-30px}
+#mapa .lhs me-parent me-epd::before,.pv .lhs me-parent me-epd::before{left:-30px}
+/* sublinhado e riscado do tópico valem para o texto (que é um bloco interno e não herdava a decoração) */
+#mapa me-tpc>.text,.pv me-tpc>.text{text-decoration:inherit}
 </style></head>
 <body>
 
@@ -959,6 +963,12 @@ function status(t,cls){const s=$('e-status');s.textContent=t;s.className='status
 function dica(t){clearTimeout(dica.t);const d=$('dica');d.textContent=t||'';d.hidden=!t}
 function aviso(t){dica(t);dica.t=setTimeout(()=>dica(''),4500)}
 const percorrer=(n,f,prof=0,pai=null)=>{f(n,prof,pai);(n.children||[]).forEach(c=>percorrer(c,f,prof+1,n))};
+/* zoom e posição ficam guardados só nesta aba: o F5 mantém, sair do mapa e voltar abre no zoom inicial */
+const chaveVista=id=>'privomind.vista.'+id;let primeiraAbertura=true,vistaTimer=0;
+const foiRecarregada=()=>{try{return ((performance.getEntriesByType('navigation')[0]||{}).type)==='reload'}catch(_){return false}};
+function lerVista(id){try{const v=JSON.parse(sessionStorage.getItem(chaveVista(id))||'null');return v&&v.s&&typeof v.t==='string'&&v.t.includes('translate3d')?v:null}catch(_){return null}}
+function gravarVistaAgora(){if(!mind||!atual||vista!=='mapa')return;try{sessionStorage.setItem(chaveVista(atual.id),JSON.stringify({s:mind.scaleVal,t:mind.map.style.transform}))}catch(_){}}
+function guardarVista(){clearTimeout(vistaTimer);vistaTimer=setTimeout(gravarVistaAgora,200)}
 async function abrirMapa(id){
   if(atual&&atual.id===id)return;
   await fecharEditor();
@@ -977,7 +987,9 @@ async function abrirMapa(id){
     markdown:(t)=>md(t),
     contextMenu:{focus:true,link:true,locale:PT,extend:[{name:'Realinhar posição',onclick:()=>realinhar(mind&&mind.currentNode)}]},newTopicName:'Novo tópico',theme:montarTema()});
   mind.init(dados);
-  if((dados.nodeData.children||[]).length){mind.scale(.5);mind.toCenter()} /* mapa com conteúdo abre com 50% de zoom; mapa vazio fica em 100% */
+  const salva=(primeiraAbertura&&foiRecarregada())?lerVista(id):null;primeiraAbertura=false;
+  if(salva){mind.scaleVal=salva.s;mind.map.style.transform=salva.t} /* F5: continua onde estava (mesmo zoom e mesma posição) */
+  else if((dados.nodeData.children||[]).length){mind.scale(.5);mind.toCenter()} /* mapa com conteúdo abre com 50% de zoom; mapa vazio fica em 100% */
   /* EST-02: tópico novo criado a partir do centro sempre vai pra direita */
   addOriginal=mind.addChild.bind(mind);
   mind.addChild=async function(el,node){const alvo=el||this.currentNode;if(alvo&&ehRaiz(alvo)&&!node)return novoNoLado(ME.RIGHT);return addOriginal(el,node)};
@@ -986,8 +998,8 @@ async function abrirMapa(id){
   mind.bus.addListener('linkDiv',depoisDasLinhas);
   mind.bus.addListener('selectNodes',aoSelecionar);
   mind.bus.addListener('unselectNodes',()=>setTimeout(posBarra,0));
-  mind.bus.addListener('scale',v=>{mostrarZoom();posBarra()});
-  mind.bus.addListener('move',()=>posBarra());
+  mind.bus.addListener('scale',v=>{mostrarZoom();posBarra();guardarVista()});
+  mind.bus.addListener('move',()=>{posBarra();guardarVista()});
   mind.container.addEventListener('copy',registrarCopia,true);mind.container.addEventListener('cut',registrarCopia,true);
   vista='mapa';dadosLista=null;trocarVistaUI();
   depoisDasLinhas();mostrarZoom();
@@ -1016,6 +1028,7 @@ async function salvar(){
 }
 async function fecharEditor(){
   if(!mind)return;clearTimeout(timer);
+  if(atual){try{sessionStorage.removeItem(chaveVista(atual.id))}catch(_){}} /* saiu do mapa: da próxima vez abre no zoom inicial */
   if(document.querySelector('#outline .tx:focus'))document.activeElement.blur();
   if(pendente){await salvar()}
   try{mind.destroy()}catch(_){}
@@ -2083,7 +2096,8 @@ $('e-png').onclick=async()=>{
     setTimeout(()=>URL.revokeObjectURL(a.href),2000);status(pendente?'Salvando…':'Salvo','ok')}
   catch(_){status('Não consegui gerar a imagem','erro')}
 };
-window.addEventListener('beforeunload',e=>{if(pendente||salvando){salvar();e.preventDefault();e.returnValue=''}});
+window.addEventListener('pagehide',gravarVistaAgora);
+window.addEventListener('beforeunload',e=>{gravarVistaAgora();if(pendente||salvando){salvar();e.preventDefault();e.returnValue=''}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&pendente)salvar()});
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(mind){mind.changeTheme(montarTema());depoisDasLinhas()}});
 
