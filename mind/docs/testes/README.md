@@ -24,6 +24,7 @@ python3 lados.py            <raiz-do-repo> /tmp/me/package out   # VIS-08: tema/
 python3 celular.py           <raiz-do-repo> /tmp/me/package out   # iPhone simulado com a barra de baixo
 python3 painel_modelos.py     <raiz-do-repo> /tmp/me/package out   # seção 14: menu lateral, lixeira, modelos, importar, colar entre mapas
 python3 bolinha_clique.py     <raiz-do-repo> /tmp/me/package out   # CLQ-01: clique na bolinha de abrir/fechar com tremida e depois de arrastar
+python3 linha_bolinha.py     <raiz-do-repo> /tmp/me/package out   # LIN-02, FNT-05: bolinha no fim da linha e fontes no painel
 python3 estilo_menu.py       <raiz-do-repo> /tmp/me/package out   # seção 13: estilo, fonte, ícone/emoji, comentário, nota, tarefa, menu ⋯, link do tópico, celular
 python3 largura.py           <raiz-do-repo> /tmp/me/package out   # LRG-01..11: alça de largura do tópico (estreitar/alargar livre, salvar, duplo clique = automático, linha e caixa)
 ```
