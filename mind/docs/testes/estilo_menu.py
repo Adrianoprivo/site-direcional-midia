@@ -25,7 +25,7 @@ with sync_playwright() as p:
     pg.add_init_script("Object.defineProperty(navigator,'clipboard',{value:{writeText:async t=>{window.__clip=t},readText:async()=>window.__clip||''},configurable:true})")
     pg.goto('http://local/mind/')
     pg.evaluate("d=>{sessionStorage.setItem('mocklog','1');sessionStorage.setItem('mockdb',JSON.stringify([{id:'%s',titulo:'Centro',favorito:false,atualizado_em:new Date().toISOString(),dados:d}]))}"%ID,MAPA)
-    pg.goto('http://local/mind/?t=1#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(700)
+    pg.goto('http://local/mind/?t=1#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(700); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
 
     # ---------- barra com os botões novos ----------
     clica(pg,'a1')
@@ -254,7 +254,7 @@ with sync_playwright() as p:
     clica(pg,'a2'); painel(pg,'mais'); pg.click('#pop [data-m=link]'); pg.wait_for_timeout(300)
     link=pg.evaluate("navigator.clipboard.readText()")
     ok('MEN-10 link do tópico copiado',link.endswith('#/mapa/%s/t/a2'%ID),link)
-    pg.goto('http://local/mind/?t=2#/mapa/'+ID+'/t/a111'); pg.wait_for_selector('me-root'); pg.wait_for_timeout(900)
+    pg.goto('http://local/mind/?t=2#/mapa/'+ID+'/t/a111'); pg.wait_for_selector('me-root'); pg.wait_for_timeout(900); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
     ok('MEN-10 abrir o link seleciona o tópico',pg.evaluate("mind.currentNode&&mind.currentNode.nodeObj.id")=='a111')
     # link para tópico dentro de galho fechado: abre o caminho
     pg.evaluate("mind.expandNode(mind.findEle('a1'),false)"); pg.wait_for_timeout(200)
@@ -263,7 +263,7 @@ with sync_playwright() as p:
 
     # ---------- persistência ----------
     pg.wait_for_timeout(1000)
-    pg.goto('http://local/mind/?t=3#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(900)
+    pg.goto('http://local/mind/?t=3#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(900); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
     ok('SAL tudo continua depois de recarregar (preenchimento, nota, comentário, linha)',pg.evaluate("(()=>{const r=id=>mind.findEle(id);return getComputedStyle(r('b')).backgroundColor==='rgb(140, 214, 0)'&&r('a1').dataset.ind.includes('📝')&&r('a2').dataset.ind==='💬 1'})()"))
     ok('SAL linha engrossada continua',pg.evaluate("[...mind.lines.children].map(p=>p.getAttribute('stroke-width'))").count('1')==1)
 
