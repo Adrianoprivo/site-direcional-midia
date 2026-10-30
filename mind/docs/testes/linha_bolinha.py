@@ -17,11 +17,11 @@ with sync_playwright() as p:
     medir=pg.evaluate("""()=>{window.__dist=id=>{const t=mind.findEle(id),e=t.nextElementSibling,esq=!!t.closest('.lhs');const mw=t.closest('me-main > me-wrapper'),svg=[...mw.children].find(c=>c.tagName==='svg');
       let k=0,alvo=null;const paths=svg.children;const rec=w=>{const f=w.children[1]&&w.children[1].children;if(!f)return;for(const c of f){const tp=c.firstChild.firstChild,p=paths[k++];if(tp===t)alvo=p;const ep=c.firstChild.children[1];if(ep&&ep.expanded)rec(c)}};rec(mw);
       const rp=alvo.getBoundingClientRect(),re=e.getBoundingClientRect(),cx=re.x+re.width/2,fim=esq?rp.left:rp.right;return Math.round(Math.abs(cx-fim))};return ['e1','e2','d1'].map(__dist)}""")
-    ok('LIN bolinha encostada no fim da linha no começo',max(medir)<=26,medir)
+    ok('LIN bolinha encostada no fim da linha no começo',max(medir)<=12,medir)
     # simula o que acontece quando a fonte/emoji termina de carregar: o texto fica mais largo e mais alto depois do desenho
     pg.evaluate("document.querySelectorAll('#mapa me-tpc .text').forEach(s=>{s.style.fontSize='24px';s.style.letterSpacing='2px'})"); pg.wait_for_timeout(500)
     depois=pg.evaluate("['e1','e2','d1'].map(__dist)")
-    ok('LIN depois de o texto crescer, as linhas são refeitas e a bolinha continua no fim da linha',max(depois)<=26,depois)
+    ok('LIN depois de o texto crescer, as linhas são refeitas e a bolinha continua no fim da linha',max(depois)<=12,depois)
     pg.screenshot(path=OUT+'/linha-bolinha.png')
     # painel de fonte mostra cada fonte
     pg.evaluate("mind.scale(1);mind.toCenter()"); r=pg.evaluate("(()=>{const r=mind.findEle('d1').getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()"); pg.mouse.click(*r); pg.wait_for_timeout(300)
