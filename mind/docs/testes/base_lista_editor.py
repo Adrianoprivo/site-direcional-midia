@@ -41,7 +41,7 @@ with sync_playwright() as p:
     pg.reload(); pg.wait_for_selector('me-root',timeout=8000); pg.wait_for_timeout(500)
     topicos=pg.eval_on_selector_all('me-tpc','els=>els.map(e=>e.textContent.trim())')
     print('apos recarregar:',topicos)
-    pg.click('#voltar'); pg.wait_for_selector('#lista',state='visible'); pg.wait_for_timeout(800)
+    pg.click('#voltar'); pg.mouse.move(1000,650); pg.wait_for_timeout(350); pg.wait_for_selector('#lista',state='visible'); pg.wait_for_timeout(800)
     print('lista:',pg.text_content('#mapas'), pg.evaluate('[location.hash, mapas.length, document.getElementById("mapas").innerHTML.length, document.getElementById("busca").value]'))
     pg.click('button[data-a=fav]'); pg.wait_for_timeout(300)
     pg.fill('#busca','plano'); pg.wait_for_timeout(200); pg.screenshot(path=OUT+'/5-lista.png')
@@ -50,7 +50,7 @@ with sync_playwright() as p:
     # celular
     pg.set_viewport_size({'width':390,'height':800}); pg.screenshot(path=OUT+'/6-lista-celular.png')
     pg.click('button[data-a=abrir]'); pg.wait_for_selector('me-root'); pg.wait_for_timeout(600); pg.screenshot(path=OUT+'/7-editor-celular.png')
-    pg.click('#voltar'); pg.wait_for_selector('#lista',state='visible')
+    pg.click('#voltar'); pg.mouse.move(1000,650); pg.wait_for_timeout(350); pg.wait_for_selector('#lista',state='visible')
     pg.click('button[data-a=del]'); pg.wait_for_timeout(300)
     print('depois de apagar:',pg.text_content('#mapas')[:60], '| db (vai pra lixeira, continua no banco):',pg.evaluate('window.__db.length'),pg.evaluate('!!window.__db[0].excluido_em'))
     pg.goto('http://local/mind/#/lixeira'); pg.wait_for_timeout(500); pg.once('dialog',lambda d:d.accept()); pg.click('button[data-a=del-forever]'); pg.wait_for_timeout(300)

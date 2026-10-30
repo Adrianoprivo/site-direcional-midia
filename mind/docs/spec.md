@@ -127,7 +127,10 @@ Onde guarda: `dados.meta.privo = { tema, estilo }`. Mapa sem isso abre com Direc
 ## 11. Fora desta versão ⏳
 
 - **API para mandar mensagem e ele executar** — junto com o agente de WhatsApp, quando o editor estiver redondo.
-- Anexos em tópicos (o clipe do MindMeister), exportar PDF, modelos prontos.
+- Anexos em tópicos (o clipe do MindMeister) e exportar PDF.
+- **Campo de IA** para gerar mapa a partir de descrição ou documento: só quando o PrivoMind for monetizado (precisa de chave de API e tem custo).
+- **Estudo de mercado dos modelos**: pesquisar em YouTube, Instagram, LinkedIn, TikTok e Google quais estilos de mapa mental as pessoas mais usam, comparar com os 18 modelos atuais, renomear ou criar os que faltam.
+- **Aba de funil/fluxo** (quadro livre com cartões, imagens e setas): em análise, ver conversa de 2026-10-30.
 - Compartilhar com outras pessoas, apresentação, histórico de versões.
 
 ## 13. Estilo do tópico, fonte, ícones, comentário e menu ⋯ ✅ (2026-10-30)
@@ -209,12 +212,12 @@ Pedido do Adriano a partir dos prints do MindMeister. Tudo no mesmo arquivo `min
 
 | Código | Função | Comportamento |
 | --- | --- | --- |
-| LAT-01 | Menu lateral | Logo (rosa dos ventos da Direcional Mídia) + **PrivoMind**, e-mail de quem entrou, **Lar · Todos os mapas · Favoritos · Lixeira** e Sair. No celular vira uma barra no topo. Endereços: `#/`, `#/todos`, `#/favoritos`, `#/lixeira`. |
+| LAT-01 | Menu lateral | Logo (rosa dos ventos da Direcional Mídia) + **PrivoMind**, **Lar · Todos os mapas · Favoritos · Lixeira** e, embaixo, e-mail de quem entrou e Sair (discreto). **No computador fica recolhido (só ícones) e abre quando o mouse passa por cima; fecha quando sai.** No celular vira uma barra no topo. Endereços: `#/`, `#/todos`, `#/favoritos`, `#/lixeira`. |
 | LAT-02 | Botões do topo | **Novo mapa · Navegue pelos modelos · Importar**. |
 | LAT-03 | Lar | Saudação, atalhos para 4 modelos e os 8 mapas mais recentes. |
 | LIX-01 | Lixeira | A lixeira do ícone **não apaga**: o mapa ganha `excluido_em` (coluna nova da tabela `mapas`) e some das outras telas. Na Lixeira: **Restaurar**, **Apagar para sempre** (com confirmação, apaga também as imagens) e **Esvaziar lixeira**. Nada é apagado sozinho. |
 | MOD-01 | Modelos | Janela "Começar" com 8 categorias (Destaque, Gerenciamento de projetos, Negócios e metas, Educação e Notas, Recursos Humanos, Brainstorming e Análise, Marketing e Conteúdo, Layout), busca e miniaturas. 18 modelos próprios (textos nossos), entre eles Método DEVER, Matriz de decisão, Planejamento de OKR, Análise SWOT e Checklist do Google Meu Negócio. |
-| MOD-02 | Prévia | Mostra o mapa de verdade (zoom e arrastar), setas para o modelo anterior/próximo, descrição e **Usar modelo** (cria uma cópia nova e abre). |
+| MOD-02 | Prévia | Mostra o mapa de verdade com o **tópico central no meio** (zoom e arrastar), setas para o modelo anterior/próximo, descrição e **Usar modelo** (cria uma cópia nova e abre). A seta de voltar, o X, a tecla Esc e o clique fora **voltam para a janela de modelos**; só a prévia aberta pelos atalhos do Lar volta para o Lar. |
 | IMP-01 | Importar | Arrastar o arquivo, procurar, ou colar um texto. Lê **texto com recuo e Markdown** (`#`, `-`, `*`, `1.`), **Freemind (.mm)** (lados e links), **OPML** e **JSON do PrivoMind/Mind Elixir**. Cria um mapa novo (limite de 3000 tópicos). Formatos compactados (.xmind, .mind, .mmap, .zip) ainda não: avisa e sugere exportar como texto, Freemind ou OPML. |
 | CPY-01 | Colar entre mapas | Selecionar um tópico, **Ctrl+C**, abrir outro mapa, selecionar o destino, **Ctrl+V**: leva o tópico com tudo que sai dele, com ids novos. Imagens ganham um arquivo próprio na pasta do mapa de destino (apagar o mapa de origem não quebra a cópia). Ctrl+C avisa "Copiado". |
 
