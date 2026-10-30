@@ -15,7 +15,7 @@ Imagem no tópico,editor,should,yes,yes,"colar, soltar arquivo, escolher, link; 
 Modo tópicos (lista recuada),editor,should,yes,yes,vista em lista editável no rodapé (VIS-L)
 Temas do mapa,estilo,should,yes,yes,5 temas de cor sólida + estilo Linha/Caixa por mapa (VIS-02/03)
 Exportar imagem e PDF,exportar,should,yes,partial,PNG feito; PDF na fase 2
-Modelos prontos,painel,should,yes,no,criar modelos próprios (não copiar os deles)
+Modelos prontos,painel,should,yes,yes,18 modelos próprios com prévia (MOD-01/02)
 Modo apresentação,apresentar,could,yes,no,
 Compartilhar por link (somente leitura),compartilhar,could,yes,no,
 Colaboração em tempo real,compartilhar,could,yes,no,projeto grande sozinho
@@ -40,3 +40,6 @@ Rodapé com vista e zoom (− % +),editor,should,yes,yes,ROD-01..04
 Tarefa no tópico (prazo e prioridade),editor,should,yes,yes,TAR-01
 Menu ⋯ do tópico (copiar/colar/colar estilo/detalhe/alinhamento/ramo/link),editor,should,yes,yes,MEN-01..09
 Copiar link para o tópico,editor,could,yes,yes,MEN-09
+Menu lateral (Lar/Todos/Favoritos/Lixeira),painel,should,yes,yes,LAT-01..03 e LIX-01
+Importar texto/Freemind/OPML/JSON,painel,should,yes,partial,IMP-01; formatos compactados (.xmind/.mind/.mmap) ainda não
+Colar árvore de um mapa em outro,editor,should,yes,yes,CPY-01

@@ -1,6 +1,6 @@
 # PrivoMind — Especificação (spec)
 
-**Versão:** 2.1 · **Data:** 2026-10-30 (v2.0 de 2026-10-19) · **Dono:** Adriano · **Status:** aprovada em conversa (itens e decisões abaixo)
+**Versão:** 2.2 · **Data:** 2026-10-30 (v2.0 de 2026-10-19) · **Dono:** Adriano · **Status:** aprovada em conversa (itens e decisões abaixo)
 
 Este documento diz **o que** o PrivoMind faz e **como deve se comportar**. Todo ajuste novo entra aqui antes de virar código. Cada função tem um código (ex.: `ARR-03`) para facilitar falar dela e testar.
 
@@ -203,6 +203,23 @@ Pedido do Adriano a partir dos prints do MindMeister. Tudo grátis e sem limite 
 - Comentário é pessoal (sem @menção nem resposta), porque o mapa ainda é de uma pessoa só.
 - As fontes Lora e Caveat vêm do Google Fonts; sem internet, o navegador usa uma fonte parecida.
 
+## 14. Tela inicial: menu lateral, lixeira, modelos, importar e colar entre mapas ✅ (2026-10-30)
+
+Pedido do Adriano a partir dos prints do MindMeister. Tudo no mesmo arquivo `mind/index.html`.
+
+| Código | Função | Comportamento |
+| --- | --- | --- |
+| LAT-01 | Menu lateral | Logo (rosa dos ventos da Direcional Mídia) + **PrivoMind**, e-mail de quem entrou, **Lar · Todos os mapas · Favoritos · Lixeira** e Sair. No celular vira uma barra no topo. Endereços: `#/`, `#/todos`, `#/favoritos`, `#/lixeira`. |
+| LAT-02 | Botões do topo | **Novo mapa · Navegue pelos modelos · Importar**. |
+| LAT-03 | Lar | Saudação, atalhos para 4 modelos e os 8 mapas mais recentes. |
+| LIX-01 | Lixeira | A lixeira do ícone **não apaga**: o mapa ganha `excluido_em` (coluna nova da tabela `mapas`) e some das outras telas. Na Lixeira: **Restaurar**, **Apagar para sempre** (com confirmação, apaga também as imagens) e **Esvaziar lixeira**. Nada é apagado sozinho. |
+| MOD-01 | Modelos | Janela "Começar" com 8 categorias (Destaque, Gerenciamento de projetos, Negócios e metas, Educação e Notas, Recursos Humanos, Brainstorming e Análise, Marketing e Conteúdo, Layout), busca e miniaturas. 18 modelos próprios (textos nossos), entre eles Método DEVER, Matriz de decisão, Planejamento de OKR, Análise SWOT e Checklist do Google Meu Negócio. |
+| MOD-02 | Prévia | Mostra o mapa de verdade (zoom e arrastar), setas para o modelo anterior/próximo, descrição e **Usar modelo** (cria uma cópia nova e abre). |
+| IMP-01 | Importar | Arrastar o arquivo, procurar, ou colar um texto. Lê **texto com recuo e Markdown** (`#`, `-`, `*`, `1.`), **Freemind (.mm)** (lados e links), **OPML** e **JSON do PrivoMind/Mind Elixir**. Cria um mapa novo (limite de 3000 tópicos). Formatos compactados (.xmind, .mind, .mmap, .zip) ainda não: avisa e sugere exportar como texto, Freemind ou OPML. |
+| CPY-01 | Colar entre mapas | Selecionar um tópico, **Ctrl+C**, abrir outro mapa, selecionar o destino, **Ctrl+V**: leva o tópico com tudo que sai dele, com ids novos. Imagens ganham um arquivo próprio na pasta do mapa de destino (apagar o mapa de origem não quebra a cópia). Ctrl+C avisa "Copiado". |
+
+Banco: `alter table mapas add column excluido_em timestamptz` (migração `privomind_mapas_lixeira`, aplicada em 2026-10-30).
+
 ## 12. Como testar
 
 Testes automáticos em `testes/` (navegador sem tela + banco e armazenamento simulados). Cada código acima tem pelo menos uma checagem:
@@ -215,6 +232,7 @@ Testes automáticos em `testes/` (navegador sem tela + banco e armazenamento sim
 | `aparencia.py` | VIS-01..05, ROD-01..04 |
 | `formatar.py` | TXT, LNK, IMG |
 | `lista.py` | VIS-L1..3 |
+| `painel_modelos.py` | seção 14: menu lateral, lixeira, modelos e prévia, importar (texto, md, mm, opml, json), colar entre mapas, celular |
 | `estilo_menu.py` | seção 13: estilo (forma, preenchimento, borda, linha, limite), fonte, ícone/emoji, comentário, nota, tarefa, menu ⋯, link do tópico, celular |
 | `celular.py` | barra de baixo, formato no celular |
 | `duplo_clique.py` | edição sempre abre |
