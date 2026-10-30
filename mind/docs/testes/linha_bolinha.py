@@ -14,9 +14,10 @@ with sync_playwright() as p:
     pg.goto('http://local/mind/'); pg.evaluate("d=>{sessionStorage.setItem('mocklog','1');sessionStorage.setItem('mockdb',JSON.stringify([d]))}",mapa)
     pg.goto('http://local/mind/?t=1#/mapa/'+A); pg.wait_for_selector('me-root'); pg.wait_for_timeout(900); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(300)
     # a bolinha NÃO pode mudar de lugar quando o galho abre/fecha, e fechado tem que ter o tracinho ligando o fim da linha até ela
-    JS="""id=>{const t=mind.findEle(id),e=t.nextElementSibling,r=e.getBoundingClientRect(),mp=t.parentElement,ps=getComputedStyle(mp,'::after'),pr=mp.getBoundingClientRect(),tr=t.getBoundingClientRect(),esq=!!t.closest('.lhs');
-      return {minus:e.classList.contains('minus'),cx:Math.round(r.x+r.width/2),cy:Math.round(r.y+r.height/2),stub:ps.content!=='none'&&ps.content!=='normal',w:Math.round(parseFloat(ps.width)||0),
-        ligado:ps.content!=='none'&&ps.content!=='normal'?(esq?Math.abs((pr.left+parseFloat(ps.left))-(r.x+r.width/2))<2||true:true):false,borda:esq?Math.round(tr.left):Math.round(tr.right)}}"""
+    JS="""id=>{const t=mind.findEle(id),e=t.nextElementSibling,r=e.getBoundingClientRect(),esq=!!t.closest('.lhs'),mw=t.closest('me-main > me-wrapper'),svg=[...mw.children].find(c=>c.tagName==='svg');
+      const cx=r.x+r.width/2,cy=r.y+r.height/2,tr=t.getBoundingClientRect();let melhor=null;
+      for(const s of svg.querySelectorAll('path.stub')){const b=s.getBoundingClientRect(),fim=esq?b.left:b.right,d=Math.hypot(fim-cx,(b.top+b.bottom)/2-cy);if(!melhor||d<melhor.d)melhor={d:Math.round(d*10)/10,ini:esq?b.right:b.left}}
+      return {minus:e.classList.contains('minus'),cx:Math.round(cx),cy:Math.round(cy),perto:melhor&&melhor.d<=2?melhor:null,borda:esq?Math.round(tr.left):Math.round(tr.right)}}"""
     for i in ('d1','e1'):
         pg.evaluate("i=>mind.expandNode(mind.findEle(i),true)",i); pg.wait_for_timeout(300)
         pg.evaluate("i=>mind.expandNode(mind.findEle(i),false)",i); pg.wait_for_timeout(250)
@@ -24,7 +25,7 @@ with sync_playwright() as p:
         pg.evaluate("i=>mind.expandNode(mind.findEle(i),true)",i); pg.wait_for_timeout(250)
         a=pg.evaluate("("+JS+")('%s')"%i)
         ok('LIN %s: a bolinha fica no MESMO lugar fechada e aberta (não pula)'%i,abs(f['cx']-a['cx'])<=1 and abs(f['cy']-a['cy'])<=1,(f['cx'],a['cx']))
-        ok('LIN %s: fechado tem o tracinho ligando o fim da linha à bolinha; aberto não precisa'%i,f['stub'] and f['w']==20 and not a['stub'],(f['stub'],f['w'],a['stub']))
+        ok('LIN %s: fechado tem o tracinho (desenhado junto das linhas) ligando o fim da linha ao centro da bolinha; aberto não tem'%i,f['perto'] is not None and abs(f['perto']['ini']-f['borda'])<=3 and a['perto'] is None,(f['perto'],f['borda'],a['perto']))
         ok('LIN %s: a bolinha está a ~20 px do fim da linha (o tracinho cobre exatamente isso)'%i,abs(abs(f['cx']-f['borda'])-20)<=3,(f['cx'],f['borda']))
     pg.evaluate("['e1','e2','d1'].forEach(i=>{const e=mind.findEle(i);if(e.nextElementSibling.classList.contains('minus'))mind.expandNode(e,false)})"); pg.wait_for_timeout(300)
     pg.evaluate("document.querySelectorAll('#mapa me-tpc .text').forEach(s=>{s.style.fontSize='24px';s.style.letterSpacing='2px'})"); pg.wait_for_timeout(500)

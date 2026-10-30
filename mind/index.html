@@ -449,11 +449,6 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* sublinhado e riscado do tópico valem para o texto (que é um bloco interno e não herdava a decoração) */
 #mapa me-tpc>.text,.pv me-tpc>.text{text-decoration:inherit}
 
-/* bolinha de galho fechado: fica exatamente no mesmo lugar da bolinha de galho aberto (não pula ao clicar).
-   Aberto, as linhas dos filhos passam por ela; fechado não há filhos, então um tracinho da mesma cor liga o fim da linha do tópico até a bolinha. */
-:is(#mapa,.pv):not(.caixa) me-children me-parent:has(>me-epd:not(.minus))::after{content:'';position:absolute;bottom:-1px;height:2px;width:20px;background:var(--cor-galho,var(--accent));z-index:0;pointer-events:none}
-:is(#mapa,.pv):not(.caixa) .rhs me-children me-parent:has(>me-epd:not(.minus))::after{right:14px}
-:is(#mapa,.pv):not(.caixa) .lhs me-children me-parent:has(>me-epd:not(.minus))::after{left:14px}
 </style></head>
 <body>
 
@@ -1751,6 +1746,17 @@ function marcarTopicos(){
     else if(w.dataset.lim){delete w.dataset.lim;w.style.removeProperty('--lim-c')}
   });
 }
+/* galho fechado não tem linhas de filhos passando pela bolinha: prolonga a linha do tópico até o centro dela, com o mesmo traço */
+function tracinhoAteBolinha(svg,p,epd,esq){
+  const d=(p.getAttribute('d')||'').match(/-?\d+(\.\d+)?/g);if(!d||d.length<2)return;
+  const comH=/H\s*-?[\d.]+\s*$/.test(p.getAttribute('d')||''); /* a linha termina num trecho reto "H x" */
+  const x2=comH?+d[d.length-1]:+d[d.length-2],y2=comH?+d[d.length-2]:+d[d.length-1],rp=p.getBoundingClientRect(),re=epd.getBoundingClientRect(),esc=mind.scaleVal||1;
+  const fim=esq?rp.left:rp.right,L=Math.abs(re.x+re.width/2-fim)/esc;if(!(L>1&&L<80))return;
+  const t=document.createElementNS('http://www.w3.org/2000/svg','path');t.setAttribute('class','stub');
+  t.setAttribute('d',`M ${x2} ${y2} L ${x2+(esq?-L:L)} ${y2}`);
+  ['stroke','stroke-width','stroke-dasharray','stroke-linecap','fill','opacity'].forEach(a=>{const v=p.getAttribute(a);if(v!==null)t.setAttribute(a,v)});
+  svg.appendChild(t);
+}
 /* espessura e estilo da linha que liga o tópico ao pai (a lib redesenha as linhas toda hora, então reaplicamos) */
 function estiloLinhas(){
   if(!mind||!mind.lines)return;
@@ -1763,10 +1769,12 @@ function estiloLinhas(){
     const t=mw.querySelector(':scope > me-parent > me-tpc');if(!t||!t.nodeObj)return;
     aplicar(principais[i],estDe(t.nodeObj),3);
     const svg=[...mw.children].find(c=>c.tagName.toLowerCase()==='svg');if(!svg)return;
-    let k=0;const paths=svg.children;
+    svg.querySelectorAll('path.stub').forEach(x=>x.remove());
+    let k=0;const paths=[...svg.children].filter(x=>x.tagName.toLowerCase()==='path'&&!x.classList.contains('stub'));
     const rec=w=>{const filhos=w.children[1]&&w.children[1].children;if(!filhos)return;
-      for(const c of filhos){const tp=c.firstChild&&c.firstChild.firstChild;aplicar(paths[k++],estDe(tp&&tp.nodeObj),2);
-        const epd=c.firstChild&&c.firstChild.children[1];if(epd&&epd.expanded)rec(c)}};
+      for(const c of filhos){const tp=c.firstChild&&c.firstChild.firstChild,p=paths[k++];aplicar(p,estDe(tp&&tp.nodeObj),2);
+        const epd=c.firstChild&&c.firstChild.children[1];
+        if(epd&&epd.expanded)rec(c);else if(epd&&p&&!$('mapa').classList.contains('caixa'))tracinhoAteBolinha(svg,p,epd,!!c.closest('.lhs'))}};
     rec(mw);
   });
 }
