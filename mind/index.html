@@ -442,6 +442,8 @@ button{font:inherit;color:inherit;cursor:pointer}
   .lat-nav .n{position:absolute;right:20px}
   .lat-nav a{position:relative}
 }
+
+#mapa me-parent me-epd::before,.pv me-parent me-epd::before{content:'';position:absolute;inset:-7px;border-radius:50%}
 </style></head>
 <body>
 
@@ -1159,6 +1161,27 @@ function cancelarArraste(){
   if(!a.raiz&&a.w)posicionar(a.w,a.ox,a.oy);limparArraste();redesenhar();setTimeout(posBarra,0);
 }
 window.addEventListener('pointercancel',cancelarArraste,true);
+
+/* ---------- bolinha de abrir/fechar: clique que não falha ----------
+   A biblioteca cancela o clique se o mouse mexer QUALQUER pixel entre apertar e soltar (e a trava fica "presa" depois de arrastar a tela).
+   Por isso era preciso clicar 2 ou 3 vezes. Aqui o clique vale se o mouse andou até 8 px, e a trava é limpa antes de cada clique. */
+let epdBaixo=null;
+$('mapa').addEventListener('pointerdown',e=>{
+  if(!mind||e.button!==0)return;const b=e.target.closest&&e.target.closest('me-epd');
+  if(!b){epdBaixo=null;return}
+  try{mind.panHelper.clear()}catch(_){}
+  epdBaixo={b,x:e.clientX,y:e.clientY,ctrl:e.ctrlKey||e.metaKey};
+},true);
+window.addEventListener('pointerup',e=>{
+  const d=epdBaixo;epdBaixo=null;if(!d||!mind||e.button!==0)return;
+  const alvoEl=document.elementFromPoint(e.clientX,e.clientY),mesmo=alvoEl&&(alvoEl===d.b||(alvoEl.closest&&alvoEl.closest('me-epd')===d.b));
+  if(!mesmo||Math.hypot(e.clientX-d.x,e.clientY-d.y)>8||!d.b.isConnected)return;
+  const engole=ev=>{ev.stopImmediatePropagation();ev.preventDefault()};
+  window.addEventListener('click',engole,true);setTimeout(()=>window.removeEventListener('click',engole,true),80);
+  try{mind.panHelper.clear()}catch(_){}
+  const no=d.b.previousSibling;if(!no)return;
+  if(d.ctrl)mind.expandNodeAll(no);else mind.expandNode(no);
+},true);
 
 /* ---------- bolinhas "+" ao lado do tópico ---------- */
 let sobre=null,timerMais=0;
