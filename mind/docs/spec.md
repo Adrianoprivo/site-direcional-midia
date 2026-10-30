@@ -130,7 +130,7 @@ Onde guarda: `dados.meta.privo = { tema, estilo }`. Mapa sem isso abre com Direc
 - Anexos em tópicos (o clipe do MindMeister) e exportar PDF.
 - **Campo de IA** para gerar mapa a partir de descrição ou documento: só quando o PrivoMind for monetizado (precisa de chave de API e tem custo).
 - **Estudo de mercado dos modelos**: pesquisar em YouTube, Instagram, LinkedIn, TikTok e Google quais estilos de mapa mental as pessoas mais usam, comparar com os 18 modelos atuais, renomear ou criar os que faltam.
-- **Aba de funil/fluxo** (quadro livre com cartões, imagens e setas): em análise, ver conversa de 2026-10-30.
+- **Aba "Fluxos"** (quadro livre com cartões, imagens e setas, para montar funis e sequências): fica na agenda de estudos, sem data. Antes de construir, pesquisar Miro, "AWAC" (confirmar o nome com o Adriano) e Funnelytics e decidir o que trazer. Pedido de 2026-10-30.
 - Compartilhar com outras pessoas, apresentação, histórico de versões.
 
 ## 13. Estilo do tópico, fonte, ícones, comentário e menu ⋯ ✅ (2026-10-30)
