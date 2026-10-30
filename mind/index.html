@@ -448,6 +448,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 #mapa .lhs me-parent me-epd::before,.pv .lhs me-parent me-epd::before{left:-30px}
 /* sublinhado e riscado do tópico valem para o texto (que é um bloco interno e não herdava a decoração) */
 #mapa me-tpc>.text,.pv me-tpc>.text{text-decoration:inherit}
+
+/* bolinha com número (galho fechado): não tem linha saindo dela, então ficava solta ~11px depois do fim da linha do tópico; aqui ela encosta no fim da linha */
+:is(#mapa,.pv) .rhs me-children me-parent me-epd:not(.minus){transform:translateX(-10px)}
+:is(#mapa,.pv) .lhs me-children me-parent me-epd:not(.minus){transform:translateX(10px)}
+:is(#mapa,.pv).caixa .rhs me-children me-parent me-epd:not(.minus),:is(#mapa,.pv).caixa .lhs me-children me-parent me-epd:not(.minus){transform:none}
 </style></head>
 <body>
 
