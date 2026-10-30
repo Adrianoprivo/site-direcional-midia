@@ -29,7 +29,7 @@ with sync_playwright() as p:
     errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
     pg.goto('http://local/mind/')
     pg.evaluate("d=>{sessionStorage.setItem('mocklog','1');sessionStorage.setItem('mockdb',JSON.stringify([{id:'%s',titulo:'Teste',favorito:false,atualizado_em:new Date().toISOString(),dados:d}]))}"%ID,MAPA)
-    pg.goto('http://local/mind/?t=1#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(800)
+    pg.goto('http://local/mind/?t=1#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(800); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
 
     ok('ARR-09 posição antiga de sub-tópico descartada',no(pg,'a1')['pos'] is None)
     ok('ARR-09 galho principal mantém posição',no(pg,'a')['pos']=={'x':0,'y':-20})
@@ -106,7 +106,7 @@ with sync_playwright() as p:
     pg.wait_for_timeout(1200); ok('salvou',pg.text_content('#e-status')=='Salvo')
     estado=pg.evaluate("JSON.stringify(mind.getData().nodeData,(k,v)=>k==='parent'?undefined:v)")
     pg.screenshot(path=OUT+'/arrastar-fim.png')
-    pg.reload(); pg.wait_for_selector('me-root'); pg.wait_for_timeout(700)
+    pg.reload(); pg.wait_for_selector('me-root'); pg.wait_for_timeout(700); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
     ok('recarregou igual',pg.evaluate("JSON.stringify(mind.getData().nodeData,(k,v)=>k==='parent'?undefined:v)")==estado)
     print('ERROS:',errs+falhas)
     b.close()

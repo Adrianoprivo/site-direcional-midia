@@ -14,7 +14,7 @@ def ok(nome,cond,extra=''):
 def carregar(pg,dados=MAPA):
     pg.goto('http://local/mind/')
     pg.evaluate("d=>{sessionStorage.setItem('mocklog','1');sessionStorage.setItem('mockdb',JSON.stringify([{id:'%s',titulo:'Planejamento',favorito:false,atualizado_em:new Date().toISOString(),dados:d}]))}"%ID,dados)
-    pg.goto('http://local/mind/?t=1#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(700)
+    pg.goto('http://local/mind/?t=1#/mapa/'+ID); pg.wait_for_selector('me-root'); pg.wait_for_timeout(700); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
 with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':1280,'height':800}); pg.route('**/*',rotas)
     errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
@@ -66,7 +66,7 @@ with sync_playwright() as p:
     pg.mouse.click(1000,150); pg.wait_for_timeout(100); ok('painel fecha clicando fora',not pg.is_visible('#painel-ap'))
     pg.screenshot(path=OUT+'/ap-4-caixa.png')
     pg.wait_for_timeout(1200); ok('salvou tema e estilo',pg.evaluate("JSON.stringify(window.__db[0].dados.meta.privo)")=='{"tema":"terra","estilo":"caixa"}')
-    pg.reload(); pg.wait_for_selector('me-root'); pg.wait_for_timeout(600)
+    pg.reload(); pg.wait_for_selector('me-root'); pg.wait_for_timeout(600); pg.evaluate("mind.scale(1);mind.toCenter()"); pg.wait_for_timeout(150)
     ok('recarregou com tema e estilo',pg.evaluate("document.getElementById('mapa').classList.contains('caixa')&&getComputedStyle(mind.findEle('r')).backgroundColor==='rgb(124, 45, 18)'"))
     # escuro
     pg.emulate_media(color_scheme='dark'); pg.wait_for_timeout(400); pg.screenshot(path=OUT+'/ap-5-escuro-caixa.png')

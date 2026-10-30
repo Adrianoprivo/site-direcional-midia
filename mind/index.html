@@ -431,6 +431,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media (min-width:821px) and (hover:hover){
   .shell{grid-template-columns:76px minmax(0,1fr)}
   .lat-main{grid-column:2}
+  /* ao abrir, o menu empurra o conteúdo (não cobre) e o resto da página se reorganiza */
+  .shell{transition:grid-template-columns .2s ease}
+  .shell:has(.lat:hover),.shell:has(.lat :focus-visible){grid-template-columns:268px minmax(0,1fr)}
   .lat{position:fixed;left:0;top:0;bottom:0;width:76px;height:auto;overflow:hidden;z-index:60;transition:width .2s ease,box-shadow .2s ease}
   .lat:hover,.lat:has(:focus-visible){width:268px;box-shadow:18px 0 40px -18px rgb(10 5 40 / .55)}
   .lat-marca>div,.lat .t,.lat-user,.lat-nav .n{opacity:0;white-space:nowrap;transition:opacity .15s}
@@ -972,6 +975,7 @@ async function abrirMapa(id){
     markdown:(t)=>md(t),
     contextMenu:{focus:true,link:true,locale:PT,extend:[{name:'Realinhar posição',onclick:()=>realinhar(mind&&mind.currentNode)}]},newTopicName:'Novo tópico',theme:montarTema()});
   mind.init(dados);
+  if((dados.nodeData.children||[]).length){mind.scale(.5);mind.toCenter()} /* mapa com conteúdo abre com 50% de zoom; mapa vazio fica em 100% */
   /* EST-02: tópico novo criado a partir do centro sempre vai pra direita */
   addOriginal=mind.addChild.bind(mind);
   mind.addChild=async function(el,node){const alvo=el||this.currentNode;if(alvo&&ehRaiz(alvo)&&!node)return novoNoLado(ME.RIGHT);return addOriginal(el,node)};

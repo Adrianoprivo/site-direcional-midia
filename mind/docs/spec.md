@@ -212,13 +212,14 @@ Pedido do Adriano a partir dos prints do MindMeister. Tudo no mesmo arquivo `min
 
 | Código | Função | Comportamento |
 | --- | --- | --- |
-| LAT-01 | Menu lateral | Logo (rosa dos ventos da Direcional Mídia) + **PrivoMind**, **Lar · Todos os mapas · Favoritos · Lixeira** e, embaixo, e-mail de quem entrou e Sair (discreto). **No computador fica recolhido (só ícones) e abre quando o mouse passa por cima; fecha quando sai.** No celular vira uma barra no topo. Endereços: `#/`, `#/todos`, `#/favoritos`, `#/lixeira`. |
+| LAT-01 | Menu lateral | Logo (rosa dos ventos da Direcional Mídia) + **PrivoMind**, **Lar · Todos os mapas · Favoritos · Lixeira** e, embaixo, e-mail de quem entrou e Sair (discreto). **No computador fica recolhido (só ícones) e abre quando o mouse passa por cima e fecha quando sai; ao abrir, ele empurra o conteúdo da página (não cobre nada) e o resto se reorganiza.** No celular vira uma barra no topo. Endereços: `#/`, `#/todos`, `#/favoritos`, `#/lixeira`. |
 | LAT-02 | Botões do topo | **Novo mapa · Navegue pelos modelos · Importar**. |
 | LAT-03 | Lar | Saudação, atalhos para 4 modelos e os 8 mapas mais recentes. |
 | LIX-01 | Lixeira | A lixeira do ícone **não apaga**: o mapa ganha `excluido_em` (coluna nova da tabela `mapas`) e some das outras telas. Na Lixeira: **Restaurar**, **Apagar para sempre** (com confirmação, apaga também as imagens) e **Esvaziar lixeira**. Nada é apagado sozinho. |
 | MOD-01 | Modelos | Janela "Começar" com 8 categorias (Destaque, Gerenciamento de projetos, Negócios e metas, Educação e Notas, Recursos Humanos, Brainstorming e Análise, Marketing e Conteúdo, Layout), busca e miniaturas. 18 modelos próprios (textos nossos), entre eles Método DEVER, Matriz de decisão, Planejamento de OKR, Análise SWOT e Checklist do Google Meu Negócio. |
 | MOD-02 | Prévia | Mostra o mapa de verdade com o **tópico central no meio** (zoom e arrastar), setas para o modelo anterior/próximo, descrição e **Usar modelo** (cria uma cópia nova e abre). A seta de voltar, o X, a tecla Esc e o clique fora **voltam para a janela de modelos**; só a prévia aberta pelos atalhos do Lar volta para o Lar. |
 | IMP-01 | Importar | Arrastar o arquivo, procurar, ou colar um texto. Lê **texto com recuo e Markdown** (`#`, `-`, `*`, `1.`), **Freemind (.mm)** (lados e links), **OPML** e **JSON do PrivoMind/Mind Elixir**. Cria um mapa novo (limite de 3000 tópicos). Formatos compactados (.xmind, .mind, .mmap, .zip) ainda não: avisa e sugere exportar como texto, Freemind ou OPML. |
+| ZOOM-01 | Zoom ao abrir | Todo mapa com conteúdo abre com **50%** de zoom e o tópico central no meio. Mapa novo e vazio abre em 100%. O zoom não é salvo (muda só enquanto você usa). |
 | CPY-01 | Colar entre mapas | Selecionar um tópico, **Ctrl+C**, abrir outro mapa, selecionar o destino, **Ctrl+V**: leva o tópico com tudo que sai dele, com ids novos. Imagens ganham um arquivo próprio na pasta do mapa de destino (apagar o mapa de origem não quebra a cópia). Ctrl+C avisa "Copiado". |
 
 Banco: `alter table mapas add column excluido_em timestamptz` (migração `privomind_mapas_lixeira`, aplicada em 2026-10-30).
