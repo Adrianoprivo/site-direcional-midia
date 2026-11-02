@@ -1,5 +1,5 @@
 // IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..09: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
-// Só leitura no Instagram nesta etapa.
+// IG-PUB-01..03 (02/11/2026): publicar foto única ou carrossel, só quando o Adriano aprova na tela.
 import { admin, cors, json, usuario } from "../_shared/comum.ts";
 
 const G = "https://graph.instagram.com";
@@ -17,6 +17,59 @@ async function ig(caminho: string, token: string, params: Record<string, string>
     throw new ErroIG(r.status, corpo?.error?.code ?? null, corpo?.error?.type ?? "erro");
   }
   return corpo;
+}
+
+/** POST no Graph do Instagram (criar contêiner e publicar). */
+async function igPost(caminho: string, token: string, params: Record<string, string>) {
+  const r = await fetch(`${G}/${caminho}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ ...params, access_token: token }),
+  });
+  const corpo = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    console.error("instagram-post", r.status, caminho.split("/").pop(), corpo?.error?.code, corpo?.error?.error_subcode, corpo?.error?.message);
+    throw new ErroIG(r.status, corpo?.error?.code ?? null, corpo?.error?.error_user_msg ?? corpo?.error?.message ?? "erro");
+  }
+  return corpo;
+}
+
+const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Espera o contêiner ficar pronto (FINISHED). Fotos costumam ficar prontas em segundos. */
+async function aguardarConteiner(id: string, token: string) {
+  for (let i = 0; i < 20; i++) {
+    const s = await ig(id, token, { fields: "status_code,status" });
+    if (s.status_code === "FINISHED") return;
+    if (s.status_code === "ERROR" || s.status_code === "EXPIRED") {
+      throw new ErroIG(400, null, `O Instagram não aceitou a imagem (${s.status ?? s.status_code}). Confira se o link abre e se a imagem é JPG.`);
+    }
+    await espera(1500);
+  }
+  throw new ErroIG(504, null, "O Instagram demorou para processar a imagem. Tente de novo em instantes.");
+}
+
+/** IG-PUB-01/02: foto única (1 imagem) ou carrossel (2 a 10 imagens). Imagens em JPG, por link público https. */
+async function publicar(token: string, imagens: string[], legenda: string) {
+  let criacao: string;
+  if (imagens.length === 1) {
+    const c = await igPost("me/media", token, { image_url: imagens[0], caption: legenda });
+    criacao = c.id;
+  } else {
+    const filhos: string[] = [];
+    for (const url of imagens) {
+      const c = await igPost("me/media", token, { image_url: url, is_carousel_item: "true" });
+      filhos.push(c.id);
+    }
+    for (const f of filhos) await aguardarConteiner(f, token);
+    const c = await igPost("me/media", token, { media_type: "CAROUSEL", children: filhos.join(","), caption: legenda });
+    criacao = c.id;
+  }
+  await aguardarConteiner(criacao, token);
+  const pub = await igPost("me/media_publish", token, { creation_id: criacao });
+  let link: string | null = null;
+  try { link = (await ig(pub.id, token, { fields: "permalink" })).permalink ?? null; } catch { /* o post já saiu; só não veio o link */ }
+  return { id: pub.id as string, link };
 }
 
 /** IG-CON-05: renova o token de 60 dias quando já tem mais de 24 h e faltam menos de 20 dias. */
@@ -182,7 +235,7 @@ Deno.serve(async (req) => {
   try {
     const uid = await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
-    const { acao, depois, de, ate, comparar, id } = await req.json().catch(() => ({}));
+    const { acao, depois, de, ate, comparar, id, imagens, legenda, autorizado } = await req.json().catch(() => ({}));
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
       .select("user_id,username,access_token,obtido_em,expira_em").eq("user_id", uid).maybeSingle();
@@ -225,6 +278,23 @@ Deno.serve(async (req) => {
       return json(req, { periodos: [d7, d14, d30] });
     }
 
+    if (acao === "limite") { // IG-PUB-03: quantos posts pela API ainda cabem nas últimas 24 h
+      const r = await ig("me/content_publishing_limit", await tokenValido(c as Conexao), { fields: "quota_usage,config" });
+      const d = r.data?.[0] ?? {};
+      return json(req, { usados: d.quota_usage ?? null, total: d.config?.quota_total ?? null });
+    }
+    if (acao === "publicar") {
+      if (autorizado !== true) return json(req, { erro: "Confirme a prévia antes de publicar." }, 400);
+      const lista = Array.isArray(imagens) ? imagens.map((x) => String(x).trim()).filter(Boolean) : [];
+      if (lista.length < 1 || lista.length > 10) return json(req, { erro: "Use de 1 a 10 imagens." }, 400);
+      if (lista.some((u) => !/^https:\/\/[^\s]+$/i.test(u))) return json(req, { erro: "Cada imagem precisa de um link https público." }, 400);
+      const texto = typeof legenda === "string" ? legenda : "";
+      if (texto.length > 2200) return json(req, { erro: "A legenda passa de 2.200 caracteres." }, 400);
+      const r = await publicar(await tokenValido(c as Conexao), lista, texto);
+      console.log("publicado", r.id, lista.length);
+      return json(req, { publicado: true, ...r });
+    }
+
     if (acao === "desconectar") {
       await db.from("ig_conexoes").delete().eq("user_id", uid);
       return json(req, { conectado: false });
@@ -232,7 +302,11 @@ Deno.serve(async (req) => {
     return json(req, { erro: "Ação desconhecida." }, 400);
   } catch (e) {
     if (e instanceof ErroIG) {
-      const m = MSG[e.motivo] ?? (e.codigo === 4 || e.codigo === 17 || e.codigo === 32
+      const m = MSG[e.motivo] ?? (e.codigo === 9 || e.codigo === 25
+        ? "O Instagram atingiu o limite de posts por dia pela API. Tente amanhã."
+        : e.motivo && e.motivo.length > 12 && e.motivo !== "erro" && /[a-zà-ú]/i.test(e.motivo) && !/^[A-Z][A-Za-z]+Exception$/.test(e.motivo)
+        ? `Instagram: ${e.motivo}`
+        : e.codigo === 4 || e.codigo === 17 || e.codigo === 32
         ? "O Instagram limitou as consultas por um momento. Espere alguns minutos e tente de novo."
         : `O Instagram respondeu com erro (${e.status}). Tente de novo em instantes.`);
       return json(req, { erro: m }, 502);

@@ -199,6 +199,15 @@ dialog.ver::backdrop{background:rgb(0 0 0 / .7)}
 .login form{width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px}
 .login label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:13px}
 .login input{font:inherit;border:1px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:8px;padding:9px 11px}
+.pub label{display:block;font-weight:600;font-size:13px;margin:0 0 6px}
+.pub textarea{width:100%;font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--line2);border-radius:8px;padding:10px 12px;resize:vertical}
+.pub textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.pub .cnt{font-size:12px;color:var(--muted);text-align:right;margin-top:4px}
+.pub .prev{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px}
+.pub .prev figure{margin:0;flex:0 0 120px}
+.pub .prev img{width:120px;height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--line);display:block;background:var(--line)}
+.pub .prev figcaption{font-size:11px;color:var(--muted);margin-top:3px}
+.pub .linha{margin-bottom:16px}
 .login input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .login .err{color:var(--bad);min-height:1.2em;margin:0;font-size:13px}
 .login .btn{justify-content:center;padding:10px}
@@ -365,7 +374,7 @@ async function desconectar(fn,pergunta,ok){if(!confirm(pergunta))return;
   try{await api(fn,{acao:'desconectar'});if(fn==='ig-api'){S.igPerfil=S.igPosts=S.igConta=null}else S.gContas=null;await carregarStatus();flash=aviso('ok',ok)}catch(e){flash=aviso('bad',e.message)}render()}
 
 /* ---------- Instagram: meu perfil ---------- */
-const ABAS=[['perfil','Visão geral'],['posts','Métricas por post'],['melhores','Melhores posts']];
+const ABAS=[['perfil','Visão geral'],['posts','Métricas por post'],['melhores','Melhores posts'],['publicar','Publicar']];
 const TIPO={REELS:'Reels',FEED:'Feed',STORY:'Story',CAROUSEL_ALBUM:'Carrossel',IMAGE:'Foto',VIDEO:'Vídeo'};
 const FMT={REEL:'Reels',POST:'Posts do feed',CAROUSEL_CONTAINER:'Carrosséis',STORY:'Stories',AD:'Anúncios',IGTV:'Vídeos',LIVE:'Lives'};
 
@@ -408,7 +417,7 @@ async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes'
   crumb([['Instagram','#/instagram/eu/perfil'],['@'+(S.ig.usuario||''),'#/instagram/eu/perfil'],ABAS.find(a=>a[0]===aba)?.[1]||'']);
   $('topact').innerHTML=`<button class="btn" id="recarregar" type="button">Atualizar</button>`;
   $('recarregar').onclick=()=>{S.igPerfil=null;S.igPer={};S.igPosts=null;S.igConta=null;render()};
-  v.innerHTML=`${flash}<div class="ph"><div><h1>@${esc(S.ig.usuario)}</h1><p>Meu perfil · só leitura nesta etapa, nada é publicado.</p></div>
+  v.innerHTML=`${flash}<div class="ph"><div><h1>@${esc(S.ig.usuario)}</h1><p>Meu perfil · métricas e publicação. Nada vai ao ar sem você confirmar na aba Publicar.</p></div>
     <a class="btn" href="https://www.instagram.com/${esc(S.ig.usuario)}/" target="_blank" rel="noopener">${ic('ext')} Abrir no Instagram</a></div>
     <nav class="tabs" aria-label="Seções do perfil">${ABAS.map(([k,l])=>`<a href="#/instagram/eu/${k}"${k===aba?' aria-current="page"':''}>${l}</a>`).join('')}</nav>
     <div id="aba"><p class="muted"><span class="spin"></span> Buscando no Instagram…</p></div>`;flash='';
@@ -417,6 +426,7 @@ async function vIg(v,aba){if(!(S.ig&&S.ig.conectado)){location.hash='#/conexoes'
     if(aba==='perfil'){S.igPerfil=S.igPerfil||await api('ig-api',{acao:'perfil'});await abaVisao(alvo)}
     else if(aba==='posts'){await abaPosts(alvo)}
     else if(aba==='melhores'){await abaMelhores(alvo)}
+    else if(aba==='publicar'){abaPublicar(alvo)}
     else location.hash='#/instagram/eu/perfil';
   }catch(e){alvo.innerHTML=aviso('bad',e.message)}}
 
@@ -600,6 +610,36 @@ async function abrirPost(id){const x=(S.igPosts?.lista||[]).find(p=>p.id===id);c
     if(!r.itens.length||!r.itens[0].url){mid.innerHTML='<p class="muted">O Instagram não liberou o arquivo deste post. Use “Abrir no Instagram”.</p>';return}
     desenhar()}
   catch(e){const mid=$('vmid');if(mid)mid.innerHTML=aviso('bad',e.message)}}
+
+/* ---- Publicar (IG-PUB-01..03): foto única ou carrossel, só depois de conferir a prévia e marcar a autorização ---- */
+const RP=JSON.parse(store.get('pp-rasc')||'{"imgs":"","leg":""}');
+function abaPublicar(el){
+  el.innerHTML=`<section class="card pub"><div class="ch"><h2>Novo post no feed</h2><span class="note" id="pub-lim"></span></div><div class="cb">
+    <div class="linha"><label for="pub-imgs">Imagens (um link por linha, na ordem do carrossel)</label>
+      <textarea id="pub-imgs" rows="4" placeholder="https://raw.githubusercontent.com/.../slide-1.jpg">${esc(RP.imgs)}</textarea>
+      <p class="note">1 link = foto única · 2 a 10 links = carrossel. Use JPG em 1080x1350 (4:5) com link público.</p>
+      <div class="prev" id="pub-prev"></div></div>
+    <div class="linha"><label for="pub-leg">Legenda</label>
+      <textarea id="pub-leg" rows="9">${esc(RP.leg)}</textarea><div class="cnt" id="pub-cnt"></div></div>
+    <label class="chk" style="font-weight:500"><input type="checkbox" id="pub-ok"> Conferi a prévia e a legenda. Pode publicar no @${esc(S.ig.usuario||'')}.</label>
+    <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn pri" id="pub-btn" type="button" disabled>Publicar agora</button><span id="pub-msg"></span></div>
+  </div></section>`;
+  const imgs=$('pub-imgs'),leg=$('pub-leg'),ok=$('pub-ok'),btn=$('pub-btn');
+  const links=()=>imgs.value.split('\n').map(x=>x.trim()).filter(Boolean);
+  const atual=()=>{const L=links();RP.imgs=imgs.value;RP.leg=leg.value;store.set('pp-rasc',JSON.stringify(RP));
+    $('pub-prev').innerHTML=L.map((u,i)=>`<figure><img src="${esc(u)}" alt="Slide ${i+1}" loading="lazy"><figcaption>${L.length>1?'Slide '+(i+1):'Foto única'}</figcaption></figure>`).join('');
+    const n=leg.value.length;$('pub-cnt').textContent=`${n.toLocaleString('pt-BR')}/2.200`;$('pub-cnt').style.color=n>2200?'var(--bad)':'';
+    const valido=L.length>=1&&L.length<=10&&L.every(u=>/^https:\/\/\S+$/i.test(u))&&n<=2200;
+    btn.disabled=!(valido&&ok.checked);btn.textContent=L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto';
+    if(L.length>10)$('pub-msg').innerHTML=aviso('bad','Máximo de 10 imagens.');else if($('pub-msg').dataset.k!=='fim')$('pub-msg').innerHTML=''};
+  [imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});ok.onchange=atual;atual();
+  api('ig-api',{acao:'limite'}).then(r=>{if(r.total!=null)$('pub-lim').textContent=`Posts pela API nas últimas 24 h: ${r.usados??0} de ${r.total}`}).catch(()=>{});
+  btn.onclick=async()=>{btn.disabled=true;ok.disabled=true;const m=$('pub-msg');m.dataset.k='';m.innerHTML='<span class="spin"></span> Publicando no Instagram… (pode levar até 1 minuto)';
+    try{const r=await api('ig-api',{acao:'publicar',imagens:links(),legenda:leg.value,autorizado:true});
+      RP.imgs='';RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';
+      m.innerHTML=`<span class="msg ok" style="display:inline-block;margin:0">Publicado! ${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener">Ver no Instagram</a> · `:''}id ${esc(r.id)}</span>`;
+      imgs.value='';leg.value='';ok.checked=false;ok.disabled=false;atual()}
+    catch(e){m.dataset.k='fim';m.innerHTML=aviso('bad',e.message);ok.disabled=false;ok.checked=false;atual()}}}
 
 /* ---------- Instagram: clientes ---------- */
 function vIgClientes(v){crumb([['Instagram','#/instagram/eu/perfil'],'Clientes']);
