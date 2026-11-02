@@ -72,4 +72,13 @@ Decisão: o Instagram vem antes dos posts no Google (o Windsor já cuida do Goog
 | IG-MET-01..03 | Métricas por post | Últimos 12 posts: visualizações, alcance, curtidas, comentários, compartilhamentos, salvos. |
 | GMN-PER-02 | Google no menu | Seu perfil e clientes (etiqueta "não usar") listados no menu; página do perfil só leitura. |
 
-Próximo: publicar no Instagram (Reels, foto, carrossel) com aprovação antes de ir ao ar; clientes do Instagram.
+## 8. Publicar no Instagram 🆕 (02/11/2026)
+
+| Código | Função | Comportamento |
+| --- | --- | --- |
+| IG-PUB-01 | Foto única | Aba **Publicar**: 1 link de imagem JPG (https público) + legenda até 2.200 caracteres → contêiner → `media_publish`. |
+| IG-PUB-02 | Carrossel | 2 a 10 links, na ordem dos slides → um contêiner por slide (`is_carousel_item`) → contêiner `CAROUSEL` → `media_publish`. |
+| IG-PUB-03 | Limite | Mostra quantos posts pela API foram usados nas últimas 24 h (`content_publishing_limit`). |
+| IG-PUB-04 | Aprovação | Botão só libera depois de marcar "Conferi a prévia e a legenda". Sem janela `confirm()` (não trava a automação). |
+
+Artes: JPG 1080x1350 (4:5), servidas em `raw.githubusercontent.com/.../ig/posts/`. Próximo: Reels, agendamento, clientes do Instagram.
