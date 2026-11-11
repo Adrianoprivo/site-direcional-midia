@@ -81,4 +81,6 @@ Decisão: o Instagram vem antes dos posts no Google (o Windsor já cuida do Goog
 | IG-PUB-03 | Limite | Mostra quantos posts pela API foram usados nas últimas 24 h (`content_publishing_limit`). |
 | IG-PUB-04 | Aprovação | Botão só libera depois de marcar "Conferi a prévia e a legenda". Sem janela `confirm()` (não trava a automação). |
 
-Artes: JPG 1080x1350 (4:5), servidas em `raw.githubusercontent.com/.../ig/posts/`. Próximo: Reels, agendamento, clientes do Instagram.
+| IG-PUB-05 | Reels 🆕 (11/11/2026) | Aba **Publicar**: 1 link https de vídeo MP4 vertical 9:16 + legenda → contêiner `REELS` (`video_url`, `share_to_feed`) → espera `FINISHED` (até ~110 s) → `media_publish`. Se o vídeo estiver preenchido, as imagens são ignoradas. |
+
+Artes: JPG 1080x1350 (4:5), servidas em `raw.githubusercontent.com/.../ig/posts/`. Próximo: agendamento, clientes do Instagram.
