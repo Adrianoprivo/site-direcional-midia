@@ -619,26 +619,31 @@ function abaPublicar(el){
       <textarea id="pub-imgs" rows="4" placeholder="https://raw.githubusercontent.com/.../slide-1.jpg">${esc(RP.imgs)}</textarea>
       <p class="note">1 link = foto única · 2 a 10 links = carrossel. Use JPG em 1080x1350 (4:5) com link público.</p>
       <div class="prev" id="pub-prev"></div></div>
+    <div class="linha"><label for="pub-vid">Ou um Reels (link https de um vídeo MP4 vertical 9:16)</label>
+      <input id="pub-vid" type="url" placeholder="https://raw.githubusercontent.com/.../reel.mp4" value="${esc(RP.vid||'')}" style="width:100%">
+      <p class="note">Se preencher o vídeo, ele vai como Reels e as imagens acima são ignoradas.</p>
+      <div class="prev" id="pub-vprev"></div></div>
     <div class="linha"><label for="pub-leg">Legenda</label>
       <textarea id="pub-leg" rows="9">${esc(RP.leg)}</textarea><div class="cnt" id="pub-cnt"></div></div>
     <label class="chk" style="font-weight:500"><input type="checkbox" id="pub-ok"> Conferi a prévia e a legenda. Pode publicar no @${esc(S.ig.usuario||'')}.</label>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn pri" id="pub-btn" type="button" disabled>Publicar agora</button><span id="pub-msg"></span></div>
   </div></section>`;
-  const imgs=$('pub-imgs'),leg=$('pub-leg'),ok=$('pub-ok'),btn=$('pub-btn');
+  const vid=$('pub-vid'),imgs=$('pub-imgs'),leg=$('pub-leg'),ok=$('pub-ok'),btn=$('pub-btn');
   const links=()=>imgs.value.split('\n').map(x=>x.trim()).filter(Boolean);
-  const atual=()=>{const L=links();RP.imgs=imgs.value;RP.leg=leg.value;store.set('pp-rasc',JSON.stringify(RP));
+  const atual=()=>{const L=links();RP.imgs=imgs.value;RP.vid=vid.value;RP.leg=leg.value;store.set('pp-rasc',JSON.stringify(RP));
     $('pub-prev').innerHTML=L.map((u,i)=>`<figure><img src="${esc(u)}" alt="Slide ${i+1}" loading="lazy"><figcaption>${L.length>1?'Slide '+(i+1):'Foto única'}</figcaption></figure>`).join('');
     const n=leg.value.length;$('pub-cnt').textContent=`${n.toLocaleString('pt-BR')}/2.200`;$('pub-cnt').style.color=n>2200?'var(--bad)':'';
-    const valido=L.length>=1&&L.length<=10&&L.every(u=>/^https:\/\/\S+$/i.test(u))&&n<=2200;
-    btn.disabled=!(valido&&ok.checked);btn.textContent=L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto';
+    const V=vid.value.trim();$('pub-vprev').innerHTML=V?`<video src="${esc(V)}" controls playsinline preload="metadata" style="max-height:420px"></video>`:'';
+    const valido=V?(/^https:\/\/\S+$/i.test(V)&&n<=2200):(L.length>=1&&L.length<=10&&L.every(u=>/^https:\/\/\S+$/i.test(u))&&n<=2200);
+    btn.disabled=!(valido&&ok.checked);btn.textContent=V?'Publicar Reels':(L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto');
     if(L.length>10)$('pub-msg').innerHTML=aviso('bad','Máximo de 10 imagens.');else if($('pub-msg').dataset.k!=='fim')$('pub-msg').innerHTML=''};
-  [imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});ok.onchange=atual;atual();
+  [vid,imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});ok.onchange=atual;atual();
   api('ig-api',{acao:'limite'}).then(r=>{if(r.total!=null)$('pub-lim').textContent=`Posts pela API nas últimas 24 h: ${r.usados??0} de ${r.total}`}).catch(()=>{});
-  btn.onclick=async()=>{btn.disabled=true;ok.disabled=true;const m=$('pub-msg');m.dataset.k='';m.innerHTML='<span class="spin"></span> Publicando no Instagram… (pode levar até 1 minuto)';
-    try{const r=await api('ig-api',{acao:'publicar',imagens:links(),legenda:leg.value,autorizado:true});
-      RP.imgs='';RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';
+  btn.onclick=async()=>{btn.disabled=true;ok.disabled=true;const m=$('pub-msg');m.dataset.k='';m.innerHTML='<span class="spin"></span> Publicando no Instagram… (Reels pode levar até 2 minutos, não feche a tela)';
+    try{const r=await api('ig-api',{acao:'publicar',...(vid.value.trim()?{video:vid.value.trim()}:{imagens:links()}),legenda:leg.value,autorizado:true});
+      RP.imgs='';RP.vid='';RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';
       m.innerHTML=`<span class="msg ok" style="display:inline-block;margin:0">Publicado! ${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener">Ver no Instagram</a> · `:''}id ${esc(r.id)}</span>`;
-      imgs.value='';leg.value='';ok.checked=false;ok.disabled=false;atual()}
+      imgs.value='';vid.value='';leg.value='';ok.checked=false;ok.disabled=false;atual()}
     catch(e){m.dataset.k='fim';m.innerHTML=aviso('bad',e.message);ok.disabled=false;ok.checked=false;atual()}}}
 
 /* ---------- Instagram: clientes ---------- */

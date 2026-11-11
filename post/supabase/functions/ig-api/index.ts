@@ -1,5 +1,5 @@
 // IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..09: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
-// IG-PUB-01..03 (02/11/2026): publicar foto única ou carrossel, só quando o Adriano aprova na tela.
+// IG-PUB-01..03 (02/11/2026): publicar foto única ou carrossel; IG-PUB-05 (11/11/2026): Reels, só quando o Adriano aprova na tela.
 import { admin, cors, json, usuario } from "../_shared/comum.ts";
 
 const G = "https://graph.instagram.com";
@@ -47,6 +47,29 @@ async function aguardarConteiner(id: string, token: string) {
     await espera(1500);
   }
   throw new ErroIG(504, null, "O Instagram demorou para processar a imagem. Tente de novo em instantes.");
+}
+
+/** Espera o vídeo ficar pronto (Reels leva mais que foto). Até ~110 s. */
+async function aguardarVideo(id: string, token: string) {
+  for (let i = 0; i < 36; i++) {
+    const s = await ig(id, token, { fields: "status_code,status" });
+    if (s.status_code === "FINISHED") return;
+    if (s.status_code === "ERROR" || s.status_code === "EXPIRED") {
+      throw new ErroIG(400, null, `O Instagram não aceitou o vídeo (${s.status ?? s.status_code}). Confira se o link abre e se é MP4 vertical (9:16).`);
+    }
+    await espera(3000);
+  }
+  throw new ErroIG(504, null, "O Instagram ainda está processando o vídeo. Olhe o perfil em 1 minuto antes de tentar de novo, para não postar duas vezes.");
+}
+
+/** IG-PUB-05: Reels por link público https de um MP4 vertical. */
+async function publicarReels(token: string, video: string, legenda: string) {
+  const c = await igPost("me/media", token, { media_type: "REELS", video_url: video, caption: legenda, share_to_feed: "true" });
+  await aguardarVideo(c.id, token);
+  const pub = await igPost("me/media_publish", token, { creation_id: c.id });
+  let link: string | null = null;
+  try { link = (await ig(pub.id, token, { fields: "permalink" })).permalink ?? null; } catch { /* o post já saiu */ }
+  return { id: pub.id as string, link };
 }
 
 /** IG-PUB-01/02: foto única (1 imagem) ou carrossel (2 a 10 imagens). Imagens em JPG, por link público https. */
@@ -235,7 +258,7 @@ Deno.serve(async (req) => {
   try {
     const uid = await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
-    const { acao, depois, de, ate, comparar, id, imagens, legenda, autorizado } = await req.json().catch(() => ({}));
+    const { acao, depois, de, ate, comparar, id, imagens, video, legenda, autorizado } = await req.json().catch(() => ({}));
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
       .select("user_id,username,access_token,obtido_em,expira_em").eq("user_id", uid).maybeSingle();
@@ -285,6 +308,15 @@ Deno.serve(async (req) => {
     }
     if (acao === "publicar") {
       if (autorizado !== true) return json(req, { erro: "Confirme a prévia antes de publicar." }, 400);
+      if (typeof video === "string" && video.trim()) { // IG-PUB-05: Reels
+        const v = video.trim();
+        if (!/^https:\/\/[^\s]+$/i.test(v)) return json(req, { erro: "O vídeo precisa de um link https público." }, 400);
+        const t = typeof legenda === "string" ? legenda : "";
+        if (t.length > 2200) return json(req, { erro: "A legenda passa de 2.200 caracteres." }, 400);
+        const r = await publicarReels(await tokenValido(c as Conexao), v, t);
+        console.log("publicado reels", r.id);
+        return json(req, { publicado: true, ...r });
+      }
       const lista = Array.isArray(imagens) ? imagens.map((x) => String(x).trim()).filter(Boolean) : [];
       if (lista.length < 1 || lista.length > 10) return json(req, { erro: "Use de 1 a 10 imagens." }, 400);
       if (lista.some((u) => !/^https:\/\/[^\s]+$/i.test(u))) return json(req, { erro: "Cada imagem precisa de um link https público." }, 400);
