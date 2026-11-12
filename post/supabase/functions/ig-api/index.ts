@@ -252,13 +252,32 @@ const MSG: Record<string, string> = {
   OAuthException: "O Instagram não aceitou a autorização. Desconecte e conecte de novo.",
 };
 
+/** Chave de publicação do Claude (segredo PRIVO_CHAVE_PUBLICAR no Supabase). Só vale para status, posts, limite e publicar,
+ *  e a publicação continua exigindo "autorizado: true" (o Adriano ter dito "pode postar"). Sem o segredo, esta porta fica fechada. */
+const ACOES_CHAVE = new Set(["status", "posts", "limite", "publicar"]);
+function igualConst(a: string, b: string) {
+  if (a.length !== b.length) return false;
+  let r = 0;
+  for (let i = 0; i < a.length; i++) r |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return r === 0;
+}
+async function usuarioPorChave(req: Request): Promise<string | null> {
+  const recebida = req.headers.get("x-privo-chave") ?? "";
+  const esperada = Deno.env.get("PRIVO_CHAVE_PUBLICAR") ?? "";
+  if (esperada.length < 32 || !igualConst(recebida, esperada)) return null;
+  const { data } = await admin().from("ig_conexoes").select("user_id").limit(2);
+  return data?.length === 1 ? (data[0].user_id as string) : null; // só com 1 conta conectada
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(req) });
   if (req.method !== "POST") return json(req, { erro: "Método não permitido." }, 405);
   try {
-    const uid = await usuario(req);
+    const porChave = req.headers.has("x-privo-chave");
+    const uid = porChave ? await usuarioPorChave(req) : await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
     const { acao, depois, de, ate, comparar, id, imagens, video, legenda, autorizado } = await req.json().catch(() => ({}));
+    if (porChave && !ACOES_CHAVE.has(acao)) return json(req, { erro: "Ação não permitida com a chave." }, 403);
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
       .select("user_id,username,access_token,obtido_em,expira_em").eq("user_id", uid).maybeSingle();
