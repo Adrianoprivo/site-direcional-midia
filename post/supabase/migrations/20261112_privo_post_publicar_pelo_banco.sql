@@ -1,0 +1,3 @@
+-- Aplicada em 12/11/2026 (migrations "privo_post_publicar_pelo_banco" e "..._link"). Ver post/docs/publicar-reels-pelo-banco.md
+-- Funções: privo_ig_token, privo_ig_criar_reels, privo_ig_status, privo_ig_link, privo_ig_publicar.
+-- Todas security definer, execute só para service_role. Texto completo das funções: Supabase > Database > Functions.
