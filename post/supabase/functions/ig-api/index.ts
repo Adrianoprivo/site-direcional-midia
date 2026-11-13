@@ -1,5 +1,6 @@
 // IG-CON-01 / IG-CON-05 / IG-CON-06 / IG-MET-01..09: status, perfil (com bio), posts com métricas, métricas da conta, desconectar.
 // IG-PUB-01..03 (02/11/2026): publicar foto única ou carrossel; IG-PUB-05 (11/11/2026): Reels, só quando o Adriano aprova na tela.
+// IG-PUB-06 (13/11/2026): Stories (imagens, uma por story, ou 1 vídeo).
 import { admin, cors, json, usuario } from "../_shared/comum.ts";
 
 const G = "https://graph.instagram.com";
@@ -70,6 +71,32 @@ async function publicarReels(token: string, video: string, legenda: string) {
   let link: string | null = null;
   try { link = (await ig(pub.id, token, { fields: "permalink" })).permalink ?? null; } catch { /* o post já saiu */ }
   return { id: pub.id as string, link };
+}
+
+/** IG-PUB-06 (13/11/2026): Stories. Cada imagem vira um story (na ordem); ou 1 vídeo MP4 vertical vira um story.
+ *  Stories não têm legenda pela API. Cria todos os contêineres, espera ficarem prontos e publica um por vez. */
+async function publicarStories(token: string, itens: { video?: string; imagem?: string }[]) {
+  const criados: { id: string; video: boolean }[] = [];
+  for (const it of itens) {
+    const c = await igPost("me/media", token, it.video
+      ? { media_type: "STORIES", video_url: it.video }
+      : { media_type: "STORIES", image_url: it.imagem! });
+    criados.push({ id: c.id, video: !!it.video });
+  }
+  for (const c of criados) await (c.video ? aguardarVideo(c.id, token) : aguardarConteiner(c.id, token));
+  const ids: string[] = [];
+  for (const c of criados) {
+    try {
+      const pub = await igPost("me/media_publish", token, { creation_id: c.id });
+      ids.push(pub.id);
+    } catch (e) {
+      if (!ids.length) throw e;
+      // parte já foi ao ar: avisa quantos saíram para não repetir os mesmos stories
+      const m = e instanceof ErroIG ? e.motivo : "erro";
+      throw new ErroIG(502, null, `Saíram ${ids.length} de ${criados.length} stories; o próximo falhou (${m}). Não publique os primeiros de novo.`);
+    }
+  }
+  return { id: ids[0], ids, link: null as string | null };
 }
 
 /** IG-PUB-01/02: foto única (1 imagem) ou carrossel (2 a 10 imagens). Imagens em JPG, por link público https. */
@@ -276,7 +303,7 @@ Deno.serve(async (req) => {
     const porChave = req.headers.has("x-privo-chave");
     const uid = porChave ? await usuarioPorChave(req) : await usuario(req);
     if (!uid) return json(req, { erro: "Entre de novo para continuar." }, 401);
-    const { acao, depois, de, ate, comparar, id, imagens, video, legenda, autorizado } = await req.json().catch(() => ({}));
+    const { acao, depois, de, ate, comparar, id, imagens, video, legenda, autorizado, stories } = await req.json().catch(() => ({}));
     if (porChave && !ACOES_CHAVE.has(acao)) return json(req, { erro: "Ação não permitida com a chave." }, 403);
     const db = admin();
     const { data: c } = await db.from("ig_conexoes")
@@ -327,6 +354,22 @@ Deno.serve(async (req) => {
     }
     if (acao === "publicar") {
       if (autorizado !== true) return json(req, { erro: "Confirme a prévia antes de publicar." }, 400);
+      if (stories === true) { // IG-PUB-06: Stories
+        const https = (u: string) => /^https:\/\/[^\s]+$/i.test(u);
+        let itens: { video?: string; imagem?: string }[];
+        if (typeof video === "string" && video.trim()) {
+          if (!https(video.trim())) return json(req, { erro: "O vídeo precisa de um link https público." }, 400);
+          itens = [{ video: video.trim() }];
+        } else {
+          const l = Array.isArray(imagens) ? imagens.map((x) => String(x).trim()).filter(Boolean) : [];
+          if (l.length < 1 || l.length > 10) return json(req, { erro: "Use de 1 a 10 imagens nos stories." }, 400);
+          if (l.some((u) => !https(u))) return json(req, { erro: "Cada imagem precisa de um link https público." }, 400);
+          itens = l.map((u) => ({ imagem: u }));
+        }
+        const r = await publicarStories(await tokenValido(c as Conexao), itens);
+        console.log("publicado stories", r.ids.join(","));
+        return json(req, { publicado: true, ...r });
+      }
       if (typeof video === "string" && video.trim()) { // IG-PUB-05: Reels
         const v = video.trim();
         if (!/^https:\/\/[^\s]+$/i.test(v)) return json(req, { erro: "O vídeo precisa de um link https público." }, 400);
