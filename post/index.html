@@ -625,25 +625,30 @@ function abaPublicar(el){
       <div class="prev" id="pub-vprev"></div></div>
     <div class="linha"><label for="pub-leg">Legenda</label>
       <textarea id="pub-leg" rows="9">${esc(RP.leg)}</textarea><div class="cnt" id="pub-cnt"></div></div>
+    <div class="linha"><label class="chk" style="font-weight:500"><input type="checkbox" id="pub-sto"${RP.sto?' checked':''}> Publicar como Stories</label>
+      <p class="note">Cada imagem vira um story, na ordem (até 10), ou o vídeo vira um story. Use 1080x1920 (9:16). Stories não levam legenda pela API.</p></div>
     <label class="chk" style="font-weight:500"><input type="checkbox" id="pub-ok"> Conferi a prévia e a legenda. Pode publicar no @${esc(S.ig.usuario||'')}.</label>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn pri" id="pub-btn" type="button" disabled>Publicar agora</button><span id="pub-msg"></span></div>
   </div></section>`;
-  const vid=$('pub-vid'),imgs=$('pub-imgs'),leg=$('pub-leg'),ok=$('pub-ok'),btn=$('pub-btn');
+  const vid=$('pub-vid'),imgs=$('pub-imgs'),leg=$('pub-leg'),ok=$('pub-ok'),btn=$('pub-btn'),sto=$('pub-sto');
   const links=()=>imgs.value.split('\n').map(x=>x.trim()).filter(Boolean);
-  const atual=()=>{const L=links();RP.imgs=imgs.value;RP.vid=vid.value;RP.leg=leg.value;store.set('pp-rasc',JSON.stringify(RP));
-    $('pub-prev').innerHTML=L.map((u,i)=>`<figure><img src="${esc(u)}" alt="Slide ${i+1}" loading="lazy"><figcaption>${L.length>1?'Slide '+(i+1):'Foto única'}</figcaption></figure>`).join('');
+  const atual=()=>{const L=links(),ST=sto.checked;RP.imgs=imgs.value;RP.vid=vid.value;RP.leg=leg.value;RP.sto=ST;store.set('pp-rasc',JSON.stringify(RP));
+    $('pub-prev').innerHTML=L.map((u,i)=>`<figure><img src="${esc(u)}" alt="${ST?'Story':'Slide'} ${i+1}" loading="lazy"><figcaption>${ST?'Story '+(i+1):L.length>1?'Slide '+(i+1):'Foto única'}</figcaption></figure>`).join('');
+    leg.disabled=ST;
     const n=leg.value.length;$('pub-cnt').textContent=`${n.toLocaleString('pt-BR')}/2.200`;$('pub-cnt').style.color=n>2200?'var(--bad)':'';
     const V=vid.value.trim();$('pub-vprev').innerHTML=V?`<video src="${esc(V)}" controls playsinline preload="metadata" style="max-height:420px"></video>`:'';
-    const valido=V?(/^https:\/\/\S+$/i.test(V)&&n<=2200):(L.length>=1&&L.length<=10&&L.every(u=>/^https:\/\/\S+$/i.test(u))&&n<=2200);
-    btn.disabled=!(valido&&ok.checked);btn.textContent=V?'Publicar Reels':(L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto');
+    const legOk=ST||n<=2200;
+    const valido=V?(/^https:\/\/\S+$/i.test(V)&&legOk):(L.length>=1&&L.length<=10&&L.every(u=>/^https:\/\/\S+$/i.test(u))&&legOk);
+    btn.disabled=!(valido&&ok.checked);btn.textContent=ST?(V?'Publicar story (vídeo)':L.length>1?`Publicar ${L.length} stories`:'Publicar story'):V?'Publicar Reels':(L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto');
     if(L.length>10)$('pub-msg').innerHTML=aviso('bad','Máximo de 10 imagens.');else if($('pub-msg').dataset.k!=='fim')$('pub-msg').innerHTML=''};
-  [vid,imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});ok.onchange=atual;atual();
+  [vid,imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});sto.onchange=()=>{ok.checked=false;atual()};ok.onchange=atual;atual();
   api('ig-api',{acao:'limite'}).then(r=>{if(r.total!=null)$('pub-lim').textContent=`Posts pela API nas últimas 24 h: ${r.usados??0} de ${r.total}`}).catch(()=>{});
   btn.onclick=async()=>{btn.disabled=true;ok.disabled=true;const m=$('pub-msg');m.dataset.k='';m.innerHTML='<span class="spin"></span> Publicando no Instagram… (Reels pode levar até 2 minutos, não feche a tela)';
-    try{const r=await api('ig-api',{acao:'publicar',...(vid.value.trim()?{video:vid.value.trim()}:{imagens:links()}),legenda:leg.value,autorizado:true});
-      RP.imgs='';RP.vid='';RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';
-      m.innerHTML=`<span class="msg ok" style="display:inline-block;margin:0">Publicado! ${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener">Ver no Instagram</a> · `:''}id ${esc(r.id)}</span>`;
-      imgs.value='';vid.value='';leg.value='';ok.checked=false;ok.disabled=false;atual()}
+    try{const ST=sto.checked;const r=await api('ig-api',{acao:'publicar',...(vid.value.trim()?{video:vid.value.trim()}:{imagens:links()}),...(ST?{stories:true}:{legenda:leg.value}),autorizado:true});
+      RP.imgs='';RP.vid='';RP.sto=false;if(!ST)RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';
+      m.innerHTML=ST?`<span class="msg ok" style="display:inline-block;margin:0">${(r.ids||[r.id]).length>1?(r.ids.length+' stories publicados!'):'Story publicado!'} Confira no perfil do Instagram.</span>`
+        :`<span class="msg ok" style="display:inline-block;margin:0">Publicado! ${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener">Ver no Instagram</a> · `:''}id ${esc(r.id)}</span>`;
+      imgs.value='';vid.value='';if(!ST)leg.value='';sto.checked=false;ok.checked=false;ok.disabled=false;atual()}
     catch(e){m.dataset.k='fim';m.innerHTML=aviso('bad',e.message);ok.disabled=false;ok.checked=false;atual()}}}
 
 /* ---------- Instagram: clientes ---------- */
