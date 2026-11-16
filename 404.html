@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página não encontrada | Direcional Mídia</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#020617">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/logo-rosa.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Sora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #020617;
+      --bg-card: #0c1849;
+      --primary: #00d084;
+      --accent: #00ffff;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: rgba(0, 255, 255, 0.12);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      text-align: center;
+    }
+    main { max-width: 520px; }
+    img { width: 72px; height: 72px; margin-bottom: 24px; }
+    .codigo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800;
+      font-size: clamp(64px, 18vw, 112px);
+      line-height: 1;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    h1 { font-family: 'Poppins', sans-serif; font-size: 24px; margin: 16px 0 12px; }
+    p { color: var(--text-muted); line-height: 1.6; margin-bottom: 28px; }
+    .botoes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    a.btn {
+      display: inline-block;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    a.principal { background: var(--primary); color: var(--bg-dark); }
+    a.secundario { border: 1px solid var(--border); background: var(--bg-card); color: var(--text); }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/logo-rosa.svg" alt="Direcional Mídia">
+    <div class="codigo">404</div>
+    <h1>Essa página não existe</h1>
+    <p>O endereço pode ter mudado ou foi digitado errado. Volte para o início e siga a rota certa.</p>
+    <div class="botoes">
+      <a class="btn principal" href="/">Ir para o início</a>
+      <a class="btn secundario" href="https://wa.me/5511970511827">Falar no WhatsApp</a>
+    </div>
+  </main>
+</body>
+</html>
