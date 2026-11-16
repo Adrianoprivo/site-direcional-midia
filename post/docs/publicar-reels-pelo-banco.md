@@ -1,5 +1,7 @@
 # Publicar Reels no Instagram pelo banco (sem navegador)
 
+> **Atualizado em 16/11/2026:** este passo a passo virou o guia completo em `post/docs/publicar-no-instagram.md` (foto, carrossel, Stories e Reels pelo banco). Use aquele. Nunca publicar pelo Windsor.
+
 Criado em 12/11/2026. Serve quando a sessão do Claude **não** tem o computador do Adriano conectado e a rede da sessão não alcança o Supabase.
 O token do Instagram nunca sai do banco. As funções só rodam com `service_role` (anon e authenticated não executam).
 
@@ -19,6 +21,6 @@ O token do Instagram nunca sai do banco. As funções só rodam com `service_rol
 Cada `execute_sql` com várias instruções devolve só o resultado da última: rode o `select` da resposta numa chamada separada.
 
 ## Limites
-- Só Reels pelo banco (fotos/carrossel continuam pelo Privo Post ou pela chave do `ig-api`).
+- Foto, carrossel e Stories pelo banco: ver `post/docs/publicar-no-instagram.md` (função `privo_ig_criar_midia`).
 - O Supabase precisa estar conectado na sessão do Claude. Se o sistema pedir permissão para a ação no banco, o Adriano aprova.
 - Correção definitiva alternativa: liberar `ftahvdzbyqnvarukytws.supabase.co` na rede do Claude (Admin > Capabilities) e cadastrar o segredo `PRIVO_CHAVE_PUBLICAR` no Supabase (porta com chave já está no `ig-api`).
