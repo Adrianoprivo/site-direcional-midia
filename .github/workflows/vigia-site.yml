@@ -1,0 +1,28 @@
+# Vigia do site: a cada 30 minutos confere se as páginas principais abrem.
+# Se alguma cair, este robô falha e o GitHub manda um e-mail avisando.
+name: Vigia do site
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  conferir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confere as páginas
+        run: |
+          falhou=0
+          for url in \
+            https://direcionalmidia.com.br/ \
+            https://www.direcionalmidia.com.br/ \
+            https://direcionalmidia.com.br/central/ \
+            https://direcionalmidia.com.br/mind/ \
+            https://direcionalmidia.com.br/post/ \
+            https://habitos.direcionalmidia.com.br/ ; do
+            codigo=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 --retry 2 "$url")
+            echo "$codigo $url"
+            [ "$codigo" = "200" ] || falhou=1
+          done
+          exit $falhou
