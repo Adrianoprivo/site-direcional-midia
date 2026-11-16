@@ -1,0 +1,21 @@
+# Despertador do Supabase: o plano grátis pausa o projeto depois de 7 dias sem uso.
+# Uma vez por dia, este robô faz uma consulta simples ao banco para mantê-lo ativo.
+# A chave abaixo é a "publicável" (pública por natureza, a mesma que o site usa).
+name: Despertador do Supabase
+
+on:
+  schedule:
+    - cron: "17 9 * * *" # todo dia às 06:17 de Brasília
+  workflow_dispatch: # permite rodar na mão pela aba Actions
+
+jobs:
+  acordar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consulta simples ao banco
+        run: |
+          codigo=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://ftahvdzbyqnvarukytws.supabase.co/rest/v1/mapas?select=id&limit=1" \
+            -H "apikey: sb_publishable_TRsKX1yVSB8EYPxbaSOFAg_HM8AVpI7")
+          echo "Resposta do Supabase: $codigo"
+          test "$codigo" = "200"
