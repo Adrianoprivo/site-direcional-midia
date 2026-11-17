@@ -623,6 +623,10 @@ function abaPublicar(el){
       <input id="pub-vid" type="url" placeholder="https://raw.githubusercontent.com/.../reel.mp4" value="${esc(RP.vid||'')}" style="width:100%">
       <p class="note">Se preencher o vídeo, ele vai como Reels e as imagens acima são ignoradas.</p>
       <div class="prev" id="pub-vprev"></div></div>
+    <div class="linha"><label for="pub-arq">Ou envie do computador</label>
+      <input id="pub-arq" type="file" multiple accept="image/jpeg,video/mp4,video/quicktime" style="width:100%">
+      <p class="note">Fotos em JPG (entram na lista de imagens, na ordem escolhida) ou um vídeo MP4 (vai no campo do Reels). Até 50 MB por arquivo. O link é criado sozinho.</p>
+      <div id="pub-up"></div></div>
     <div class="linha"><label for="pub-leg">Legenda</label>
       <textarea id="pub-leg" rows="9">${esc(RP.leg)}</textarea><div class="cnt" id="pub-cnt"></div></div>
     <div class="linha"><label class="chk" style="font-weight:500"><input type="checkbox" id="pub-sto"${RP.sto?' checked':''}> Publicar como Stories</label>
@@ -642,10 +646,30 @@ function abaPublicar(el){
     btn.disabled=!(valido&&ok.checked);btn.textContent=ST?(V?'Publicar story (vídeo)':L.length>1?`Publicar ${L.length} stories`:'Publicar story'):V?'Publicar Reels':(L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto');
     if(L.length>10)$('pub-msg').innerHTML=aviso('bad','Máximo de 10 imagens.');else if($('pub-msg').dataset.k!=='fim')$('pub-msg').innerHTML=''};
   [vid,imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});sto.onchange=()=>{ok.checked=false;atual()};ok.onchange=atual;atual();
+  // IG-PUB-07: envia o arquivo para o armazenamento do Privo Post (bucket privo-midia) e usa o link público
+  const arq=$('pub-arq'),upMsg=$('pub-up');
+  arq.onchange=async()=>{const fs=[...arq.files];if(!fs.length)return;arq.disabled=true;ok.checked=false;atual();
+    const ruins=fs.filter(f=>!/^(image\/jpeg|video\/(mp4|quicktime))$/.test(f.type));
+    if(ruins.length){upMsg.innerHTML=aviso('bad',`Só JPG ou MP4: ${ruins.map(f=>esc(f.name)).join(', ')}`);arq.value='';arq.disabled=false;return}
+    const grandes=fs.filter(f=>f.size>50*1024*1024);
+    if(grandes.length){upMsg.innerHTML=aviso('bad',`Passa de 50 MB: ${grandes.map(f=>esc(f.name)).join(', ')}`);arq.value='';arq.disabled=false;return}
+    try{for(let i=0;i<fs.length;i++){const f=fs[i];
+        upMsg.innerHTML=`<span class="spin"></span> Enviando ${i+1} de ${fs.length}: ${esc(f.name)} (${(f.size/1048576).toFixed(1)} MB)…`;
+        const nome=f.name.normalize('NFD').replace(/[^\w.-]+/g,'-').slice(-80);
+        const caminho=`${S.user.id}/${Date.now()}-${nome}`;
+        const {error}=await sb.storage.from('privo-midia').upload(caminho,f,{contentType:f.type,upsert:false});
+        if(error)throw new Error('Não deu para enviar '+f.name+': '+error.message);
+        const url=sb.storage.from('privo-midia').getPublicUrl(caminho).data.publicUrl;
+        (RP.up=RP.up||[]).push(caminho);
+        if(f.type.startsWith('video/'))vid.value=url;else imgs.value=(imgs.value.trim()?imgs.value.trim()+'\n':'')+url}
+      upMsg.innerHTML=`<span class="msg ok" style="display:inline-block;margin:0">${fs.length>1?fs.length+' arquivos enviados':'Arquivo enviado'}. Confira a prévia.</span>`}
+    catch(e){upMsg.innerHTML=aviso('bad',e.message)}
+    arq.value='';arq.disabled=false;atual()};
   api('ig-api',{acao:'limite'}).then(r=>{if(r.total!=null)$('pub-lim').textContent=`Posts pela API nas últimas 24 h: ${r.usados??0} de ${r.total}`}).catch(()=>{});
   btn.onclick=async()=>{btn.disabled=true;ok.disabled=true;const m=$('pub-msg');m.dataset.k='';m.innerHTML='<span class="spin"></span> Publicando no Instagram… (Reels pode levar até 2 minutos, não feche a tela)';
     try{const ST=sto.checked;const r=await api('ig-api',{acao:'publicar',...(vid.value.trim()?{video:vid.value.trim()}:{imagens:links()}),...(ST?{stories:true}:{legenda:leg.value}),autorizado:true});
-      RP.imgs='';RP.vid='';RP.sto=false;if(!ST)RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';
+      if(RP.up&&RP.up.length){sb.storage.from('privo-midia').remove(RP.up).catch(()=>{});RP.up=[]} // o Instagram já baixou: libera o espaço
+      RP.imgs='';RP.vid='';RP.sto=false;if(!ST)RP.leg='';store.set('pp-rasc',JSON.stringify(RP));S.igPosts=null;m.dataset.k='fim';$('pub-up').innerHTML='';
       m.innerHTML=ST?`<span class="msg ok" style="display:inline-block;margin:0">${(r.ids||[r.id]).length>1?(r.ids.length+' stories publicados!'):'Story publicado!'} Confira no perfil do Instagram.</span>`
         :`<span class="msg ok" style="display:inline-block;margin:0">Publicado! ${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener">Ver no Instagram</a> · `:''}id ${esc(r.id)}</span>`;
       imgs.value='';vid.value='';if(!ST)leg.value='';sto.checked=false;ok.checked=false;ok.disabled=false;atual()}
