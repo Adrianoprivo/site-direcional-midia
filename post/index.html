@@ -633,6 +633,7 @@ function abaPublicar(el){
       <p class="note">Cada imagem vira um story, na ordem (até 10), ou o vídeo vira um story. Use 1080x1920 (9:16). Stories não levam legenda pela API.</p></div>
     <label class="chk" style="font-weight:500"><input type="checkbox" id="pub-ok"> Conferi a prévia e a legenda. Pode publicar no @${esc(S.ig.usuario||'')}.</label>
     <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><button class="btn pri" id="pub-btn" type="button" disabled>Publicar agora</button><span id="pub-msg"></span></div>
+    <p class="note" id="pub-falta" style="margin-top:8px;color:var(--bad)"></p>
   </div></section>`;
   const vid=$('pub-vid'),imgs=$('pub-imgs'),leg=$('pub-leg'),ok=$('pub-ok'),btn=$('pub-btn'),sto=$('pub-sto');
   const links=()=>imgs.value.split('\n').map(x=>x.trim()).filter(Boolean);
@@ -643,7 +644,16 @@ function abaPublicar(el){
     const V=vid.value.trim();$('pub-vprev').innerHTML=V?`<video src="${esc(V)}" controls playsinline preload="metadata" style="max-height:420px"></video>`:'';
     const legOk=ST||n<=2200;
     const valido=V?(/^https:\/\/\S+$/i.test(V)&&legOk):(L.length>=1&&L.length<=10&&L.every(u=>/^https:\/\/\S+$/i.test(u))&&legOk);
-    btn.disabled=!(valido&&ok.checked);btn.textContent=ST?(V?'Publicar story (vídeo)':L.length>1?`Publicar ${L.length} stories`:'Publicar story'):V?'Publicar Reels':(L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto');
+    btn.disabled=!(valido&&ok.checked);
+    // diz por que o botão está travado (antes ele só ficava cinza, sem explicação)
+    const falta=!V&&!L.length?'Coloque o vídeo ou as imagens (link ou "Enviar do computador").'
+      :V&&!/^https:\/\/\S+$/i.test(V)?'O link do vídeo precisa começar com https://.'
+      :!V&&L.length>10?'Máximo de 10 imagens.'
+      :!V&&!L.every(u=>/^https:\/\/\S+$/i.test(u))?'Cada imagem precisa de um link que começa com https://.'
+      :!legOk?'A legenda passa de 2.200 caracteres.'
+      :!ok.checked?'Para liberar o botão, marque "Conferi a prévia e a legenda" acima.':'';
+    $('pub-falta').textContent=falta;
+    btn.textContent=ST?(V?'Publicar story (vídeo)':L.length>1?`Publicar ${L.length} stories`:'Publicar story'):V?'Publicar Reels':(L.length>1?`Publicar carrossel (${L.length})`:'Publicar foto');
     if(L.length>10)$('pub-msg').innerHTML=aviso('bad','Máximo de 10 imagens.');else if($('pub-msg').dataset.k!=='fim')$('pub-msg').innerHTML=''};
   [vid,imgs,leg].forEach(x=>x.oninput=()=>{ok.checked=false;atual()});sto.onchange=()=>{ok.checked=false;atual()};ok.onchange=atual;atual();
   // IG-PUB-07: envia o arquivo para o armazenamento do Privo Post (bucket privo-midia) e usa o link público
